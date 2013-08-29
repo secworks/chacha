@@ -37,34 +37,45 @@
 //======================================================================
 
 module chacha_core(
-                    // Clock and reset.
-                    input wire           clk,
-                    input wire           reset_n,
+                   // Clock and reset.
+                   input wire            clk,
+                   input wire            reset_n,
                 
-                    // Control.
-                    input wire           initalize,
-                    input wire           next,
+                   // Control.
+                   input wire            initalize,
+                   input wire            next,
 
-                    // Parameters and data.
-                    // Number of compression rounds c.
-                    // Number of finalization rounds d.
-                    // Key k.
-                    // Message word block mi.
-                    input wire [127 : 0] key,
-                    input wire [127 : 0]  iv,
-
-                    // Status output.
-                    output wire           ready,
+                   // Parameters and data.
+                   // Number of compression rounds c.
+                   // Number of finalization rounds d.
+                   // Key k.
+                   // Message word block mi.
+                   
+                   input wire [255 : 0]  key,
+                   input wire [127 : 0]  constant,
+                   input wire [127 : 0]  data_in,
+                   
+                   // Status output.
+                   output wire           ready,
                     
-                    // Hash word output.
-                    output wire [31 : 0] chacha_word,
-                    output wire          chacha_word_word_valid
-                   );
+                   // Hash word output.
+                   output wire [127 : 0] data_out,
+                   output wire           data_out_valid
+                  );
 
   
   //----------------------------------------------------------------
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
+  // Datapath quartterround states names.
+  parameter DP_QR0               = 3'h0;
+  parameter DP_QR1               = 3'h0;
+  parameter DP_QR2               = 3'h0;
+  parameter DP_QR3               = 3'h0;
+  parameter DP_QR4               = 3'h0;
+  parameter DP_QR5               = 3'h0;
+  parameter DP_QR6               = 3'h0;
+  parameter DP_QR7               = 3'h0;
 
   
   //----------------------------------------------------------------
@@ -136,7 +147,9 @@ module chacha_core(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-
+  reg         init_cipher;
+  reg [2 : 0] quarterround_select;
+  
   
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
@@ -242,12 +255,14 @@ module chacha_core(
 
 
   //----------------------------------------------------------------
-  // quarter_round
-  // update_logic for the quarter round.
+  // chacha_datapath
+  //
+  // Main datapath including logic for the quarterround as well
+  // as MUX/DEMUX for selecting registers to update.
   //----------------------------------------------------------------
   always @*
-    begin : quarter_round
-      // Internal wires
+    begin : chacha_datapath
+      // Internal wires for the quartterround
       reg [31 : 0] a;
       reg [31 : 0] a0;
       reg [31 : 0] a1;
@@ -271,22 +286,124 @@ module chacha_core(
       reg [31 : 0] d2;
       reg [31 : 0] d3;
 
-      // TODO add mux/demux for selecting x-registers updated by the round.
+      // Default assignments
+      x0_new = 32'h00000000;
+      x0_we  = 0;
+      x1_new = 32'h00000000;
+      x1_we  = 0;
+      x2_new = 32'h00000000;
+      x2_we  = 0;
+      x3_new = 32'h00000000;
+      x3_we  = 0;
+      x4_new = 32'h00000000;
+      x4_we  = 0;
+      x5_new = 32'h00000000;
+      x5_we  = 0;
+      x6_new = 32'h00000000;
+      x6_we  = 0;
+      x7_new = 32'h00000000;
+      x7_we  = 0;
+      x8_new = 32'h00000000;
+      x8_we  = 0;
+      x9_new = 32'h00000000;
+      x9_we  = 0;
+      x10_new = 32'h00000000;
+      x10_we  = 0;
+      x11_new = 32'h00000000;
+      x11_we  = 0;
+      x12_new = 32'h00000000;
+      x12_we  = 0;
+      x13_new = 32'h00000000;
+      x13_we  = 0;
+      x14_new = 32'h00000000;
+      x14_we  = 0;
+      x15_new = 32'h00000000;
+      x15_we  = 0;
       
+      // MUX for selecting registers for the quarterround.
+      case (quarterround_select)
+          DP_QR0:
+            begin
+              a = x0_reg;
+              b = x4_reg;
+              c = x8_reg;
+              d = x12_reg;
+            end
+        
+          DP_QR1:
+            begin
+              a = x1_reg;
+              b = x5_reg;
+              c = x9_reg;
+              d = x13_reg;
+            end
+        
+          DP_QR2:
+            begin
+              a = x2_reg;
+              b = x6_reg;
+              c = x10_reg;
+              d = x14_reg;
+            end
+        
+          DP_QR3:
+            begin
+              a = x3_reg;
+              b = x7_reg;
+              c = x11_reg;
+              d = x15_reg;
+            end
+        
+          DP_QR4:
+            begin
+              a = x0_reg;
+              b = x5_reg;
+              c = x10_reg;
+              d = x15_reg;
+            end
+        
+          DP_QR5:
+            begin
+              a = x1_reg;
+              b = x6_reg;
+              c = x11_reg;
+              d = x12_reg;
+            end
+        
+          DP_QR6:
+            begin
+              a = x2_reg;
+              b = x7_reg;
+              c = x8_reg;
+              d = x13_reg;
+            end
+        
+          DP_QR7:
+            begin
+              a = x3_reg;
+              b = x4_reg;
+              c = x9_reg;
+              d = x14_reg;
+            end
+      endcase // case (quarterround_select)
+        
+      // The quarterround logic
       a0 = a + b;
       a1 = a0 + b1;
 
       b0 = b ^ c0;
-      b1 = {b0[20:0], b0[31:21]]};
+      b1 = {b0[20:0], b0[31:21]};
       b2 = b1 ^ c1;
-      b3 = {b2[24:0], b2[31:25]]};
+      b3 = {b2[24:0], b2[31:25]};
 
       d0 = d ^ a0;
       d1 = {d0[15:0], d0[31:16]};
       d2 = d1 ^ a1;
       d3 = {d2[23:0], d2[31:24]};
+
       
-    end // block: quarter_round
+    end // block: chacha_datapath
+
   
   //----------------------------------------------------------------
   // chacha_ctrl_fsm
@@ -294,6 +411,11 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : chacha_ctrl_fsm
+      // Default assignments
+      init_cipher = 0;
+      quarterround_select = DP_QR0
+      
+
     end // chacha_ctrl_fsm
 endmodule // chacha_core
 
