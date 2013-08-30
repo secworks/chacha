@@ -68,21 +68,36 @@ module chacha_core(
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   // Datapath quartterround states names.
-  parameter DP_QR0               = 3'h0;
-  parameter DP_QR1               = 3'h0;
-  parameter DP_QR2               = 3'h0;
-  parameter DP_QR3               = 3'h0;
-  parameter DP_QR4               = 3'h0;
-  parameter DP_QR5               = 3'h0;
-  parameter DP_QR6               = 3'h0;
-  parameter DP_QR7               = 3'h0;
+  parameter DP_QR0 = 3'h0;
+  parameter DP_QR1 = 3'h0;
+  parameter DP_QR2 = 3'h0;
+  parameter DP_QR3 = 3'h0;
+  parameter DP_QR4 = 3'h0;
+  parameter DP_QR5 = 3'h0;
+  parameter DP_QR6 = 3'h0;
+  parameter DP_QR7 = 3'h0;
 
+  // NUM_ROUNDS
+  // Default number of rounds
+  parameter NUM_ROUNDS = 4'h8;
 
+  // TAU and SIGMA constants.
+  parameter TAU0 = 32'h61707865;
+  parameter TAU1 = 32'h3120646e;
+  parameter TAU2 = 32'h79622d36;
+  parameter TAU3 = 32'h6b206574;
+
+  parameter SIGMA0 = 32'h61707865;
+  parameter SIGMA1 = 32'h3320646e;
+  parameter SIGMA2 = 32'h79622d32;
+  parameter SIGMA3 = 32'h6b206574;
+  
   // State names for the control FSM.
   parameter CTRL_IDLE  = 3'h0;
   parameter CTRL_INIT  = 3'h1;
   parameter CTRL_ROUND = 3'h2;
   parameter CTRL_FINAL = 3'h3;
+
   
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
