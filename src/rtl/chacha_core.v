@@ -77,6 +77,12 @@ module chacha_core(
   parameter DP_QR6               = 3'h0;
   parameter DP_QR7               = 3'h0;
 
+
+  // State names for the control FSM.
+  parameter CTRL_IDLE  = 3'h0;
+  parameter CTRL_INIT  = 3'h1;
+  parameter CTRL_ROUND = 3'h2;
+  parameter CTRL_FINAL = 3'h3;
   
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
@@ -142,6 +148,16 @@ module chacha_core(
   reg [31 : 0] x15_reg;
   reg [31 : 0] x15_new;
   reg          x15_we;
+
+  reg [3 : 0] round_ctr_reg;
+  reg [3 : 0] round_ctr_new;
+  reg         round_ctr_we;
+  reg         round_ctr_inc;
+  reg         round_ctr_rst;
+
+  reg [2 : 0] chacha_ctrl_reg;
+  reg [2 : 0] chacha_ctrl_new;
+  reg         chacha_ctrl_we;
   
   
   //----------------------------------------------------------------
@@ -167,22 +183,24 @@ module chacha_core(
       if (!reset_n)
         begin
           // Reset all registers to defined values.
-          x0_reg  <= 31'h00000000;
-          x1_reg  <= 31'h00000000;
-          x2_reg  <= 31'h00000000;
-          x3_reg  <= 31'h00000000;
-          x4_reg  <= 31'h00000000;
-          x5_reg  <= 31'h00000000;
-          x6_reg  <= 31'h00000000;
-          x7_reg  <= 31'h00000000;
-          x8_reg  <= 31'h00000000;
-          x9_reg  <= 31'h00000000;
-          x10_reg <= 31'h00000000;
-          x11_reg <= 31'h00000000;
-          x12_reg <= 31'h00000000;
-          x13_reg <= 31'h00000000;
-          x14_reg <= 31'h00000000;
-          x15_reg <= 31'h00000000;
+          x0_reg          <= 31'h00000000;
+          x1_reg          <= 31'h00000000;
+          x2_reg          <= 31'h00000000;
+          x3_reg          <= 31'h00000000;
+          x4_reg          <= 31'h00000000;
+          x5_reg          <= 31'h00000000;
+          x6_reg          <= 31'h00000000;
+          x7_reg          <= 31'h00000000;
+          x8_reg          <= 31'h00000000;
+          x9_reg          <= 31'h00000000;
+          x10_reg         <= 31'h00000000;
+          x11_reg         <= 31'h00000000;
+          x12_reg         <= 31'h00000000;
+          x13_reg         <= 31'h00000000;
+          x14_reg         <= 31'h00000000;
+          x15_reg         <= 31'h00000000;
+          chacha_ctrl_reg <= CTRL_IDLE;
+          round_ctr_reg   <= 0;
         end
       else
         begin
@@ -190,65 +208,90 @@ module chacha_core(
             begin
               x0_reg <= x0_new;
             end
+
           if (x1_we)
             begin
               x1_reg <= x1_new;
             end
+
           if (x2_we)
             begin
               x2_reg <= x2_new;
             end
+
           if (x3_we)
             begin
               x3_reg <= x3_new;
             end
+
           if (x4_we)
             begin
               x4_reg <= x4_new;
             end
+
           if (x5_we)
             begin
               x5_reg <= x5_new;
             end
+
           if (x6_we)
             begin
               x6_reg <= x6_new;
             end
+
           if (x7_we)
             begin
               x7_reg <= x7_new;
             end
+
           if (x8_we)
             begin
               x8_reg <= x8_new;
             end
+
           if (x9_we)
             begin
               x9_reg <= x9_new;
             end
+
           if (x10_we)
             begin
               x10_reg <= x10_new;
             end
+
           if (x11_we)
             begin
               x11_reg <= x11_new;
             end
+
           if (x12_we)
             begin
               x12_reg <= x12_new;
             end
+
           if (x13_we)
             begin
               x13_reg <= x13_new;
             end
+
           if (x14_we)
             begin
               x14_reg <= x14_new;
             end
+
           if (x15_we)
             begin
               x15_reg <= x15_new;
+            end
+
+          if (round_ctr_we)
+            begin
+              round_ctr_reg <= round_ctr_new;
+            end
+
+          if (chacha_ctrl_we)
+            begin
+              chacha_ctrl_reg <= chacha_ctrl_new;
             end
         end
     end // reg_update
@@ -413,9 +456,25 @@ module chacha_core(
     begin : chacha_ctrl_fsm
       // Default assignments
       init_cipher = 0;
-      quarterround_select = DP_QR0
-      
+      quarterround_select = DP_QR0;
+            
+      round_ctr_new = 0;
+      round_ctr_we = 0;
+      round_ctr_inc = 0;
+      round_ctr_rst = 0;
 
+      chacha_ctrl_new = CTRL_IDLE;
+      chacha_ctrl_we = 0;
+      
+      case (chacha_ctrl_reg)
+        CTRL_IDLE:
+          begin
+
+          end
+        
+      endcase // case (chacha_ctrl_reg)
+      
+      
     end // chacha_ctrl_fsm
 endmodule // chacha_core
 
