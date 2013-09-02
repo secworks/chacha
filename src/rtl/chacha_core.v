@@ -42,17 +42,16 @@ module chacha_core(
                    input wire            reset_n,
                 
                    // Control.
-                   input wire            initalize,
+                   input wire            init,
                    input wire            next,
 
-                   // Parameters and data.
-                   // Number of compression rounds c.
-                   // Number of finalization rounds d.
-                   // Key k.
-                   // Message word block mi.
-                   
+                   // Parameters.
                    input wire [255 : 0]  key,
-                   input wire [127 : 0]  constant,
+                   input wire            key_length,
+                   input wire [127 : 0]  iv,
+                   input wire [3 : 0]    rounds,
+
+                   // Data input.
                    input wire [127 : 0]  data_in,
                    
                    // Status output.
