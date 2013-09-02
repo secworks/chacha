@@ -102,7 +102,8 @@ module chacha_core(
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
   // x0..x15
-  // 16 internal state registers.
+  // 16 internal state registers including update vectors 
+  // and write enable signals.
   reg [31 : 0] x0_reg;
   reg [31 : 0] x0_new;
   reg          x0_we;
@@ -179,6 +180,13 @@ module chacha_core(
   //----------------------------------------------------------------
   reg         init_cipher;
   reg [2 : 0] quarterround_select;
+
+  // Wires to connect the pure combinational quarterround 
+  // to the state update logic.
+  reg [31 : 0] a_prim;
+  reg [31 : 0] b_prim;
+  reg [31 : 0] c_prim;
+  reg [31 : 0] d_prim;
   
   
   //----------------------------------------------------------------
@@ -312,70 +320,29 @@ module chacha_core(
 
 
   //----------------------------------------------------------------
-  // chacha_datapath
-  //
-  // Main datapath including logic for the quarterround as well
-  // as MUX/DEMUX for selecting registers to update.
+  // Quarterround logic including MUX to select state registers
+  // as inputs to the quarterround.
   //----------------------------------------------------------------
   always @*
-    begin : chacha_datapath
+    begin : quarterround
       // Internal wires for the quartterround
-      reg [31 : 0] a;
       reg [31 : 0] a0;
       reg [31 : 0] a1;
 
-      reg [31 : 0] b;
       reg [31 : 0] b0;
       reg [31 : 0] b1;
       reg [31 : 0] b2;
       reg [31 : 0] b3;
-
       
-      reg [31 : 0] c;
       reg [31 : 0] c0;
       reg [31 : 0] c1;
       reg [31 : 0] c2;
       reg [31 : 0] c3;
       
-      reg [31 : 0] d;
       reg [31 : 0] d0;
       reg [31 : 0] d1;
       reg [31 : 0] d2;
       reg [31 : 0] d3;
-
-      // Default assignments
-      x0_new = 32'h00000000;
-      x0_we  = 0;
-      x1_new = 32'h00000000;
-      x1_we  = 0;
-      x2_new = 32'h00000000;
-      x2_we  = 0;
-      x3_new = 32'h00000000;
-      x3_we  = 0;
-      x4_new = 32'h00000000;
-      x4_we  = 0;
-      x5_new = 32'h00000000;
-      x5_we  = 0;
-      x6_new = 32'h00000000;
-      x6_we  = 0;
-      x7_new = 32'h00000000;
-      x7_we  = 0;
-      x8_new = 32'h00000000;
-      x8_we  = 0;
-      x9_new = 32'h00000000;
-      x9_we  = 0;
-      x10_new = 32'h00000000;
-      x10_we  = 0;
-      x11_new = 32'h00000000;
-      x11_we  = 0;
-      x12_new = 32'h00000000;
-      x12_we  = 0;
-      x13_new = 32'h00000000;
-      x13_we  = 0;
-      x14_new = 32'h00000000;
-      x14_we  = 0;
-      x15_new = 32'h00000000;
-      x15_we  = 0;
       
       // MUX for selecting registers for the quarterround.
       case (quarterround_select)
@@ -444,22 +411,206 @@ module chacha_core(
             end
       endcase // case (quarterround_select)
         
-      // The quarterround logic
+      // The actual quarterround logic
       a0 = a + b;
       a1 = a0 + b1;
-
+      a_prim = a1;
+                
       b0 = b ^ c0;
       b1 = {b0[20:0], b0[31:21]};
       b2 = b1 ^ c1;
       b3 = {b2[24:0], b2[31:25]};
+      b_prim = b3;
 
+      // TODO: Add logic for c. Where did it go?!?
+      c_prim = c;
+      
       d0 = d ^ a0;
       d1 = {d0[15:0], d0[31:16]};
       d2 = d1 ^ a1;
       d3 = {d2[23:0], d2[31:24]};
+      d_prim = d3;
+    end // quarterround
 
+
+  //----------------------------------------------------------------
+  // state_update
+  //
+  // Logic to update the internal state during initialization
+  // as well as round processing.
+  //----------------------------------------------------------------
+  always @*
+    begin : state_update
+      // Default assignments
+      x0_new = 32'h00000000;
+      x0_we  = 0;
+      x1_new = 32'h00000000;
+      x1_we  = 0;
+      x2_new = 32'h00000000;
+      x2_we  = 0;
+      x3_new = 32'h00000000;
+      x3_we  = 0;
+      x4_new = 32'h00000000;
+      x4_we  = 0;
+      x5_new = 32'h00000000;
+      x5_we  = 0;
+      x6_new = 32'h00000000;
+      x6_we  = 0;
+      x7_new = 32'h00000000;
+      x7_we  = 0;
+      x8_new = 32'h00000000;
+      x8_we  = 0;
+      x9_new = 32'h00000000;
+      x9_we  = 0;
+      x10_new = 32'h00000000;
+      x10_we  = 0;
+      x11_new = 32'h00000000;
+      x11_we  = 0;
+      x12_new = 32'h00000000;
+      x12_we  = 0;
+      x13_new = 32'h00000000;
+      x13_we  = 0;
+      x14_new = 32'h00000000;
+      x14_we  = 0;
+      x15_new = 32'h00000000;
+      x15_we  = 0;
+
+      if (init_cipher)
+        begin
+          x0_we   = 1;
+          x1_we   = 1;
+          x2_we   = 1;
+          x3_we   = 1;
+          x4_we   = 1;
+          x5_we   = 1;
+          x6_we   = 1;
+          x7_we   = 1;
+          x8_we   = 1;
+          x9_we   = 1;
+          x10_we  = 1;
+          x11_we  = 1;
+          x12_we  = 1;
+          x13_we  = 1;
+          x14_we  = 1;
+          x15_we  = 1;
+          x4_new  = key[31 : 0];
+          x5_new  = key[63 : 32];
+          x6_new  = key[95 : 64];
+          x7_new  = key[127 : 96];
+          x12_new = counter[31 : 0];
+          x13_new = counter[63 : 32];
+          x14_new = iv[31 : 0];
+          x15_new = iv[63 : 0];
+
+          if (key_length)
+            begin
+              // 256 bit key.
+              x0_new  = SIGMA;
+              x1_new  = SIGMA;
+              x2_new  = SIGMA;
+              x3_new  = SIGMA;
+              x8_new  = key[159 : 128];
+              x9_new  = key[191 : 160];
+              x10_new = key[223 : 192];
+              x11_new = key[255 : 224];
+            end
+          else
+            begin
+              // 128 bit key.
+              x0_new  = TAU;
+              x1_new  = TAU;
+              x2_new  = TAU;
+              x3_new  = TAU;
+              x8_new  = key[31 : 0];
+              x9_new  = key[63 : 32];
+              x10_new = key[95 : 64];
+              x11_new = key[127 : 96];
+            end
+        end
+      else
+        begin
+          // Write results from the quarterround to the state regs.
+          case (quarterround_select)
+            DP_QR0:
+              begin
+                x0_new  = a_prim;
+                x0_we   = 1;
+                x4_new  = b_prim;
+                x4_we   = 1;
+                x8_reg  = c_prim;
+                x8_we   = 1;
+                x12_new = d_prim;
+                x12_we  = 1;
+              end
+            
+            DP_QR1:
+              begin
+                x1_new  = a_prim;
+                x1_we   = 1;
+                x5_new  = b_prim;
+                x5_we   = 1;
+                x9_new  = c_prim;
+                x9_we   = 1;
+                x13_new = d_prim;
+                x13_we  = 1;
+              end
+            
+            DP_QR2:
+              begin
+                a = x2_reg;
+                b = x6_reg;
+                c = x10_reg;
+                d = x14_reg;
+              end
+            
+            DP_QR3:
+              begin
+                a = x3_reg;
+                b = x7_reg;
+                c = x11_reg;
+                d = x15_reg;
+              end
+            
+            DP_QR4:
+              begin
+                a = x0_reg;
+                b = x5_reg;
+                c = x10_reg;
+                d = x15_reg;
+              end
+            
+            DP_QR5:
+              begin
+                a = x1_reg;
+                b = x6_reg;
+                c = x11_reg;
+                d = x12_reg;
+              end
+        
+            DP_QR6:
+              begin
+                a = x2_reg;
+                b = x7_reg;
+                c = x8_reg;
+                d = x13_reg;
+              end
+            
+            DP_QR7:
+              begin
+                a = x3_reg;
+                b = x4_reg;
+                c = x9_reg;
+                d = x14_reg;
+              end
+          endcase // case (quarterround_select)
+          
+        end
+
+      else
       
-    end // block: chacha_datapath
+    end // state_update
+  
+  
 
   
   //----------------------------------------------------------------
