@@ -53,13 +53,13 @@ module chacha_core(
                    input wire [3 : 0]    rounds,
                    
                    // Data input.
-                   input wire [127 : 0]  data_in,
+                   input wire [511 : 0]  data_in,
                    
                    // Status output.
                    output wire           ready,
                     
                    // Hash word output.
-                   output wire [127 : 0] data_out,
+                   output wire [511 : 0] data_out,
                    output wire           data_out_valid
                   );
 
@@ -164,7 +164,11 @@ module chacha_core(
   reg [31 : 0] x15_reg;
   reg [31 : 0] x15_new;
   reg          x15_we;
-
+  
+  reg  data_out_valid_reg
+  reg  data_out_valid_new
+  reg  data_out_valid_we
+  
   reg [3 : 0] round_ctr_reg;
   reg [3 : 0] round_ctr_new;
   reg         round_ctr_we;
@@ -199,6 +203,13 @@ module chacha_core(
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
+  // Data out assignment. Note that this adds one layer of XOR
+  assign data_out = data_in ^ {x15_reg, x14_reg, x13_reg, x12_reg, 
+                               x11_reg, x10_reg, x9_reg, x8_reg, 
+                               x7_reg, x6_reg, x5_reg, x4_reg, 
+                               x3_reg, x2_reg, x1_reg, x0_reg};
+
+  assign data_out_valid = data_out_valid_reg;
   
   
   //----------------------------------------------------------------
@@ -212,25 +223,26 @@ module chacha_core(
       if (!reset_n)
         begin
           // Reset all registers to defined values.
-          x0_reg          <= 31'h00000000;
-          x1_reg          <= 31'h00000000;
-          x2_reg          <= 31'h00000000;
-          x3_reg          <= 31'h00000000;
-          x4_reg          <= 31'h00000000;
-          x5_reg          <= 31'h00000000;
-          x6_reg          <= 31'h00000000;
-          x7_reg          <= 31'h00000000;
-          x8_reg          <= 31'h00000000;
-          x9_reg          <= 31'h00000000;
-          x10_reg         <= 31'h00000000;
-          x11_reg         <= 31'h00000000;
-          x12_reg         <= 31'h00000000;
-          x13_reg         <= 31'h00000000;
-          x14_reg         <= 31'h00000000;
-          x15_reg         <= 31'h00000000;
-          qr_ctr_reg      <= QR0;
-          round_ctr_reg   <= 0;
-          chacha_ctrl_reg <= CTRL_IDLE;
+          x0_reg             <= 31'h00000000;
+          x1_reg             <= 31'h00000000;
+          x2_reg             <= 31'h00000000;
+          x3_reg             <= 31'h00000000;
+          x4_reg             <= 31'h00000000;
+          x5_reg             <= 31'h00000000;
+          x6_reg             <= 31'h00000000;
+          x7_reg             <= 31'h00000000;
+          x8_reg             <= 31'h00000000;
+          x9_reg             <= 31'h00000000;
+          x10_reg            <= 31'h00000000;
+          x11_reg            <= 31'h00000000;
+          x12_reg            <= 31'h00000000;
+          x13_reg            <= 31'h00000000;
+          x14_reg            <= 31'h00000000;
+          x15_reg            <= 31'h00000000;
+          data_out_valid_reg <= 0;
+          qr_ctr_reg         <= QR0;
+          round_ctr_reg      <= 0;
+          chacha_ctrl_reg    <= CTRL_IDLE;
         end
       else
         begin
@@ -314,14 +326,19 @@ module chacha_core(
               x15_reg <= x15_new;
             end
 
-          if (round_ctr_we)
+          if (data_out_valid_we)
             begin
-              round_ctr_reg <= round_ctr_new;
+              data_out_valid_reg <= data_out_valid_new;
             end
 
           if (qr_ctr_we)
             begin
               qr_ctr_reg <= qr_ctr_new;
+            end
+
+          if (round_ctr_we)
+            begin
+              round_ctr_reg <= round_ctr_new;
             end
 
           if (chacha_ctrl_we)
@@ -715,6 +732,9 @@ module chacha_core(
       round_ctr_inc = 0;
       round_ctr_rst = 0;
 
+      data_out_valid_new = 0;
+      data_out_valid_we  = 0;
+      
       chacha_ctrl_new = CTRL_IDLE;
       chacha_ctrl_we = 0;
       
