@@ -48,9 +48,10 @@ module chacha_core(
                    // Parameters.
                    input wire [255 : 0]  key,
                    input wire            key_length,
-                   input wire [127 : 0]  iv,
+                   input wire [63 : 0]   iv,
+                   input wire [63 : 0]   counter,
                    input wire [3 : 0]    rounds,
-
+                   
                    // Data input.
                    input wire [127 : 0]  data_in,
                    
