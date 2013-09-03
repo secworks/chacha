@@ -67,14 +67,14 @@ module chacha_core(
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   // Datapath quartterround states names.
-  parameter DP_QR0 = 3'h0;
-  parameter DP_QR1 = 3'h0;
-  parameter DP_QR2 = 3'h0;
-  parameter DP_QR3 = 3'h0;
-  parameter DP_QR4 = 3'h0;
-  parameter DP_QR5 = 3'h0;
-  parameter DP_QR6 = 3'h0;
-  parameter DP_QR7 = 3'h0;
+  parameter QR0 = 3'h0;
+  parameter QR1 = 3'h0;
+  parameter QR2 = 3'h0;
+  parameter QR3 = 3'h0;
+  parameter QR4 = 3'h0;
+  parameter QR5 = 3'h0;
+  parameter QR6 = 3'h0;
+  parameter QR7 = 3'h0;
 
   // NUM_ROUNDS
   // Default number of rounds
@@ -170,6 +170,12 @@ module chacha_core(
   reg         round_ctr_inc;
   reg         round_ctr_rst;
 
+  reg [2 : 0] qr_ctr_reg;
+  reg [2 : 0] qr_ctr_new;
+  reg         qr_ctr_we;
+  reg         qr_ctr_inc;
+  reg         qr_ctr_rst;
+
   reg [2 : 0] chacha_ctrl_reg;
   reg [2 : 0] chacha_ctrl_new;
   reg         chacha_ctrl_we;
@@ -180,7 +186,6 @@ module chacha_core(
   //----------------------------------------------------------------
   reg         init_cipher;
   reg         finalize;
-  reg [2 : 0] quarterround_select;
 
   // Wires to connect the pure combinational quarterround 
   // to the state update logic.
@@ -222,8 +227,9 @@ module chacha_core(
           x13_reg         <= 31'h00000000;
           x14_reg         <= 31'h00000000;
           x15_reg         <= 31'h00000000;
-          chacha_ctrl_reg <= CTRL_IDLE;
+          qr_ctr_reg      <= QR0;
           round_ctr_reg   <= 0;
+          chacha_ctrl_reg <= CTRL_IDLE;
         end
       else
         begin
@@ -312,6 +318,11 @@ module chacha_core(
               round_ctr_reg <= round_ctr_new;
             end
 
+          if (qr_ctr_we)
+            begin
+              qr_ctr_reg <= qr_ctr_new;
+            end
+
           if (chacha_ctrl_we)
             begin
               chacha_ctrl_reg <= chacha_ctrl_new;
@@ -346,8 +357,8 @@ module chacha_core(
       reg [31 : 0] d3;
       
       // MUX for selecting registers for the quarterround.
-      case (quarterround_select)
-          DP_QR0:
+      case (qr_ctr_reg)
+          QR0:
             begin
               a = x0_reg;
               b = x4_reg;
@@ -355,7 +366,7 @@ module chacha_core(
               d = x12_reg;
             end
         
-          DP_QR1:
+          QR1:
             begin
               a = x1_reg;
               b = x5_reg;
@@ -363,7 +374,7 @@ module chacha_core(
               d = x13_reg;
             end
         
-          DP_QR2:
+          QR2:
             begin
               a = x2_reg;
               b = x6_reg;
@@ -371,7 +382,7 @@ module chacha_core(
               d = x14_reg;
             end
         
-          DP_QR3:
+          QR3:
             begin
               a = x3_reg;
               b = x7_reg;
@@ -379,7 +390,7 @@ module chacha_core(
               d = x15_reg;
             end
         
-          DP_QR4:
+          QR4:
             begin
               a = x0_reg;
               b = x5_reg;
@@ -387,7 +398,7 @@ module chacha_core(
               d = x15_reg;
             end
         
-          DP_QR5:
+          QR5:
             begin
               a = x1_reg;
               b = x6_reg;
@@ -395,7 +406,7 @@ module chacha_core(
               d = x12_reg;
             end
         
-          DP_QR6:
+          QR6:
             begin
               a = x2_reg;
               b = x7_reg;
@@ -403,7 +414,7 @@ module chacha_core(
               d = x13_reg;
             end
         
-          DP_QR7:
+          QR7:
             begin
               a = x3_reg;
               b = x4_reg;
@@ -413,23 +424,24 @@ module chacha_core(
       endcase // case (quarterround_select)
         
       // The actual quarterround logic
-      a0 = a + b;
-      a1 = a0 + b1;
+      a0     = a + b;
+      a1     = a0 + b1;
       a_prim = a1;
                 
-      b0 = b ^ c0;
-      b1 = {b0[20:0], b0[31:21]};
-      b2 = b1 ^ c1;
-      b3 = {b2[24:0], b2[31:25]};
+      b0     = b ^ c0;
+      b1     = {b0[20:0], b0[31:21]};
+      b2     = b1 ^ c1;
+      b3     = {b2[24:0], b2[31:25]};
       b_prim = b3;
 
-      // TODO: Add logic for c. Where did it go?!?
-      c_prim = c;
+      c0     = c + d1;
+      c1     = c0 + d3
+      c_prim = c1;
       
-      d0 = d ^ a0;
-      d1 = {d0[15:0], d0[31:16]};
-      d2 = d1 ^ a1;
-      d3 = {d2[23:0], d2[31:24]};
+      d0     = d ^ a0;
+      d1     = {d0[15:0], d0[31:16]};
+      d2     = d1 ^ a1;
+      d3     = {d2[23:0], d2[31:24]};
       d_prim = d3;
     end // quarterround
 
@@ -537,8 +549,8 @@ module chacha_core(
         begin
           // Quarterround update.
           // Write results from the quarterround to the state regs.
-          case (quarterround_select)
-            DP_QR0:
+          case (qr_ctr_reg)
+            QR0:
               begin
                 x0_new  = a_prim;
                 x4_new  = b_prim;
@@ -550,7 +562,7 @@ module chacha_core(
                 x12_we  = 1;
               end
             
-            DP_QR1:
+            QR1:
               begin
                 x1_new  = a_prim;
                 x5_new  = b_prim;
@@ -562,7 +574,7 @@ module chacha_core(
                 x13_we  = 1;
               end
             
-            DP_QR2:
+            QR2:
               begin
                 x2_new  = a;
                 x6_new  = b;
@@ -574,7 +586,7 @@ module chacha_core(
                 x14_we  = 1;
               end
             
-            DP_QR3:
+            QR3:
               begin
                 x3_new  = a;
                 x7_new  = b;
@@ -586,7 +598,7 @@ module chacha_core(
                 x15_we  = 1;
               end
             
-            DP_QR4:
+            QR4:
               begin
                 x0_new  = a;
                 x5_new  = b;
@@ -598,7 +610,7 @@ module chacha_core(
                 x15_we  = 1;
               end
             
-            DP_QR5:
+            QR5:
               begin
                 x1_new  = a; 
                 x6_new  = b; 
@@ -610,7 +622,7 @@ module chacha_core(
                 x12_we  = 1;
               end
         
-            DP_QR6:
+            QR6:
               begin
                 x2_new  = a;
                 x7_new  = b;
@@ -622,7 +634,7 @@ module chacha_core(
                 x13_we  = 1;
               end
             
-            DP_QR7:
+            QR7:
               begin
                 x3_new  = a;
                 x4_new  = b;
@@ -636,6 +648,31 @@ module chacha_core(
           endcase // case (quarterround_select)
         end
     end // state_update
+  
+  
+  //----------------------------------------------------------------
+  // qr_ctr
+  // Update logic for the quarterround counter, a monotonically 
+  // increasing counter with reset.
+  //----------------------------------------------------------------
+  always @*
+    begin : qr_ctr
+      // Defult assignments
+      qr_ctr_new = 0;
+      qr_ctr_we  = 0;
+      
+      if (qr_ctr_rst)
+        begin
+          qr_ctr_new = 0;
+          qr_ctr_we  = 1;
+        end
+
+      if (qr_ctr_inc)
+        begin
+          qr_ctr_new = qr_ctr_reg + 4'h1;
+          qr_ctr_we  = 1;
+        end
+    end // qr_ctr
   
   
   //----------------------------------------------------------------
@@ -673,7 +710,6 @@ module chacha_core(
       // Default assignments
       init_cipher = 0;
       finalize = 0;
-      quarterround_select = DP_QR0;
 
       round_ctr_inc = 0;
       round_ctr_rst = 0;
