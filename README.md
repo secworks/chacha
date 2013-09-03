@@ -25,6 +25,10 @@ interfaces. The core should be wrapped in a top module that provides a
 proper core API. There will be a top wrapper with a 32-bit interface as
 well as a testbench.
 
+The core is currently not completed. The datapath is basically done and
+supporting logic such as counters are in place. But the control FSM is
+not done yet.
+
 
 ## Notes ##
 The core does not contain any internal block counter, but assumes that
