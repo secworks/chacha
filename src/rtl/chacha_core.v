@@ -179,6 +179,7 @@ module chacha_core(
   // Wires.
   //----------------------------------------------------------------
   reg         init_cipher;
+  reg         finalize;
   reg [2 : 0] quarterround_select;
 
   // Wires to connect the pure combinational quarterround 
@@ -527,89 +528,139 @@ module chacha_core(
               x11_new = key[127 : 96];
             end
         end
+      else if (finalize)
+        begin
+          // Perform end of rounds final update of state.
+          
+        end
       else
         begin
+          // Quarterround update.
           // Write results from the quarterround to the state regs.
           case (quarterround_select)
             DP_QR0:
               begin
                 x0_new  = a_prim;
-                x0_we   = 1;
                 x4_new  = b_prim;
-                x4_we   = 1;
                 x8_reg  = c_prim;
-                x8_we   = 1;
                 x12_new = d_prim;
+                x0_we   = 1;
+                x4_we   = 1;
+                x8_we   = 1;
                 x12_we  = 1;
               end
             
             DP_QR1:
               begin
                 x1_new  = a_prim;
-                x1_we   = 1;
                 x5_new  = b_prim;
-                x5_we   = 1;
                 x9_new  = c_prim;
-                x9_we   = 1;
                 x13_new = d_prim;
+                x1_we   = 1;
+                x5_we   = 1;
+                x9_we   = 1;
                 x13_we  = 1;
               end
             
             DP_QR2:
               begin
-                a = x2_reg;
-                b = x6_reg;
-                c = x10_reg;
-                d = x14_reg;
+                x2_new  = a;
+                x6_new  = b;
+                x10_new = c;
+                x14_new = d;
+                x2_we   = 1;
+                x6_we   = 1;
+                x10_we  = 1;
+                x14_we  = 1;
               end
             
             DP_QR3:
               begin
-                a = x3_reg;
-                b = x7_reg;
-                c = x11_reg;
-                d = x15_reg;
+                x3_new  = a;
+                x7_new  = b;
+                x11_new = c;
+                x15_new = d;
+                x3_we   = 1;
+                x7_we   = 1;
+                x11_we  = 1;
+                x15_we  = 1;
               end
             
             DP_QR4:
               begin
-                a = x0_reg;
-                b = x5_reg;
-                c = x10_reg;
-                d = x15_reg;
+                x0_new  = a;
+                x5_new  = b;
+                x10_new = c;
+                x15_new = d;
+                x0_we   = 1;
+                x5_we   = 1;
+                x10_we  = 1;
+                x15_we  = 1;
               end
             
             DP_QR5:
               begin
-                a = x1_reg;
-                b = x6_reg;
-                c = x11_reg;
-                d = x12_reg;
+                x1_new  = a; 
+                x6_new  = b; 
+                x11_new = c; 
+                x12_new = d; 
+                x1_we   = 1;
+                x6_we   = 1;
+                x11_we  = 1;
+                x12_we  = 1;
               end
         
             DP_QR6:
               begin
-                a = x2_reg;
-                b = x7_reg;
-                c = x8_reg;
-                d = x13_reg;
+                x2_new  = a;
+                x7_new  = b;
+                x8_new  = c;
+                x13_new = d;
+                x2_we   = 1;
+                x7_we   = 1;
+                x8_we   = 1;
+                x13_we  = 1;
               end
             
             DP_QR7:
               begin
-                a = x3_reg;
-                b = x4_reg;
-                c = x9_reg;
-                d = x14_reg;
+                x3_new  = a;
+                x4_new  = b;
+                x9_new  = c;
+                x14_new = d;
+                x3_we   = 1;
+                x4_we   = 1;
+                x9_we   = 1;
+                x14_we  = 1;
               end
           endcase // case (quarterround_select)
-          
         end
-
-      else
-      
     end // state_update
   
+  
+  //----------------------------------------------------------------
+  // round_ctr
+  // Update logic for the round counter, a monotonically 
+  // increasing counter with reset.
+  //----------------------------------------------------------------
+  always @*
+    begin : round_ctr
+      // Defult assignments
+      round_ctr_new = 0;
+      round_ctr_we  = 0;
+      
+      if (round_ctr_rst)
+        begin
+          round_ctr_new = 0;
+          round_ctr_we  = 1;
+        end
+
+      if (round_ctr_inc)
+        begin
+          round_ctr_new = round_ctr_reg + 4'h1;
+          round_ctr_we  = 1;
+        end
+    end // round_ctr
   
 
   
@@ -621,10 +672,9 @@ module chacha_core(
     begin : chacha_ctrl_fsm
       // Default assignments
       init_cipher = 0;
+      finalize = 0;
       quarterround_select = DP_QR0;
-            
-      round_ctr_new = 0;
-      round_ctr_we = 0;
+
       round_ctr_inc = 0;
       round_ctr_rst = 0;
 
