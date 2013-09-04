@@ -165,22 +165,38 @@ module chacha_core(
   reg [31 : 0] x15_new;
   reg          x15_we;
   
-  reg  data_out_valid_reg
-  reg  data_out_valid_new
-  reg  data_out_valid_we
-  
-  reg [3 : 0] round_ctr_reg;
-  reg [3 : 0] round_ctr_new;
-  reg         round_ctr_we;
-  reg         round_ctr_inc;
-  reg         round_ctr_rst;
+  reg  data_out_valid_reg;
+  reg  data_out_valid_new;
+  reg  data_out_valid_we;
 
+  // Quarterround counter register with
+  // reset and increment control.
   reg [2 : 0] qr_ctr_reg;
   reg [2 : 0] qr_ctr_new;
   reg         qr_ctr_we;
   reg         qr_ctr_inc;
   reg         qr_ctr_rst;
+  
+  // Doubleround counter register with
+  // reset and increment control.
+  reg [3 : 0] dr_ctr_reg;
+  reg [3 : 0] dr_ctr_new;
+  reg         dr_ctr_we;
+  reg         dr_ctr_inc;
+  reg         dr_ctr_rst;
 
+  // 64 bit block counter based on two
+  // 32 bit words with reset and 
+  // increment control.
+  reg [31 : 0] block0_ctr_reg;
+  reg [31 : 0] block0_ctr_new;
+  reg [31 : 0] block1_ctr_reg;
+  reg [31 : 0] block1_ctr_new;
+  reg          block0_ctr_we;
+  reg          block1_ctr_we;
+  reg          block_ctr_inc;
+  reg          block_ctr_rst;
+  
   reg [2 : 0] chacha_ctrl_reg;
   reg [2 : 0] chacha_ctrl_new;
   reg         chacha_ctrl_we;
@@ -241,7 +257,7 @@ module chacha_core(
           x15_reg            <= 31'h00000000;
           data_out_valid_reg <= 0;
           qr_ctr_reg         <= QR0;
-          round_ctr_reg      <= 0;
+          dr_ctr_reg      <= 0;
           chacha_ctrl_reg    <= CTRL_IDLE;
         end
       else
@@ -336,9 +352,9 @@ module chacha_core(
               qr_ctr_reg <= qr_ctr_new;
             end
 
-          if (round_ctr_we)
+          if (dr_ctr_we)
             begin
-              round_ctr_reg <= round_ctr_new;
+              dr_ctr_reg <= dr_ctr_new;
             end
 
           if (chacha_ctrl_we)
@@ -528,8 +544,8 @@ module chacha_core(
           x5_new  = key[63 : 32];
           x6_new  = key[95 : 64];
           x7_new  = key[127 : 96];
-          x12_new = counter[31 : 0];
-          x13_new = counter[63 : 32];
+          x12_new = 32'h00000000;
+          x13_new = 32'h00000000;
           x14_new = iv[31 : 0];
           x15_new = iv[63 : 0];
 
@@ -558,10 +574,12 @@ module chacha_core(
               x11_new = key[127 : 96];
             end
         end
-      else if (finalize)
+      else if (next)
         begin
-          // Perform end of rounds final update of state.
-          
+          x12_new = block_ctr0_new;
+          x13_new = block_ctr1_new;
+          x12_we  = 1;
+          x23_we  = 1;
         end
       else
         begin
@@ -694,31 +712,64 @@ module chacha_core(
   
   
   //----------------------------------------------------------------
-  // round_ctr
+  // dr_ctr
   // Update logic for the round counter, a monotonically 
   // increasing counter with reset.
   //----------------------------------------------------------------
   always @*
-    begin : round_ctr
+    begin : dr_ctr
       // Defult assignments
-      round_ctr_new = 0;
-      round_ctr_we  = 0;
+      dr_ctr_new = 0;
+      dr_ctr_we  = 0;
       
-      if (round_ctr_rst)
+      if (dr_ctr_rst)
         begin
-          round_ctr_new = 0;
-          round_ctr_we  = 1;
+          dr_ctr_new = 0;
+          dr_ctr_we  = 1;
         end
 
-      if (round_ctr_inc)
+      if (dr_ctr_inc)
         begin
-          round_ctr_new = round_ctr_reg + 4'h1;
-          round_ctr_we  = 1;
+          dr_ctr_new = dr_ctr_reg + 4'h1;
+          dr_ctr_we  = 1;
         end
-    end // round_ctr
+    end // dr_ctr
+  
+  
+  //----------------------------------------------------------------
+  // block_ctr
+  // Update logic for the 64-bit block counter, a monotonically 
+  // increasing counter with reset.
+  //----------------------------------------------------------------
+  always @*
+    begin : block_ctr
+      // Defult assignments
+      block0_ctr_new = 32'h00000000;
+      block1_ctr_new = 32'h00000000;
+      block0_ctr_we = 0;
+      block1_ctr_we = 0;
+      
+      if (block_ctr_rst)
+        begin
+          block0_ctr_we = 1;
+          block1_ctr_we = 1;
+        end
+      
+      if (block_ctr_inc)
+        begin
+          block0_ctr_new = block0_ctr_new + 1;
+          block0_ctr_we = 1;
+
+          // Avoid chaining the 32-bit adders.
+          if (block0_ctr_reg == 32'hffffffff)
+            begin
+              block1_ctr_new = block1_ctr_new + 1;
+              block1_ctr_we = 1;
+            end
+        end
+    end // block_ctr
   
 
-  
   //----------------------------------------------------------------
   // chacha_ctrl_fsm
   // Logic for the state machine controlling the core behaviour.
@@ -729,9 +780,15 @@ module chacha_core(
       init_cipher = 0;
       finalize = 0;
 
-      round_ctr_inc = 0;
-      round_ctr_rst = 0;
+      qr_ctr_inc = 0;
+      qr_ctr_rst = 0;
 
+      dr_ctr_inc = 0;
+      dr_ctr_rst = 0;
+
+      block_ctr_inc = 0;
+      block_ctr_rst = 0;
+      
       data_out_valid_new = 0;
       data_out_valid_we  = 0;
       
