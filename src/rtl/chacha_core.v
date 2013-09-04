@@ -49,8 +49,7 @@ module chacha_core(
                    input wire [255 : 0]  key,
                    input wire            key_length,
                    input wire [63 : 0]   iv,
-                   input wire [63 : 0]   counter,
-                   input wire [3 : 0]    rounds,
+                   input wire [4 : 0]    rounds,
                    
                    // Data input.
                    input wire [511 : 0]  data_in,
