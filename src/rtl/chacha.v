@@ -179,10 +179,414 @@ module chacha(
         end
       else
         begin
+          if (key0_we)
+            begin
+              key0_reg <= key0_new;
+            end
           
+          if (key1_we)
+            begin
+              key1_reg <= key1_new;
+            end
+          
+          if (key2_we)
+            begin
+              key2_reg <= key2_new;
+            end
+          
+          if (key3_we)
+            begin
+              key3_reg <= key3_new;
+            end
+          
+          if (key4_we)
+            begin
+              key4_reg <= key4_new;
+            end
+          
+          if (key5_we)
+            begin
+              key5_reg <= key5_new;
+            end
+          
+          if (key6_we)
+            begin
+              key6_reg <= key6_new;
+            end
+          
+          if (key7_we)
+            begin
+              key7_reg <= key7_new;
+            end
+          
+          if (iv0_we)
+            begin
+              iv0_reg <= iv0_new;
+            end
+          
+          if (iv1_we)
+            begin
+              iv1_reg <= iv1_new;
+            end
         end
     end // reg_update
 
+
+  //----------------------------------------------------------------
+  // Address decoder logic.
+  //----------------------------------------------------------------
+  always @*
+    begin : addr_decoder
+      // Default assignments.
+      key0_new = 32'h00000000;
+      key0_we  = 0;
+      key1_new = 32'h00000000;
+      key1_we  = 0;
+      key2_new = 32'h00000000;
+      key2_we  = 0;
+      key3_new = 32'h00000000;
+      key3_we  = 0;
+      key4_new = 32'h00000000;
+      key4_we  = 0;
+      key5_new = 32'h00000000;
+      key5_we  = 0;
+      key6_new = 32'h00000000;
+      key6_we  = 0;
+      key7_new = 32'h00000000;
+      key7_we  = 0;
+
+      iv0_new  = 32'h00000000;
+      iv0_we   = 0;
+      iv1_new  = 32'h00000000;
+      iv1_we   = 0;
+      
+      if (cs)
+        begin
+          if (write_read)
+            begin
+              // Perform write operations.
+              case (address)
+                ADDR_CTRL:
+                  begin
+                    
+                  end
+                  
+                ADDR_KEYLEN:
+                  begin
+                    
+                  end
+
+                ADDR_ROUNDS:
+                  begin
+                    
+                  end
+  
+                ADDR_KEY0:
+                  begin
+                    key0_new = data_in;
+                    key0_we  = 1;
+                  end
+  
+                ADDR_KEY1:
+                  begin
+                    key1_new = data_in;
+                    key1_we  = 1;
+                  end
+  
+                ADDR_KEY2:
+                  begin
+                    key2_new = data_in;
+                    key2_we  = 1;
+                  end
+  
+                ADDR_KEY3:
+                  begin
+                    key3_new = data_in;
+                    key3_we  = 1;
+                  end
+  
+                ADDR_KEY4:
+                  begin
+                    key4_new = data_in;
+                    key4_we  = 1;
+                  end
+  
+                ADDR_KEY5:
+                  begin
+                    key5_new = data_in;
+                    key5_we  = 1;
+                  end
+                
+                ADDR_KEY6:
+                  begin
+                    key6_new = data_in;
+                    key6_we  = 1;
+                  end
+
+                ADDR_KEY7:
+                  begin
+                    key7_new = data_in;
+                    key7_we  = 1;
+                  end
+                  
+                ADDR_IV0:
+                  begin
+                    iv0_new = data_in;
+                    iv0_we  = 1;
+                  end
+
+                ADDR_IV1:
+                  begin
+                    iv1_new = data_in;
+                    iv1_we  = 1;
+                  end
+                
+                ADDR_DATA_IN0:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN1:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN2:
+                  begin
+                    
+                  end
+                
+                ADDR_DATA_IN3:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN4:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN5:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN6:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN7:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN8:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN9:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN10:
+                  begin
+                    
+                  end
+                
+                ADDR_DATA_IN11:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN12:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN13:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN14:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_IN15:
+                  begin
+                    
+                  end
+              endcase // case (address)
+            end // if (write_read)
+
+          else
+            begin
+              // Perform read operations.
+              case (address)
+                ADDR_CTRL:
+                  begin
+                    
+                  end
+                
+                ADDR_STATUS:
+                  begin
+                    
+                  end
+                  
+                ADDR_KEYLEN:
+                  begin
+                    
+                  end
+
+                ADDR_ROUNDS:
+                  begin
+                    
+                  end
+  
+                ADDR_KEY0:
+                  begin
+                    data_out = key0_reg;
+                  end
+                
+                ADDR_KEY1:
+                  begin
+                    data_out = key1_reg;
+                  end
+
+                ADDR_KEY2:
+                  begin
+                    data_out = key2_reg;
+                  end
+
+                ADDR_KEY3:
+                  begin
+                    data_out = key3_reg;
+                    
+                  end
+
+                ADDR_KEY4:
+                  begin
+                    data_out = key4_reg;
+                    
+                  end
+
+                ADDR_KEY5:
+                  begin
+                    data_out = key5_reg;
+                    
+                  end
+
+                ADDR_KEY6:
+                  begin
+                    data_out = key6_reg;
+                    
+                  end
+
+                ADDR_KEY7:
+                  begin
+                    data_out = key7_reg;
+                    
+                  end
+                  
+                ADDR_IV0:
+                  begin
+                    data_out = iv0_reg;
+                    
+                  end
+
+                ADDR_IV1:
+                  begin
+                    data_out = iv1_reg;
+                  end
+                
+                ADDR_DATA_OUT0:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT1:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT2:
+                  begin
+                    
+                  end
+                
+                ADDR_DATA_OUT3:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT4:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT5:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT6:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT7:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT8:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT9:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT10:
+                  begin
+                    
+                  end
+                
+                ADDR_DATA_OUT11:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT12:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT13:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT14:
+                  begin
+                    
+                  end
+
+                ADDR_DATA_OUT15:
+                  begin
+                    
+                  end
+              endcase // case (address)
+            end
+        end
+    end // addr_decoder
+  
 endmodule // chacha
 
 //======================================================================
