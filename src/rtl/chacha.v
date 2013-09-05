@@ -289,8 +289,8 @@ module chacha(
   assign core_data_in = {data_in15_reg, data_in14_reg, data_in13_reg, data_in12_reg,
                          data_in11_reg, data_in10_reg, data_in9_reg, data_in8_reg,
                          data_in7_reg, data_in6_reg, data_in5_reg, data_in4_reg,
-                         data_in3_reg, data_in2_reg, data_in1_reg, data_in0_reg}
-
+                         data_in3_reg, data_in2_reg, data_in1_reg, data_in0_reg};
+  
                    
   //----------------------------------------------------------------
   // core instantiation.
