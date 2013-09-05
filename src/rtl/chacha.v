@@ -54,62 +54,93 @@ module chacha(
   //----------------------------------------------------------------
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
-  parameter ADDR_CTRL       = 8'h00;
-  parameter ADDR_STATUS     = 8'h01;
+  parameter ADDR_CTRL        = 8'h00;
+  parameter CTRL_INIT_BIT    = 0;
+  parameter CTRL_NEXT_BIT    = 1;
 
-  parameter ADDR_KEYLEN     = 8'h08;
-  parameter ADDR_ROUNDS     = 8'h09;
+  parameter ADDR_STATUS      = 8'h01;
+  parameter STATUS_READY_BIT = 0;
   
-  parameter ADDR_KEY0       = 8'h10;
-  parameter ADDR_KEY1       = 8'h11;
-  parameter ADDR_KEY2       = 8'h12;
-  parameter ADDR_KEY3       = 8'h13;
-  parameter ADDR_KEY4       = 8'h14;
-  parameter ADDR_KEY5       = 8'h15;
-  parameter ADDR_KEY6       = 8'h16;
-  parameter ADDR_KEY7       = 8'h17;
-                            
-  parameter ADDR_IV0        = 8'h20;
-  parameter ADDR_IV1        = 8'h21;
-                          
-  parameter ADDR_DATA_IN0   = 8'h40;
-  parameter ADDR_DATA_IN1   = 8'h41;
-  parameter ADDR_DATA_IN2   = 8'h42;
-  parameter ADDR_DATA_IN3   = 8'h43;
-  parameter ADDR_DATA_IN4   = 8'h44;
-  parameter ADDR_DATA_IN5   = 8'h45;
-  parameter ADDR_DATA_IN6   = 8'h46;
-  parameter ADDR_DATA_IN7   = 8'h47;
-  parameter ADDR_DATA_IN8   = 8'h48;
-  parameter ADDR_DATA_IN9   = 8'h49;
-  parameter ADDR_DATA_IN10  = 8'h4a;
-  parameter ADDR_DATA_IN11  = 8'h4b;
-  parameter ADDR_DATA_IN12  = 8'h4c;
-  parameter ADDR_DATA_IN13  = 8'h4d;
-  parameter ADDR_DATA_IN14  = 8'h4e;
-  parameter ADDR_DATA_IN15  = 8'h4f;
-
-  parameter ADDR_DATA_OUT0  = 8'h80;
-  parameter ADDR_DATA_OUT1  = 8'h81;
-  parameter ADDR_DATA_OUT2  = 8'h82;
-  parameter ADDR_DATA_OUT3  = 8'h83;
-  parameter ADDR_DATA_OUT4  = 8'h84;
-  parameter ADDR_DATA_OUT5  = 8'h85;
-  parameter ADDR_DATA_OUT6  = 8'h86;
-  parameter ADDR_DATA_OUT7  = 8'h87;
-  parameter ADDR_DATA_OUT8  = 8'h88;
-  parameter ADDR_DATA_OUT9  = 8'h89;
-  parameter ADDR_DATA_OUT10 = 8'h8a;
-  parameter ADDR_DATA_OUT11 = 8'h8b;
-  parameter ADDR_DATA_OUT12 = 8'h8c;
-  parameter ADDR_DATA_OUT13 = 8'h8d;
-  parameter ADDR_DATA_OUT14 = 8'h8e;
-  parameter ADDR_DATA_OUT15 = 8'h8f;
+  parameter ADDR_KEYLEN      = 8'h08;
+  parameter KEYLEN_BIT       = 0;
+  parameter ADDR_ROUNDS      = 8'h09;
+  parameter ROUNDS_HIGH_BIT  = 4;
+  parameter ROUNDS_LOW_BIT   = 0;
+                             
+  parameter ADDR_KEY0        = 8'h10;
+  parameter ADDR_KEY1        = 8'h11;
+  parameter ADDR_KEY2        = 8'h12;
+  parameter ADDR_KEY3        = 8'h13;
+  parameter ADDR_KEY4        = 8'h14;
+  parameter ADDR_KEY5        = 8'h15;
+  parameter ADDR_KEY6        = 8'h16;
+  parameter ADDR_KEY7        = 8'h17;
+                             
+  parameter ADDR_IV0         = 8'h20;
+  parameter ADDR_IV1         = 8'h21;
+                             
+  parameter ADDR_DATA_IN0    = 8'h40;
+  parameter ADDR_DATA_IN1    = 8'h41;
+  parameter ADDR_DATA_IN2    = 8'h42;
+  parameter ADDR_DATA_IN3    = 8'h43;
+  parameter ADDR_DATA_IN4    = 8'h44;
+  parameter ADDR_DATA_IN5    = 8'h45;
+  parameter ADDR_DATA_IN6    = 8'h46;
+  parameter ADDR_DATA_IN7    = 8'h47;
+  parameter ADDR_DATA_IN8    = 8'h48;
+  parameter ADDR_DATA_IN9    = 8'h49;
+  parameter ADDR_DATA_IN10   = 8'h4a;
+  parameter ADDR_DATA_IN11   = 8'h4b;
+  parameter ADDR_DATA_IN12   = 8'h4c;
+  parameter ADDR_DATA_IN13   = 8'h4d;
+  parameter ADDR_DATA_IN14   = 8'h4e;
+  parameter ADDR_DATA_IN15   = 8'h4f;
+                             
+  parameter ADDR_DATA_OUT0   = 8'h80;
+  parameter ADDR_DATA_OUT1   = 8'h81;
+  parameter ADDR_DATA_OUT2   = 8'h82;
+  parameter ADDR_DATA_OUT3   = 8'h83;
+  parameter ADDR_DATA_OUT4   = 8'h84;
+  parameter ADDR_DATA_OUT5   = 8'h85;
+  parameter ADDR_DATA_OUT6   = 8'h86;
+  parameter ADDR_DATA_OUT7   = 8'h87;
+  parameter ADDR_DATA_OUT8   = 8'h88;
+  parameter ADDR_DATA_OUT9   = 8'h89;
+  parameter ADDR_DATA_OUT10  = 8'h8a;
+  parameter ADDR_DATA_OUT11  = 8'h8b;
+  parameter ADDR_DATA_OUT12  = 8'h8c;
+  parameter ADDR_DATA_OUT13  = 8'h8d;
+  parameter ADDR_DATA_OUT14  = 8'h8e;
+  parameter ADDR_DATA_OUT15  = 8'h8f;
 
   
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
+  // Control registers.
+  reg init_reg;
+  reg init_new;
+  reg init_we;
+  
+  reg next_reg;
+  reg next_new;
+  reg next_we;
+  
+  reg ready_reg;
+  reg ready_new;
+  reg ready_we;
+  
+  reg keylen_reg;
+  reg keylen_new;
+  reg keylen_we;
+
+  reg [4 : 0] rounds_reg;
+  reg [4 : 0] rounds_new;
+  reg         rounds_we;
+
+  reg data_out_valid_reg;
+  reg data_out_valid_new;
+  
   // Key registers.
   reg [31 : 0] key0_reg;
   reg [31 : 0] key0_new;
@@ -143,16 +174,132 @@ module chacha(
   reg [31 : 0] iv1_reg;
   reg [31 : 0] iv1_new;
   reg          iv1_we;
-  
 
+  // Data in registers.
+  reg [31 : 0] data_in0_reg;
+  reg [31 : 0] data_in0_new;
+  reg          data_in0_we;
+  reg [31 : 0] data_in1_reg;
+  reg [31 : 0] data_in1_new;
+  reg          data_in1_we;
+  reg [31 : 0] data_in2_reg;
+  reg [31 : 0] data_in2_new;
+  reg          data_in2_we;
+  reg [31 : 0] data_in3_reg;
+  reg [31 : 0] data_in3_new;
+  reg          data_in3_we;
+  reg [31 : 0] data_in4_reg;
+  reg [31 : 0] data_in4_new;
+  reg          data_in4_we;
+  reg [31 : 0] data_in5_reg;
+  reg [31 : 0] data_in5_new;
+  reg          data_in5_we;
+  reg [31 : 0] data_in6_reg;
+  reg [31 : 0] data_in6_new;
+  reg          data_in6_we;
+  reg [31 : 0] data_in7_reg;
+  reg [31 : 0] data_in7_new;
+  reg          data_in7_we;
+  reg [31 : 0] data_in8_reg;
+  reg [31 : 0] data_in8_new;
+  reg          data_in8_we;
+  reg [31 : 0] data_in9_reg;
+  reg [31 : 0] data_in9_new;
+  reg          data_in9_we;
+  reg [31 : 0] data_in10_reg;
+  reg [31 : 0] data_in10_new;
+  reg          data_in10_we;
+  reg [31 : 0] data_in11_reg;
+  reg [31 : 0] data_in11_new;
+  reg          data_in11_we;
+  reg [31 : 0] data_in12_reg;
+  reg [31 : 0] data_in12_new;
+  reg          data_in12_we;
+  reg [31 : 0] data_in13_reg;
+  reg [31 : 0] data_in13_new;
+  reg          data_in13_we;
+  reg [31 : 0] data_in14_reg;
+  reg [31 : 0] data_in14_new;
+  reg          data_in14_we;
+  reg [31 : 0] data_in15_reg;
+  reg [31 : 0] data_in15_new;
+  reg          data_in15_we;
+
+
+  // Data out registers.
+  reg [31 : 0] data_out0_reg;
+  reg [31 : 0] data_out0_new;
+  reg [31 : 0] data_out1_reg;
+  reg [31 : 0] data_out1_new;
+  reg [31 : 0] data_out2_reg;
+  reg [31 : 0] data_out2_new;
+  reg [31 : 0] data_out3_reg;
+  reg [31 : 0] data_out3_new;
+  reg [31 : 0] data_out4_reg;
+  reg [31 : 0] data_out4_new;
+  reg [31 : 0] data_out5_reg;
+  reg [31 : 0] data_out5_new;
+  reg [31 : 0] data_out6_reg;
+  reg [31 : 0] data_out6_new;
+  reg [31 : 0] data_out7_reg;
+  reg [31 : 0] data_out7_new;
+  reg [31 : 0] data_out8_reg;
+  reg [31 : 0] data_out8_new;
+  reg [31 : 0] data_out9_reg;
+  reg [31 : 0] data_out9_new;
+  reg [31 : 0] data_out10_reg;
+  reg [31 : 0] data_out10_new;
+  reg [31 : 0] data_out11_reg;
+  reg [31 : 0] data_out11_new;
+  reg [31 : 0] data_out12_reg;
+  reg [31 : 0] data_out12_new;
+  reg [31 : 0] data_out13_reg;
+  reg [31 : 0] data_out13_new;
+  reg [31 : 0] data_out14_reg;
+  reg [31 : 0] data_out14_new;
+  reg [31 : 0] data_out15_reg;
+  reg [31 : 0] data_out15_new;
+
+  
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  
+  // Wires needded to connect the core.
+
   
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
+
+  
+  //----------------------------------------------------------------
+  // core instantiation.
+  //----------------------------------------------------------------
+  chacha_core core (
+                    // Clock and reset.
+                    .clk(clk),
+                    .reset_n(reset_n),
+                    
+                    // Control.
+                    .init(init_reg),
+                    .next(),
+                    
+                    // Parameters.
+                    .key(),
+                    .key_length(keylen_reg),
+                    .iv(),
+                    .rounds(rounds_reg),
+                    
+                    // Data input.
+                    .data_in(),
+                    
+                    // Status output.
+                    .ready(ready_reg),
+                    
+                    // Hash word output.
+                    .data_out(),
+                    .data_out_valid(data_out_valid_new)
+                   );
   
   
   //----------------------------------------------------------------
@@ -166,19 +313,87 @@ module chacha(
       if (!reset_n)
         begin
           // Reset all registers to defined values.
-          key0_reg <= 32'h00000000;
-          key1_reg <= 32'h00000000;
-          key2_reg <= 32'h00000000;
-          key3_reg <= 32'h00000000;
-          key4_reg <= 32'h00000000;
-          key5_reg <= 32'h00000000;
-          key6_reg <= 32'h00000000;
-          key7_reg <= 32'h00000000;
-          iv0_reg  <= 32'h00000000;
-          iv1_reg  <= 32'h00000000;
+
+          init_reg           <= 0;
+          next_ref           <= 0;
+          ready_reg          <= 0;
+          keylen_reg         <= 0;
+          rounds_reg         <= 5'b00000;
+          data_out_valid_reg <= 0;
+          
+          key0_reg           <= 32'h00000000;
+          key1_reg           <= 32'h00000000;
+          key2_reg           <= 32'h00000000;
+          key3_reg           <= 32'h00000000;
+          key4_reg           <= 32'h00000000;
+          key5_reg           <= 32'h00000000;
+          key6_reg           <= 32'h00000000;
+          key7_reg           <= 32'h00000000;
+
+          iv0_reg            <= 32'h00000000;
+          iv1_reg            <= 32'h00000000;
+
+          data_in0_reg       <= 32'h00000000;
+          data_in1_reg       <= 32'h00000000;
+          data_in2_reg       <= 32'h00000000;
+          data_in3_reg       <= 32'h00000000;
+          data_in4_reg       <= 32'h00000000;
+          data_in5_reg       <= 32'h00000000;
+          data_in6_reg       <= 32'h00000000;
+          data_in7_reg       <= 32'h00000000;
+          data_in8_reg       <= 32'h00000000;
+          data_in9_reg       <= 32'h00000000;
+          data_in10_reg      <= 32'h00000000;
+          data_in11_reg      <= 32'h00000000;
+          data_in12_reg      <= 32'h00000000;
+          data_in13_reg      <= 32'h00000000;
+          data_in14_reg      <= 32'h00000000;
+          data_in15_reg      <= 32'h00000000;
+
+          data_out0_reg      <= 32'h00000000;
+          data_out1_reg      <= 32'h00000000;
+          data_out2_reg      <= 32'h00000000;
+          data_out3_reg      <= 32'h00000000;
+          data_out4_reg      <= 32'h00000000;
+          data_out5_reg      <= 32'h00000000;
+          data_out6_reg      <= 32'h00000000;
+          data_out7_reg      <= 32'h00000000;
+          data_out8_reg      <= 32'h00000000;
+          data_out9_reg      <= 32'h00000000;
+          data_out10_reg     <= 32'h00000000;
+          data_out11_reg     <= 32'h00000000;
+          data_out12_reg     <= 32'h00000000;
+          data_out13_reg     <= 32'h00000000;
+          data_out14_reg     <= 32'h00000000;
+          data_out15_reg     <= 32'h00000000;
         end
       else
         begin
+          // We sample the valid and ready signals
+          // continiously.
+          ready_reg          <= ready_new;
+          data_out_valid_reg <= data_out_valid_new;
+
+          if (init_we)
+            begin
+              init_reg <= init_new;
+            end
+
+          if (next_we)
+            begin
+              next_reg <= next_new;
+            end
+
+          if (keylen_we)
+            begin
+              keylen_reg <= keylen_new;
+            end
+          
+          if (rounds_we)
+            begin
+              rounds_reg <= rounds_new;
+            end
+          
           if (key0_we)
             begin
               key0_reg <= key0_new;
@@ -227,6 +442,109 @@ module chacha(
           if (iv1_we)
             begin
               iv1_reg <= iv1_new;
+            end
+
+          if (data_in0_we)
+            begin
+              data_in0_reg <= data_in_new;
+            end
+
+          if (data_in1_we)
+            begin
+              data_in1_reg <= data_in1_new;
+            end
+
+          if (data_in2_we)
+            begin
+              data_in2_reg <= data_in2_new;
+            end
+
+          if (data_in3_we)
+            begin
+              data_in3_reg <= data_in3_new;
+            end
+
+          if (data_in4_we)
+            begin
+              data_in4_reg <= data_in4_new;
+            end
+
+          if (data_in5_we)
+            begin
+              data_in5_reg <= data_in5_new;
+            end
+
+          if (data_in6_we)
+            begin
+              data_in6_reg <= data_in6_new;
+            end
+
+          if (data_in7_we)
+            begin
+              data_in7_reg <= data_in7_new;
+            end
+
+          if (data_in8_we)
+            begin
+              data_in8_reg <= data_in8_new;
+            end
+
+          if (data_in9_we)
+            begin
+              data_in9_reg <= data_in9_new;
+            end
+
+          if (data_in10_we)
+            begin
+              data_in10_reg <= data_in10_new;
+            end
+
+          if (data_in11_we)
+            begin
+              data_in11_reg <= data_in11_new;
+            end
+
+          if (data_in12_we)
+            begin
+              data_in12_reg <= data_in12_new;
+            end
+
+          if (data_in13_we)
+            begin
+              data_in13_reg <= data_in13_new;
+            end
+
+          if (data_in14_we)
+            begin
+              data_in14_reg <= data_in14_new;
+            end
+
+          if (data_in15_we)
+            begin
+              data_in15_reg <= data_in15_new;
+            end
+
+          
+          // We sample data out whenever the valid flag
+          // is set.
+          if (data_out_valid_new)
+            begin
+              data_out0_reg  <= data_out0_new;
+              data_out1_reg  <= data_out1_new;
+              data_out2_reg  <= data_out2_new;
+              data_out3_reg  <= data_out3_new;
+              data_out4_reg  <= data_out4_new;
+              data_out5_reg  <= data_out5_new;
+              data_out6_reg  <= data_out6_new;
+              data_out7_reg  <= data_out7_new;
+              data_out8_reg  <= data_out8_new;
+              data_out9_reg  <= data_out9_new;
+              data_out10_reg <= data_out10_new;
+              data_out11_reg <= data_out11_new;
+              data_out12_reg <= data_out12_new;
+              data_out13_reg <= data_out13_new;
+              data_out14_reg <= data_out14_new;
+              data_out15_reg <= data_out15_new;
             end
         end
     end // reg_update
