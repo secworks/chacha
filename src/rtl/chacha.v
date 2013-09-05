@@ -556,27 +556,71 @@ module chacha(
   always @*
     begin : addr_decoder
       // Default assignments.
-      key0_new = 32'h00000000;
-      key0_we  = 0;
-      key1_new = 32'h00000000;
-      key1_we  = 0;
-      key2_new = 32'h00000000;
-      key2_we  = 0;
-      key3_new = 32'h00000000;
-      key3_we  = 0;
-      key4_new = 32'h00000000;
-      key4_we  = 0;
-      key5_new = 32'h00000000;
-      key5_we  = 0;
-      key6_new = 32'h00000000;
-      key6_we  = 0;
-      key7_new = 32'h00000000;
-      key7_we  = 0;
+      init_new      = 0;
+      init_we       = 0;
+      next_new      = 0;
+      next_we       = 0;
+                    
+      keylen_new    = 0;
+      keylen_we     = 0;
+                    
+      rounds_new    = 5'b00000;
+      rounds_we     = 0;
+      
+      key0_new      = 32'h00000000;
+      key0_we       = 0;
+      key1_new      = 32'h00000000;
+      key1_we       = 0;
+      key2_new      = 32'h00000000;
+      key2_we       = 0;
+      key3_new      = 32'h00000000;
+      key3_we       = 0;
+      key4_new      = 32'h00000000;
+      key4_we       = 0;
+      key5_new      = 32'h00000000;
+      key5_we       = 0;
+      key6_new      = 32'h00000000;
+      key6_we       = 0;
+      key7_new      = 32'h00000000;
+      key7_we       = 0;
 
-      iv0_new  = 32'h00000000;
-      iv0_we   = 0;
-      iv1_new  = 32'h00000000;
-      iv1_we   = 0;
+      iv0_new       = 32'h00000000;
+      iv0_we        = 0;
+      iv1_new       = 32'h00000000;
+      iv1_we        = 0;
+
+      data_in0_new  = 32'h00000000;
+      data_in0_we   = 0;
+      data_in1_new  = 32'h00000000;
+      data_in1_we   = 0;
+      data_in2_new  = 32'h00000000;
+      data_in2_we   = 0;
+      data_in3_new  = 32'h00000000;
+      data_in3_we   = 0;
+      data_in4_new  = 32'h00000000;
+      data_in4_we   = 0;
+      data_in5_new  = 32'h00000000;
+      data_in5_we   = 0;
+      data_in6_new  = 32'h00000000;
+      data_in6_we   = 0;
+      data_in7_new  = 32'h00000000;
+      data_in7_we   = 0;
+      data_in8_new  = 32'h00000000;
+      data_in8_we   = 0;
+      data_in9_new  = 32'h00000000;
+      data_in9_we   = 0;
+      data_in10_new = 32'h00000000;
+      data_in10_we  = 0;
+      data_in11_new = 32'h00000000;
+      data_in11_we  = 0;
+      data_in12_new = 32'h00000000;
+      data_in12_we  = 0;
+      data_in13_new = 32'h00000000;
+      data_in13_we  = 0;
+      data_in14_new = 32'h00000000;
+      data_in14_we  = 0;
+      data_in15_new = 32'h00000000;
+      data_in15_we  = 0;
       
       if (cs)
         begin
@@ -586,17 +630,22 @@ module chacha(
               case (address)
                 ADDR_CTRL:
                   begin
-                    
+                    init_new = data_in[CTRL_INIT_BIT];
+                    init_we  = 1;
+                    next_new = data_in[CTRL_NEXT_BIT];
+                    next_we  = 1;
                   end
                   
                 ADDR_KEYLEN:
                   begin
-                    
+                    keylen_new = data_in[KEYLEN_BIT];
+                    keylen_we = 1;
                   end
 
                 ADDR_ROUNDS:
                   begin
-                    
+                    rounds_new = data_in[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
+                    rounds_we  = 0;
                   end
   
                 ADDR_KEY0:
@@ -661,82 +710,98 @@ module chacha(
                 
                 ADDR_DATA_IN0:
                   begin
-                    
+                    data_in0_new = data_in;
+                    data_in0_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN1:
                   begin
-                    
+                    data_in1_new = data_in;
+                    data_in1_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN2:
                   begin
-                    
+                    data_in2_new = data_in;
+                    data_in2_we  = 1;
                   end
                 
                 ADDR_DATA_IN3:
                   begin
-                    
+                    data_in3_new = data_in;
+                    data_in3_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN4:
                   begin
-                    
+                    data_in4_new = data_in;
+                    data_in4_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN5:
                   begin
-                    
+                    data_in5_new = data_in;
+                    data_in5_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN6:
                   begin
-                    
+                    data_in6_new = data_in;
+                    data_in6_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN7:
                   begin
-                    
+                    data_in7_new = data_in;
+                    data_in7_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN8:
                   begin
-                    
+                    data_in8_new = data_in;
+                    data_in8_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN9:
                   begin
-                    
+                    data_in9_new = data_in;
+                    data_in9_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN10:
                   begin
-                    
+                    data_in10_new = data_in;
+                    data_in10_we  = 1;
                   end
                 
                 ADDR_DATA_IN11:
                   begin
-                    
+                    data_in11_new = data_in;
+                    data_in11_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN12:
                   begin
-                    
+                    data_in12_new = data_in;
+                    data_in12_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN13:
                   begin
-                    
+                    data_in13_new = data_in;
+                    data_in13_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN14:
                   begin
-                    
+                    data_in14_new = data_in;
+                    data_in14_we  = 1;
                   end
-
+                
                 ADDR_DATA_IN15:
                   begin
-                    
+                    data_in15_new = data_in;
+                    data_in15_we  = 1;
                   end
               endcase // case (address)
             end // if (write_read)
