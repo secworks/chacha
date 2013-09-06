@@ -163,6 +163,13 @@ module chacha_core(
   reg [31 : 0] x15_reg;
   reg [31 : 0] x15_new;
   reg          x15_we;
+
+  reg [511 : 0] data_in_reg;
+  reg           data_in_we;
+
+  // Note: 4 bits since we count double rounds.
+  reg [3 : 0] rounds_reg;
+  reg         rounds_we;
   
   reg  data_out_valid_reg;
   reg  data_out_valid_new;
@@ -205,6 +212,7 @@ module chacha_core(
   // Wires.
   //----------------------------------------------------------------
   reg         init_cipher;
+  reg         next_block;
   reg         finalize;
 
   // Wires to connect the pure combinational quarterround 
@@ -254,9 +262,11 @@ module chacha_core(
           x13_reg            <= 31'h00000000;
           x14_reg            <= 31'h00000000;
           x15_reg            <= 31'h00000000;
+          data_in_reg        <= 512'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+          rounds_reg         <= 4'h0;
           data_out_valid_reg <= 0;
           qr_ctr_reg         <= QR0;
-          dr_ctr_reg      <= 0;
+          dr_ctr_reg         <= 0;
           chacha_ctrl_reg    <= CTRL_IDLE;
         end
       else
@@ -356,6 +366,17 @@ module chacha_core(
               dr_ctr_reg <= dr_ctr_new;
             end
 
+          if (data_in_we)
+            begin
+              data_in_reg <= data_in;
+            end
+
+          // Note we skip the low bit.
+          if (rounds_we)
+            begin
+              rounds_reg <= rounds[4 : 1];
+            end
+          
           if (chacha_ctrl_we)
             begin
               chacha_ctrl_reg <= chacha_ctrl_new;
@@ -777,6 +798,7 @@ module chacha_core(
     begin : chacha_ctrl_fsm
       // Default assignments
       init_cipher = 0;
+      next_block = 0;
       finalize = 0;
 
       qr_ctr_inc = 0;
@@ -787,6 +809,10 @@ module chacha_core(
 
       block_ctr_inc = 0;
       block_ctr_rst = 0;
+
+      data_in_we = 0;
+      rounds_we  = 0;
+      
       
       data_out_valid_new = 0;
       data_out_valid_we  = 0;
