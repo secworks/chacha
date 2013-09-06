@@ -92,10 +92,9 @@ module chacha_core(
   parameter SIGMA3 = 32'h6b206574;
   
   // State names for the control FSM.
-  parameter CTRL_IDLE  = 3'h0;
-  parameter CTRL_INIT  = 3'h1;
-  parameter CTRL_ROUND = 3'h2;
-  parameter CTRL_FINAL = 3'h3;
+  parameter CTRL_IDLE   = 3'h0;
+  parameter CTRL_ROUNDS = 3'h1;
+  parameter CTRL_DONE   = 3'h2;
 
   
   //----------------------------------------------------------------
@@ -797,39 +796,107 @@ module chacha_core(
   always @*
     begin : chacha_ctrl_fsm
       // Default assignments
-      init_cipher = 0;
-      next_block = 0;
-      finalize = 0;
-
-      qr_ctr_inc = 0;
-      qr_ctr_rst = 0;
-
-      dr_ctr_inc = 0;
-      dr_ctr_rst = 0;
-
-      block_ctr_inc = 0;
-      block_ctr_rst = 0;
-
-      data_in_we = 0;
-      rounds_we  = 0;
-      
+      init_cipher        = 0;
+      update_dp          = 0;
+      next_block         = 0;
+      finalize           = 0;
+                         
+      qr_ctr_inc         = 0;
+      qr_ctr_rst         = 0;
+                         
+      dr_ctr_inc         = 0;
+      dr_ctr_rst         = 0;
+                         
+      block_ctr_inc      = 0;
+      block_ctr_rst      = 0;
+                         
+      data_in_we         = 0;
+      rounds_we          = 0;
       
       data_out_valid_new = 0;
       data_out_valid_we  = 0;
       
-      chacha_ctrl_new = CTRL_IDLE;
-      chacha_ctrl_we = 0;
+      chacha_ctrl_new    = CTRL_IDLE;
+      chacha_ctrl_we     = 0;
+
       
       case (chacha_ctrl_reg)
+        // Wait for init signal. When init is given
+        // we initialize the datapath. Note that we
+        // also assume that init implies start of
+        // processing first block.
         CTRL_IDLE:
           begin
-
+            if (init)
+              begin
+                init_cipher     = 1;
+                qr_ctr_rst      = 1;
+                dr_ctr_rst      = 1;
+                block_ctr_rst   = 1;
+                data_in_we      = 1;
+                rounds_we       = 1;
+                chacha_ctrl_new = CTRL_ROUNDS;
+                chacha_ctrl_we  = 1;
+              end
           end
-        
+
+        // We perform 8 quarterrounds for each
+        // double round and repeat until we have
+        // processed the block. We then set data 
+        // valid and move to CTR_DONE.
+        CTRL_ROUNDS:
+          begin
+            update_dp  = 1;
+            qr_ctr_inc = 1;
+            if (qr_ctr_reg == QR7)
+              begin
+                dr_ctr_inc = 1;
+                if (dr_ctr_reg == rounds_reg;)
+                  begin
+                    data_out_valid_new = 1;
+                    data_out_valid_we  = 1;
+                    chacha_ctrl_new    = CTRL_DONE;
+                    chacha_ctrl_we     = 1;
+                  end
+              end
+          end
+
+        // We wait for either next block signal or
+        // init signal. When then drop valid, perform
+        // initialization or 
+        // either starts on a new block or 
+        CTRL_DONE:
+          begin
+            if (init)
+              begin
+                data_out_valid_new = 0;
+                data_out_valid_we  = 1;
+                init_cipher        = 1;
+                qr_ctr_rst         = 1;
+                dr_ctr_rst         = 1;
+                block_ctr_rst      = 1;
+                data_in_we         = 1;
+                rounds_we          = 1;
+                chacha_ctrl_new    = CTRL_ROUNDS;
+                chacha_ctrl_we     = 1;
+              end
+            else if (next)
+              begin
+                data_out_valid_new = 0;
+                data_out_valid_we  = 1;
+                next_block         = 1;
+                qr_ctr_rst         = 1;
+                dr_ctr_rst         = 1;
+                block_ctr_rst      = 1;
+                data_in_we         = 1;
+                rounds_we          = 1;
+                chacha_ctrl_new    = CTRL_ROUNDS;
+                chacha_ctrl_we     = 1;
+              end
+          end
       endcase // case (chacha_ctrl_reg)
-      
-      
     end // chacha_ctrl_fsm
+
 endmodule // chacha_core
 
 //======================================================================
