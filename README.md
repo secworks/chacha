@@ -39,7 +39,4 @@ debugged. The wrapper does not yet have a testbench.
 
 
 ## Notes ##
-The core does not contain any internal block counter, but assumes that
-the user/host supplies the counter and updates the counter
-appropriately.
 
