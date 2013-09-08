@@ -57,7 +57,7 @@ module chacha_core(
                    // Status output.
                    output wire           ready,
                     
-                   // Hash word output.
+                   // Data out with valid signal.
                    output wire [511 : 0] data_out,
                    output wire           data_out_valid
                   );

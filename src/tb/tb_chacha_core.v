@@ -57,6 +57,16 @@ module tb_chacha_core();
   // Clock and reset.
   reg tb_clk;
   reg tb_reset_n;
+
+  // Wires needded to connect the core.
+  reg           tb_core_init;
+  reg           tb_core_next;
+  reg [255 : 0] tb_core_key;
+  reg           tb_core_keylen;
+  reg [4 : 0]   tb_core_rounds;
+  reg [63 : 0]  tb_core_iv;
+  reg [511 : 0] tb_core_data_in;
+  reg [511 : 0] tb_core_data_out;
   
   
   //----------------------------------------------------------------
@@ -68,24 +78,24 @@ module tb_chacha_core();
                    .reset_n(tb_reset_n),
                 
                    // Control.
-                   .init(),
-                   .next(),
+                   .init(tb_init),
+                   .next(tb_next),
 
                    // Parameters.
-                   .key(),
-                   .key_length(),
-                   .iv(),
-                   .rounds(),
+                   .key(tb_key),
+                   .key_length(tb_keylength),
+                   .iv(tb_iv),
+                   .rounds(tb_rounds),
                    
                    // Data input.
-                   .data_in(),
+                   .data_in(tb_data_in),
                    
                    // Status output.
-                   .ready(),
+                   .ready(tb_ready),
                     
-                   // Hash word output.
-                   .data_out(),
-                   .data_out_valid()
+                   // Data out with valid signal.
+                   .data_out(tb_data_out),
+                   .data_out_valid(tb_data_out_valid)
                   );
   
 
