@@ -153,6 +153,10 @@ module chacha_core(
   
   reg [31 : 0] x12_reg;
   reg [31 : 0] x12_new;
+  reg          x12_we;
+  
+  reg [31 : 0] x13_reg;
+  reg [31 : 0] x13_new;
   reg          x13_we;
   
   reg [31 : 0] x14_reg;
@@ -212,10 +216,16 @@ module chacha_core(
   //----------------------------------------------------------------
   reg         init_cipher;
   reg         next_block;
+  reg         update_dp;
   reg         finalize;
 
   // Wires to connect the pure combinational quarterround 
   // to the state update logic.
+  reg [31 : 0] a;
+  reg [31 : 0] b;
+  reg [31 : 0] c;
+  reg [31 : 0] d;
+
   reg [31 : 0] a_prim;
   reg [31 : 0] b_prim;
   reg [31 : 0] c_prim;
@@ -571,10 +581,10 @@ module chacha_core(
           if (key_length)
             begin
               // 256 bit key.
-              x0_new  = SIGMA;
-              x1_new  = SIGMA;
-              x2_new  = SIGMA;
-              x3_new  = SIGMA;
+              x0_new  = SIGMA0;
+              x1_new  = SIGMA1;
+              x2_new  = SIGMA2;
+              x3_new  = SIGMA3;
               x8_new  = key[159 : 128];
               x9_new  = key[191 : 160];
               x10_new = key[223 : 192];
@@ -583,22 +593,22 @@ module chacha_core(
           else
             begin
               // 128 bit key.
-              x0_new  = TAU;
-              x1_new  = TAU;
-              x2_new  = TAU;
-              x3_new  = TAU;
+              x0_new  = TAU0;
+              x1_new  = TAU1;
+              x2_new  = TAU2;
+              x3_new  = TAU3;
               x8_new  = key[31 : 0];
               x9_new  = key[63 : 32];
               x10_new = key[95 : 64];
               x11_new = key[127 : 96];
             end
         end
-      else if (next)
+      else if (update_dp)
         begin
-          x12_new = block_ctr0_new;
-          x13_new = block_ctr1_new;
+          x12_new = block0_ctr_new;
+          x13_new = block1_ctr_new;
           x12_we  = 1;
-          x23_we  = 1;
+          x13_we  = 1;
         end
       else
         begin
