@@ -147,9 +147,9 @@ module chacha_core(
   reg [31 : 0] x10_new;
   reg          x10_we;
   
-  reg [31 : 0] x1_reg;
-  reg [31 : 0] x1_new;
-  reg          x1_we;
+  reg [31 : 0] x11_reg;
+  reg [31 : 0] x11_new;
+  reg          x11_we;
   
   reg [31 : 0] x12_reg;
   reg [31 : 0] x12_new;
@@ -261,7 +261,7 @@ module chacha_core(
           x13_reg            <= 31'h00000000;
           x14_reg            <= 31'h00000000;
           x15_reg            <= 31'h00000000;
-          data_in_reg        <= 512'00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+          data_in_reg        <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
           rounds_reg         <= 4'h0;
           data_out_valid_reg <= 0;
           qr_ctr_reg         <= QR0;
@@ -488,7 +488,7 @@ module chacha_core(
       b_prim = b3;
 
       c0     = c + d1;
-      c1     = c0 + d3
+      c1     = c0 + d3;
       c_prim = c1;
       
       d0     = d ^ a0;
@@ -851,7 +851,7 @@ module chacha_core(
             if (qr_ctr_reg == QR7)
               begin
                 dr_ctr_inc = 1;
-                if (dr_ctr_reg == rounds_reg;)
+                if (dr_ctr_reg == rounds_reg)
                   begin
                     data_out_valid_new = 1;
                     data_out_valid_we  = 1;
