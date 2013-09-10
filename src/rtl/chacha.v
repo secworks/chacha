@@ -127,8 +127,6 @@ module chacha(
   reg next_we;
   
   reg ready_reg;
-  reg ready_new;
-  reg ready_we;
   
   reg keylen_reg;
   reg keylen_new;
@@ -139,7 +137,6 @@ module chacha(
   reg         rounds_we;
 
   reg data_out_valid_reg;
-  reg data_out_valid_new;
   
   // Key registers.
   reg [31 : 0] key0_reg;
@@ -271,9 +268,14 @@ module chacha(
   wire           core_keylen;
   wire [4 : 0]   core_rounds;
   wire [63 : 0]  core_iv;
+  wire           core_ready;
   wire [511 : 0] core_data_in;
   wire [511 : 0] core_data_out;
+  wire           core_data_out_valid;
 
+  // Wires needed to connect the interface.
+  reg data_out_reg;
+  
   
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
@@ -290,8 +292,11 @@ module chacha(
                          data_in11_reg, data_in10_reg, data_in9_reg, data_in8_reg,
                          data_in7_reg, data_in6_reg, data_in5_reg, data_in4_reg,
                          data_in3_reg, data_in2_reg, data_in1_reg, data_in0_reg};
-  
-                   
+
+  // Connect the output data port.
+  assign data_out = data_out_reg;
+
+             
   //----------------------------------------------------------------
   // core instantiation.
   //----------------------------------------------------------------
@@ -314,11 +319,11 @@ module chacha(
                     .data_in(core_data_in),
                     
                     // Status output.
-                    .ready(ready_new),
+                    .ready(core_ready),
                     
                     // Hash word output.
                     .data_out(core_data_out),
-                    .data_out_valid(data_out_valid_new)
+                    .data_out_valid(core_data_out_valid)
                    );
   
   
@@ -335,7 +340,7 @@ module chacha(
           // Reset all registers to defined values.
 
           init_reg           <= 0;
-          next_ref           <= 0;
+          next_reg           <= 0;
           ready_reg          <= 0;
           keylen_reg         <= 0;
           rounds_reg         <= 5'b00000;
@@ -391,8 +396,8 @@ module chacha(
         begin
           // We sample the valid and ready signals
           // continiously.
-          ready_reg          <= ready_new;
-          data_out_valid_reg <= data_out_valid_new;
+          ready_reg          <= core_ready;
+          data_out_valid_reg <= core_data_out_valid;
 
           if (init_we)
             begin
@@ -466,7 +471,7 @@ module chacha(
 
           if (data_in0_we)
             begin
-              data_in0_reg <= data_in_new;
+              data_in0_reg <= data_in0_new;
             end
 
           if (data_in1_we)
@@ -546,24 +551,24 @@ module chacha(
           
           // We sample data out whenever the valid flag
           // is set.
-          if (data_out_valid_new)
+          if (core_data_out_valid)
             begin
               data_out0_reg  <= core_data_out[31 : 0];
-              data_out1_reg  <= data_out1_new[63 : 32];
-              data_out2_reg  <= data_out2_new[95 : 64];
-              data_out3_reg  <= data_out3_new[127 : 96];
-              data_out4_reg  <= data_out4_new[159 : 128];
-              data_out5_reg  <= data_out5_new[191 : 160];
-              data_out6_reg  <= data_out6_new[223 : 192];
-              data_out7_reg  <= data_out7_new[255 : 224];
-              data_out8_reg  <= data_out8_new[287 : 256];
-              data_out9_reg  <= data_out9_new[319 : 288];
-              data_out10_reg <= data_out10_new[351 : 320];
-              data_out11_reg <= data_out11_new[383 : 352];
-              data_out12_reg <= data_out12_new[415 : 384];
-              data_out13_reg <= data_out13_new[447 : 416];
-              data_out14_reg <= data_out14_new[479 : 448];
-              data_out15_reg <= data_out15_new[511 : 480];
+              data_out1_reg  <= core_data_out[63 : 32];
+              data_out2_reg  <= core_data_out[95 : 64];
+              data_out3_reg  <= core_data_out[127 : 96];
+              data_out4_reg  <= core_data_out[159 : 128];
+              data_out5_reg  <= core_data_out[191 : 160];
+              data_out6_reg  <= core_data_out[223 : 192];
+              data_out7_reg  <= core_data_out[255 : 224];
+              data_out8_reg  <= core_data_out[287 : 256];
+              data_out9_reg  <= core_data_out[319 : 288];
+              data_out10_reg <= core_data_out[351 : 320];
+              data_out11_reg <= core_data_out[383 : 352];
+              data_out12_reg <= core_data_out[415 : 384];
+              data_out13_reg <= core_data_out[447 : 416];
+              data_out14_reg <= core_data_out[479 : 448];
+              data_out15_reg <= core_data_out[511 : 480];
             end
         end
     end // reg_update
@@ -641,7 +646,7 @@ module chacha(
       data_in15_new = 32'h00000000;
       data_in15_we  = 0;
 
-      data_out = 32'h00000000;
+      data_out_reg = 32'h00000000;
       
       if (cs)
         begin
@@ -833,152 +838,152 @@ module chacha(
               case (address)
                 ADDR_CTRL:
                   begin
-                    data_out = {28'h0000000, 2'b00, next_reg, init_reg}
+                    data_out_reg = {28'h0000000, 2'b00, next_reg, init_reg};
                   end
                 
                 ADDR_STATUS:
                   begin
-                    data_out = {28'h0000000, 3'b000, ready_reg}
+                    data_out_reg = {28'h0000000, 3'b000, ready_reg};
                   end
                   
                 ADDR_KEYLEN:
                   begin
-                    data_out = {28'h0000000, 3'b000, keylen_reg}
+                    data_out_reg = {28'h0000000, 3'b000, keylen_reg};
                   end
 
                 ADDR_ROUNDS:
                   begin
-                    data_out = {24'h000000, 3'b000, rounds_reg}
+                    data_out_reg = {24'h000000, 3'b000, rounds_reg};
                   end
   
                 ADDR_KEY0:
                   begin
-                    data_out = key0_reg;
+                    data_out_reg = key0_reg;
                   end
                 
                 ADDR_KEY1:
                   begin
-                    data_out = key1_reg;
+                    data_out_reg = key1_reg;
                   end
 
                 ADDR_KEY2:
                   begin
-                    data_out = key2_reg;
+                    data_out_reg = key2_reg;
                   end
 
                 ADDR_KEY3:
                   begin
-                    data_out = key3_reg;
+                    data_out_reg = key3_reg;
                   end
 
                 ADDR_KEY4:
                   begin
-                    data_out = key4_reg;
+                    data_out_reg = key4_reg;
                   end
 
                 ADDR_KEY5:
                   begin
-                    data_out = key5_reg;
+                    data_out_reg = key5_reg;
                   end
 
                 ADDR_KEY6:
                   begin
-                    data_out = key6_reg;
+                    data_out_reg = key6_reg;
                   end
 
                 ADDR_KEY7:
                   begin
-                    data_out = key7_reg;
+                    data_out_reg = key7_reg;
                   end
                   
                 ADDR_IV0:
                   begin
-                    data_out = iv0_reg;
+                    data_out_reg = iv0_reg;
                   end
 
                 ADDR_IV1:
                   begin
-                    data_out = iv1_reg;
+                    data_out_reg = iv1_reg;
                   end
                 
                 ADDR_DATA_OUT0:
                   begin
-                    data_out = data_out0_reg;
+                    data_out_reg = data_out0_reg;
                   end
                 
                 ADDR_DATA_OUT1:
                   begin
-                    data_out = data_out§_reg;
+                    data_out_reg = data_out1_reg;
                   end
                 
                 ADDR_DATA_OUT2:
                   begin
-                    data_out = data_out2_reg;
+                    data_out_reg = data_out2_reg;
                   end
                 
                 ADDR_DATA_OUT3:
                   begin
-                    data_out = data_out3_reg;
+                    data_out_reg = data_out3_reg;
                   end
                 
                 ADDR_DATA_OUT4:
                   begin
-                    data_out = data_out4_reg;
+                    data_out_reg = data_out4_reg;
                   end
                 
                 ADDR_DATA_OUT5:
                   begin
-                    data_out = data_out5_reg;
+                    data_out_reg = data_out5_reg;
                   end
                 
                 ADDR_DATA_OUT6:
                   begin
-                    data_out = data_out6_reg;
+                    data_out_reg = data_out6_reg;
                   end
                 
                 ADDR_DATA_OUT7:
                   begin
-                    data_out = data_out7_reg;
+                    data_out_reg = data_out7_reg;
                   end
                 
                 ADDR_DATA_OUT8:
                   begin
-                    data_out = data_out8_reg;
+                    data_out_reg = data_out8_reg;
                   end
                 
                 ADDR_DATA_OUT9:
                   begin
-                    data_out = data_out9_reg;
+                    data_out_reg = data_out9_reg;
                   end
                 
                 ADDR_DATA_OUT10:
                   begin
-                    data_out = data_out10_reg;
+                    data_out_reg = data_out10_reg;
                   end
                 
                 ADDR_DATA_OUT11:
                   begin
-                    data_out = data_out11_reg;
+                    data_out_reg = data_out11_reg;
                   end
                 
                 ADDR_DATA_OUT12:
                   begin
-                    data_out = data_out12_reg;
+                    data_out_reg = data_out12_reg;
                   end
                 
                 ADDR_DATA_OUT13:
                   begin
-                    data_out = data_out13_reg;
+                    data_out_reg = data_out13_reg;
                   end
                 
                 ADDR_DATA_OUT14:
                   begin
-                    data_out = data_out14_reg;
+                    data_out_reg = data_out14_reg;
                   end
                 
                 ADDR_DATA_OUT15:
                   begin
-                    data_out = data_out15_reg;
+                    data_out_reg = data_out15_reg;
                   end
               endcase // case (address)
             end
