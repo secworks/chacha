@@ -161,17 +161,20 @@ module tb_chacha_core();
   // dump_state
   // Dump the internal CHACHA state to std out.
   //----------------------------------------------------------------
-  // task dump_state();
-  //   begin
-  //     $display("Internal state:");
-  //     $display("v0_reg = %016x, v1_reg = %016x", dut.v0_reg, dut.v1_reg);
-  //     $display("v2_reg = %016x, v3_reg = %016x", dut.v2_reg, dut.v3_reg);
-  //     $display("mi_reg = %016x", dut.mi_reg);
-  //     $display("loop_ctr = %02x, dp_state = %02x, fsm_state = %02x", 
-  //              dut.loop_ctr_reg, dut.dp_state_reg, dut.chacha_ctrl_reg);
-  //     $display("");
-  //   end
-  // endtask // dump_state
+  task dump_state();
+    begin
+      $display("Internal state:");
+      $display("x0_reg  = %08x, x1_reg  = %08x", dut.x0_reg, dut.x1_reg);
+      $display("x2_reg  = %08x, x3_reg  = %08x", dut.x2_reg, dut.x3_reg);
+      $display("x4_reg  = %08x, x5_reg  = %08x", dut.x4_reg, dut.x5_reg);
+      $display("x6_reg  = %08x, x7_reg  = %08x", dut.x6_reg, dut.x7_reg);
+      $display("x8_reg  = %08x, x9_reg  = %08x", dut.x8_reg, dut.x9_reg);
+      $display("x10_reg = %08x, x11_reg = %08x", dut.x10_reg, dut.x11_reg);
+      $display("x12_reg = %08x, x13_reg = %08x", dut.x12_reg, dut.x13_reg);
+      $display("x14_reg = %08x, x15_reg = %08x", dut.x14_reg, dut.x15_reg);
+      $display("");
+    end
+  endtask // dump_state
 
   
   //----------------------------------------------------------------
@@ -189,13 +192,14 @@ module tb_chacha_core();
       tb_reset_n   = 0;
       tb_reset_n = 0;
 
-      // dump_state();
+      dump_state();
       
       // Wait ten clock cycles and release reset.
       #(20 * CLK_HALF_PERIOD);
       @(negedge tb_clk)
       tb_reset_n = 1;
-      // dump_state();
+      
+      dump_state();
       
       // Dump the state to check reset.
       #(4 * CLK_HALF_PERIOD);
