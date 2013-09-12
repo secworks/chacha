@@ -163,7 +163,9 @@ module tb_chacha_core();
   //----------------------------------------------------------------
   task dump_state();
     begin
+      $display("");
       $display("Internal state:");
+      $display("---------------");
       $display("x0_reg  = %08x, x1_reg  = %08x", dut.x0_reg, dut.x1_reg);
       $display("x2_reg  = %08x, x3_reg  = %08x", dut.x2_reg, dut.x3_reg);
       $display("x4_reg  = %08x, x5_reg  = %08x", dut.x4_reg, dut.x5_reg);
@@ -172,6 +174,9 @@ module tb_chacha_core();
       $display("x10_reg = %08x, x11_reg = %08x", dut.x10_reg, dut.x11_reg);
       $display("x12_reg = %08x, x13_reg = %08x", dut.x12_reg, dut.x13_reg);
       $display("x14_reg = %08x, x15_reg = %08x", dut.x14_reg, dut.x15_reg);
+      $display("");
+      $display("qr_ctr_reg  = %x, dr_ctr_reg  = %x", dut.qr_ctr_reg, dut.dr_ctr_reg);
+      $display("block0_ctr_reg = %08x, block1_ctr_reg = %08x", dut.block0_ctr_reg, dut.block1_ctr_reg);
       $display("");
     end
   endtask // dump_state
