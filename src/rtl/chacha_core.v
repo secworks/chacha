@@ -214,10 +214,11 @@ module chacha_core(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  reg         init_cipher;
-  reg         next_block;
-  reg         update_dp;
-  reg         finalize;
+  reg init_cipher;
+  reg init_round;
+  reg next_block;
+  reg update_dp;
+  reg finalize;
 
   // Wires to connect the pure combinational quarterround 
   // to the state update logic.
@@ -604,15 +605,17 @@ module chacha_core(
               x10_new = key[95 : 64];
               x11_new = key[127 : 96];
             end
-        end
-      else if (update_dp)
+        end // if (init_cipher)
+
+      else if (init_round)
         begin
-          x12_new = block0_ctr_new;
-          x13_new = block1_ctr_new;
+          x12_new = block0_ctr_reg;
           x12_we  = 1;
+          x13_new = block1_ctr_reg;
           x13_we  = 1;
         end
-      else
+      
+      else if (update_dp)
         begin
           // Quarterround update.
           // Write results from the quarterround to the state regs.
@@ -713,7 +716,7 @@ module chacha_core(
                 x14_we  = 1;
               end
           endcase // case (quarterround_select)
-        end
+        end // if (update_dp)
     end // state_update
   
   
@@ -809,6 +812,7 @@ module chacha_core(
     begin : chacha_ctrl_fsm
       // Default assignments
       init_cipher        = 0;
+      init_round         = 0;
       update_dp          = 0;
       next_block         = 0;
       finalize           = 0;
@@ -894,6 +898,7 @@ module chacha_core(
               end
             else if (next)
               begin
+                init_round         = 1;
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
                 next_block         = 1;
