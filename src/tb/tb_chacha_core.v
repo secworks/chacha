@@ -59,13 +59,14 @@ module tb_chacha_core();
   reg tb_reset_n;
 
   // Wires needded to connect the core.
-  reg           tb_core_init;
-  reg           tb_core_next;
-  reg [255 : 0] tb_core_key;
-  reg           tb_core_keylen;
-  reg [4 : 0]   tb_core_rounds;
-  reg [63 : 0]  tb_core_iv;
-  reg [511 : 0] tb_core_data_in;
+  reg            tb_core_init;
+  reg            tb_core_next;
+  reg [255 : 0]  tb_core_key;
+  reg            tb_core_keylength;
+  reg [4 : 0]    tb_core_rounds;
+  reg [63 : 0]   tb_core_iv;
+  wire           tb_core_ready;
+  reg [511 : 0]  tb_core_data_in;
   wire [511 : 0] tb_core_data_out;
   
   
@@ -192,17 +193,17 @@ module tb_chacha_core();
       
       // Set clock, reset and DUT input signals to 
       // defined values at simulation start.
-      cycle_ctr    = 0;
-      tb_clk       = 0;
-      tb_reset_n   = 0;
+      cycle_ctr         = 0;
+      tb_clk            = 0;
+      tb_reset_n        = 0;
 
-      tb_core_key     = 256'h0000000000000001000000000000000100000000000000010000000000000001;
-      tb_core_keylen  = 1;
-      tb_core_rounds  = 5'b00100;
-      tb_core_iv      = 64'h0000000000000001;
-      tb_core_init    = 0;
-      tb_core_next    = 0;
-      tb_core_data_in = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+      tb_core_key       = 256'h0000000000000001000000000000000100000000000000010000000000000001;
+      tb_core_keylength = 1;
+      tb_core_rounds    = 5'b00100;
+      tb_core_iv        = 64'h0000000000000001;
+      tb_core_init      = 0;
+      tb_core_next      = 0;
+      tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
       
       
       $display("State at init.");
