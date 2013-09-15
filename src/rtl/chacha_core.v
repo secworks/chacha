@@ -222,11 +222,6 @@ module chacha_core(
 
   // Wires to connect the pure combinational quarterround 
   // to the state update logic.
-  reg [31 : 0] a;
-  reg [31 : 0] b;
-  reg [31 : 0] c;
-  reg [31 : 0] d;
-
   reg [31 : 0] a_prim;
   reg [31 : 0] b_prim;
   reg [31 : 0] c_prim;
@@ -404,19 +399,23 @@ module chacha_core(
   always @*
     begin : quarterround
       // Internal wires for the quartterround
+      reg [31 : 0] a;
       reg [31 : 0] a0;
       reg [31 : 0] a1;
 
+      reg [31 : 0] b;
       reg [31 : 0] b0;
       reg [31 : 0] b1;
       reg [31 : 0] b2;
       reg [31 : 0] b3;
       
+      reg [31 : 0] c;
       reg [31 : 0] c0;
       reg [31 : 0] c1;
       reg [31 : 0] c2;
       reg [31 : 0] c3;
       
+      reg [31 : 0] d;
       reg [31 : 0] d0;
       reg [31 : 0] d1;
       reg [31 : 0] d2;
@@ -493,7 +492,7 @@ module chacha_core(
       a0     = a + b;
       a1     = a0 + b1;
       a_prim = a1;
-                
+
       b0     = b ^ c0;
       b1     = {b0[20:0], b0[31:21]};
       b2     = b1 ^ c1;
@@ -624,7 +623,7 @@ module chacha_core(
               begin
                 x0_new  = a_prim;
                 x4_new  = b_prim;
-                x8_reg  = c_prim;
+                x8_new  = c_prim;
                 x12_new = d_prim;
                 x0_we   = 1;
                 x4_we   = 1;
