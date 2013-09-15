@@ -119,12 +119,22 @@ module tb_chacha_core();
     begin : dut_monitor
       cycle_ctr = cycle_ctr + 1;
       $display("cycle = %08x:", cycle_ctr);
+      $display("qr_ctr_reg = %01x", dut.qr_ctr_reg);
+      $display("x0_reg  = %08x, x1_reg  = %08x, x2_reg  = %08x, x3_reg  = %08x", dut.x0_reg, dut.x1_reg, dut.x2_reg, dut.x3_reg);
+      $display("x4_reg  = %08x, x5_reg  = %08x, x6_reg  = %08x, x7_reg  = %08x", dut.x4_reg, dut.x5_reg, dut.x6_reg, dut.x7_reg);
+      $display("x8_reg  = %08x, x9_reg  = %08x, x10_reg = %08x, x11_reg = %08x", dut.x8_reg, dut.x9_reg, dut.x10_reg, dut.x11_reg);
+      $display("x12_reg = %08x, x13_reg = %08x, x14_reg = %08x, x15_reg = %08x", dut.x12_reg, dut.x13_reg, dut.x14_reg, dut.x15_reg);
+      $display("");
+
       $display("a0 = %08x", dut.quarterround.a0);
       $display("d0 = %08x", dut.quarterround.d0);
       $display("d1 = %08x", dut.quarterround.d1);
       $display("c  = %08x", dut.quarterround.c);
       $display("c0 = %08x", dut.quarterround.c0);
       $display("b0 = %08x", dut.quarterround.b0);
+      $display("x8_reg = %02x", dut.x8_reg);
+      $display("");
+      
     end // dut_monitor
 
 
