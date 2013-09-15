@@ -112,13 +112,19 @@ module tb_chacha_core();
   
   //--------------------------------------------------------------------
   // dut_monitor
-  // Monitor for observing the inputs and outputs to the dut.
+  // Monitor displaying information every cycle.
   // Includes the cycle counter.
   //--------------------------------------------------------------------
   always @ (posedge tb_clk)
     begin : dut_monitor
       cycle_ctr = cycle_ctr + 1;
-      $display("cycle = %8x:", cycle_ctr);
+      $display("cycle = %08x:", cycle_ctr);
+      $display("a0 = %08x", dut.quarterround.a0);
+      $display("d0 = %08x", dut.quarterround.d0);
+      $display("d1 = %08x", dut.quarterround.d1);
+      $display("c  = %08x", dut.quarterround.c);
+      $display("c0 = %08x", dut.quarterround.c0);
+      $display("b0 = %08x", dut.quarterround.b0);
     end // dut_monitor
 
 
@@ -145,10 +151,13 @@ module tb_chacha_core();
       $display("block0_ctr_reg = %08x, block1_ctr_reg = %08x", dut.block0_ctr_reg, dut.block1_ctr_reg);
 
       $display("");
-      $display("chacha_ctrl_reg = %04x", dut.chacha_ctrl_reg);
+      $display("chacha_ctrl_reg = %02x", dut.chacha_ctrl_reg);
       $display("");
       $display("data_in_reg = %064x", dut.data_in_reg);
       $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
+      $display("");
+      $display("a_prim = %08x, b_prim = %08x", dut.a_prim, dut.b_prim);
+      $display("c_prim = %08x, d_prim = %08x", dut.c_prim, dut.d_prim);
       $display("");
     end
   endtask // dump_state
@@ -168,13 +177,13 @@ module tb_chacha_core();
       $display("init       = %01x", dut.init);
       $display("next       = %01x", dut.next);
       $display("key_length = %01x", dut.key_length);
-      $display("ready      = %01x", dut.ready);
       $display("");
 
       $display("key = %032x", dut.key);
       $display("iv  = %016x", dut.iv);
       $display("");
 
+      $display("ready          = %01x", dut.ready);
       $display("data_in        = %064x", dut.data_in);
       $display("data_out       = %064x", dut.data_out);
       $display("data_out_valid = %01x", dut.data_out_valid);
@@ -206,23 +215,25 @@ module tb_chacha_core();
       tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
       
       
-      $display("State at init.");
+      $display("");
+      $display("*** State at init.");
       dump_state();
       
       // Wait ten clock cycles and release reset.
-      #(20 * CLK_HALF_PERIOD);
+      #(4 * CLK_HALF_PERIOD);
       @(negedge tb_clk)
       tb_reset_n = 1;
       
       #(2 * CLK_HALF_PERIOD);
-      $display("State after release of reset.");
+      $display("");
+      $display("*** State after release of reset.");
       dump_state();
       dump_inout();
 
       // Try and init the cipher.
       #(4 * CLK_HALF_PERIOD);
       $display("");
-      $display("Initializing cipher to process first block.");
+      $display("*** Initializing cipher to process first block.");
       tb_core_init = 1;
       dump_inout();
       #(4 * CLK_HALF_PERIOD);
@@ -235,7 +246,7 @@ module tb_chacha_core();
       dump_inout();
       
       // Finish in style.
-      $display("chacha_core simulation done.");
+      $display("*** chacha_core simulation done.");
       $finish;
     end // chacha_core_test
   
