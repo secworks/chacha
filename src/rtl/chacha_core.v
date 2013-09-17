@@ -495,23 +495,21 @@ module chacha_core(
         
       // The actual quarterround logic
       a0     = a + b;
-      a1     = a0 + b1;
-      a_prim = a1;
-
-      b0     = b ^ c0;
-      b1     = {b0[20:0], b0[31:21]};
-      b2     = b1 ^ c1;
-      b3     = {b2[24:0], b2[31:25]};
-      b_prim = b3;
-
-      c0     = c + d1;
-      c1     = c0 + d3;
-      c_prim = c1;
-      
       d0     = d ^ a0;
       d1     = {d0[15:0], d0[31:16]};
+      c0     = c + d1;
+      b0     = b ^ c0;
+      b1     = {b0[20:0], b0[31:21]};
+      a1     = a0 + b1;
       d2     = d1 ^ a1;
       d3     = {d2[23:0], d2[31:24]};
+      c1     = c0 + d3;
+      b2     = b1 ^ c1;
+      b3     = {b2[24:0], b2[31:25]};
+
+      a_prim = a1;
+      b_prim = b3;
+      c_prim = c1;
       d_prim = d3;
     end // quarterround
 
@@ -731,7 +729,7 @@ module chacha_core(
 
       if (qr_ctr_inc)
         begin
-          qr_ctr_new = qr_ctr_reg + 4'h1;
+          qr_ctr_new = qr_ctr_reg + 1;
           qr_ctr_we  = 1;
         end
     end // qr_ctr
@@ -756,7 +754,7 @@ module chacha_core(
 
       if (dr_ctr_inc)
         begin
-          dr_ctr_new = dr_ctr_reg + 4'h1;
+          dr_ctr_new = dr_ctr_reg + 1;
           dr_ctr_we  = 1;
         end
     end // dr_ctr
