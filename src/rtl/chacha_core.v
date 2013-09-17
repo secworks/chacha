@@ -227,6 +227,9 @@ module chacha_core(
   reg [31 : 0] c_prim;
   reg [31 : 0] d_prim;
   
+  // ready flag wire.
+  reg ready_wire;
+  
   
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
@@ -238,6 +241,8 @@ module chacha_core(
                                x3_reg, x2_reg, x1_reg, x0_reg};
 
   assign data_out_valid = data_out_valid_reg;
+  
+  assign ready = ready_wire;
   
   
   //----------------------------------------------------------------
@@ -815,6 +820,8 @@ module chacha_core(
                          
       data_in_we         = 0;
       rounds_we          = 0;
+
+      ready_wire         = 0;
       
       data_out_valid_new = 0;
       data_out_valid_we  = 0;
@@ -830,6 +837,7 @@ module chacha_core(
         // processing first block.
         CTRL_IDLE:
           begin
+            ready_wire = 1;
             if (init)
               begin
                 init_cipher     = 1;
@@ -870,6 +878,7 @@ module chacha_core(
         // either starts on a new block or 
         CTRL_DONE:
           begin
+            ready_wire = 1;
             if (init)
               begin
                 data_out_valid_new = 0;
