@@ -119,20 +119,30 @@ module tb_chacha_core();
     begin : dut_monitor
       cycle_ctr = cycle_ctr + 1;
       $display("cycle = %08x:", cycle_ctr);
-      $display("qr_ctr_reg = %01x", dut.qr_ctr_reg);
-      $display("x0_reg  = %08x, x1_reg  = %08x, x2_reg  = %08x, x3_reg  = %08x", dut.x0_reg, dut.x1_reg, dut.x2_reg, dut.x3_reg);
-      $display("x4_reg  = %08x, x5_reg  = %08x, x6_reg  = %08x, x7_reg  = %08x", dut.x4_reg, dut.x5_reg, dut.x6_reg, dut.x7_reg);
-      $display("x8_reg  = %08x, x9_reg  = %08x, x10_reg = %08x, x11_reg = %08x", dut.x8_reg, dut.x9_reg, dut.x10_reg, dut.x11_reg);
-      $display("x12_reg = %08x, x13_reg = %08x, x14_reg = %08x, x15_reg = %08x", dut.x12_reg, dut.x13_reg, dut.x14_reg, dut.x15_reg);
       $display("");
 
-      $display("a0 = %08x", dut.quarterround.a0);
-      $display("d0 = %08x", dut.quarterround.d0);
-      $display("d1 = %08x", dut.quarterround.d1);
-      $display("c  = %08x", dut.quarterround.c);
-      $display("c0 = %08x", dut.quarterround.c0);
-      $display("b0 = %08x", dut.quarterround.b0);
-      $display("x8_reg = %02x", dut.x8_reg);
+      $display("chacha_ctrl_reg = %01x", dut.chacha_ctrl_reg);
+      $display("qr_ctr_reg = %01x, dr_ctr_reg = %01x", dut.qr_ctr_reg, dut.dr_ctr_reg);
+      $display("x0_reg   = %08x, x0_new   = %08x, x0_we  = %01x", dut.x0_reg, dut.x0_new, dut.x0_we);
+      $display("x1_reg   = %08x, x1_new   = %08x, x1_we  = %01x", dut.x1_reg, dut.x1_new, dut.x1_we);
+      $display("x2_reg   = %08x, x2_new   = %08x, x2_we  = %01x", dut.x2_reg, dut.x2_new, dut.x2_we);
+      $display("x3_reg   = %08x, x3_new   = %08x, x3_we  = %01x", dut.x3_reg, dut.x3_new, dut.x3_we);
+      $display("x4_reg   = %08x, x4_new   = %08x, x4_we  = %01x", dut.x4_reg, dut.x4_new, dut.x4_we);
+      $display("x5_reg   = %08x, x5_new   = %08x, x5_we  = %01x", dut.x5_reg, dut.x5_new, dut.x5_we);
+      $display("x6_reg   = %08x, x6_new   = %08x, x6_we  = %01x", dut.x6_reg, dut.x6_new, dut.x6_we);
+      $display("x7_reg   = %08x, x7_new   = %08x, x7_we  = %01x", dut.x7_reg, dut.x7_new, dut.x7_we);
+      $display("x8_reg   = %08x, x8_new   = %08x, x8_we  = %01x", dut.x8_reg, dut.x8_new, dut.x8_we);
+      $display("x9_reg   = %08x, x9_new   = %08x, x9_we  = %01x", dut.x9_reg, dut.x9_new, dut.x9_we);
+      $display("x10_reg  = %08x, x10_new  = %08x, x10_we = %01x", dut.x10_reg, dut.x10_new, dut.x10_we);
+      $display("x11_reg  = %08x, x11_new  = %08x, x11_we = %01x", dut.x11_reg, dut.x11_new, dut.x11_we);
+      $display("x12_reg  = %08x, x12_new  = %08x, x12_we = %01x", dut.x12_reg, dut.x12_new, dut.x12_we);
+      $display("x13_reg  = %08x, x13_new  = %08x, x13_we = %01x", dut.x13_reg, dut.x13_new, dut.x13_we);
+      $display("x14_reg  = %08x, x14_new  = %08x, x14_we = %01x", dut.x14_reg, dut.x14_new, dut.x14_we);
+      $display("x15_reg  = %08x, x15_new  = %08x, x15_we = %01x", dut.x15_reg, dut.x15_new, dut.x15_we);
+      $display("");
+
+      $display("a      = %08x, b      = %08x, c      = %08x, d      = %08x", dut.quarterround.a, dut.quarterround.b, dut.quarterround.c, dut.quarterround.d);
+      $display("a_prim = %08x, b_prim = %08x, c_prim = %08x, d_prim = %08x", dut.a_prim, dut.b_prim, dut.c_prim, dut.d_prim);
       $display("");
       
     end // dut_monitor
@@ -237,23 +247,23 @@ module tb_chacha_core();
       #(2 * CLK_HALF_PERIOD);
       $display("");
       $display("*** State after release of reset.");
-      dump_state();
-      dump_inout();
+      //dump_state();
+      // dump_inout();
 
       // Try and init the cipher.
       #(4 * CLK_HALF_PERIOD);
       $display("");
       $display("*** Initializing cipher to process first block.");
       tb_core_init = 1;
-      dump_inout();
+      // dump_inout();
       #(4 * CLK_HALF_PERIOD);
       tb_core_init = 0;
-      dump_inout();
+      // dump_inout();
 
       // Wait a while and observe what happens.
       #(32 * CLK_HALF_PERIOD);
-      dump_state();
-      dump_inout();
+      // dump_state();
+      // tdump_inout();
       
       // Finish in style.
       $display("*** chacha_core simulation done.");
