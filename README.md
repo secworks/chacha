@@ -20,7 +20,9 @@ updated for each data block.
 
 ## Performance ##
 Each quarterround takes one cycle which means that the mininum latency
-will be 4*rounds.
+will be 4*rounds. When the core is functionally correct we will add two
+more version with 2 and 4 parallel quarterrounds respectively. The four
+quarterounds version will achieve 1 cycle/round.
 
 
 ## Status ##
