@@ -108,6 +108,41 @@ module tb_chacha();
     end // dut_monitor
 
 
+
+  //----------------------------------------------------------------
+  // dump_state
+  // Dump the internal CHACHA state to std out.
+  //----------------------------------------------------------------
+  task dump_state();
+    begin
+      $display("");
+      $display("Internal state:");
+      $display("---------------");
+      $display("init_reg   = %01x", dut.init_reg);
+      $display("next_reg   = %01x", dut.next_reg);
+      $display("ready_reg  = %01x", dut.ready_reg);
+      $display("keylen_reg = %01x", dut.keylen_reg);
+      $display("rounds_reg = %01x", dut.rounds_reg);
+
+      $display("key0_reg = %08x, key1_reg  = %08x, key2_reg = %08x, key3_reg  = %08x", dut.key0_reg, dut.key1_reg, dut.key2_reg, dut.key3_reg);
+      $display("key4_reg = %08x, key5_reg  = %08x, key6_reg = %08x, key7_reg  = %08x", dut.key4_reg, dut.key5_reg, dut.key6_reg, dut.key7_reg);
+      $display("");
+      $display("iv0_reg = %08x, iv1_reg = %08x", dut.iv0_reg, dut.iv1_reg);
+      $display("");
+      $display("data_in0_reg  = %08x, data_in1_reg   = %08x, data_in2_reg  = %08x, data_in3_reg   = %08x", dut.data_in0_reg, dut.data_in1_reg, dut.data_in2_reg, dut.data_in3_reg);
+      $display("data_in4_reg  = %08x, data_in5_reg   = %08x, data_in6_reg  = %08x, data_in7_reg   = %08x", dut.data_in4_reg, dut.data_in5_reg, dut.data_in6_reg, dut.data_in7_reg);
+      $display("data_in8_reg  = %08x, data_in9_reg   = %08x, data_in10_reg = %08x, data_in11_reg  = %08x", dut.data_in8_reg, dut.data_in9_reg, dut.data_in10_reg, dut.data_in11_reg);
+      $display("data_in12_reg = %08x, data_in13_reg  = %08x, data_in14_reg = %08x, data_in15_reg  = %08x", dut.data_in12_reg, dut.data_in13_reg, dut.data_in14_reg, dut.data_in15_reg);
+      $display("");
+      $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
+      $display("data_out0_reg  = %08x, data_out1_reg   = %08x, data_out2_reg  = %08x, data_out3_reg   = %08x", dut.data_out0_reg, dut.data_out1_reg, dut.data_out2_reg, dut.data_out3_reg);
+      $display("data_out4_reg  = %08x, data_out5_reg   = %08x, data_out6_reg  = %08x, data_out7_reg   = %08x", dut.data_out4_reg, dut.data_out5_reg, dut.data_out6_reg, dut.data_out7_reg);
+      $display("data_out8_reg  = %08x, data_out9_reg   = %08x, data_out10_reg = %08x, data_out11_reg  = %08x", dut.data_out8_reg, dut.data_out9_reg, dut.data_out10_reg, dut.data_out11_reg);
+      $display("data_out12_reg = %08x, data_out13_reg  = %08x, data_out14_reg = %08x, data_out15_reg  = %08x", dut.data_out12_reg, dut.data_out13_reg, dut.data_out14_reg, dut.data_out15_reg);
+      $display("");
+    end
+  endtask // dump_state
+
   
   //----------------------------------------------------------------
   // chacha_test
@@ -128,12 +163,18 @@ module tb_chacha();
       tb_address    = 8'h00;
       tb_data_in    = 32'h00000000;
       
-      
       $display("");
       $display("*** State at init.");
-
+      dump_state();
+      
+      // Wait ten clock cycles and release reset.
+      #(4 * CLK_HALF_PERIOD);
+      @(negedge tb_clk)
+      tb_reset_n = 1;
+      dump_state();
+        
       // Wait a while and observe what happens.
-      #(1000 * CLK_HALF_PERIOD);
+      #(20 * CLK_HALF_PERIOD);
       
       // Finish in style.
       $display("*** chacha simulation done.");
