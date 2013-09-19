@@ -115,12 +115,13 @@ module tb_chacha();
   //----------------------------------------------------------------
   task read_reg(input [7 : 0] addr);
     begin
+      tb_cs         = 1;
       tb_write_read = 0;
       tb_address    = addr;
       #(2 * CLK_HALF_PERIOD);
       $display("Read: addr 0x%02x = 0x%08x", addr, tb_data_out);
       #(2 * CLK_HALF_PERIOD);
-      tb_cs         = 0;
+      tb_cs = 0;
       tb_write_read = 0;
       tb_address    = 8'h00;
       tb_data_in    = 32'h00000000;
@@ -135,6 +136,7 @@ module tb_chacha();
   task write_reg(input [7 : 0] addr, input [31 : 0] data);
     begin
       $display("write: addr 0x%02x = 0x%08x", addr, data);
+      tb_cs         = 1;
       tb_write_read = 1;
       tb_address    = addr;
       tb_data_in    = data;
@@ -215,7 +217,7 @@ module tb_chacha();
       write_reg(8'h10, 32'h55555555);
       write_reg(8'h11, 32'haaaaaaaa);
       dump_state();
-      // read_reg(8'h10);
+      read_reg(8'h10);
       
       // Wait a while and observe what happens.
       #(10 * CLK_HALF_PERIOD);
