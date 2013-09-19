@@ -121,7 +121,7 @@ module tb_chacha();
       #(2 * CLK_HALF_PERIOD);
       $display("Read: addr 0x%02x = 0x%08x", addr, tb_data_out);
       #(2 * CLK_HALF_PERIOD);
-      tb_cs = 0;
+      tb_cs         = 0;
       tb_write_read = 0;
       tb_address    = 8'h00;
       tb_data_in    = 32'h00000000;
