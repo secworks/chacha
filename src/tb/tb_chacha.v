@@ -110,6 +110,25 @@ module tb_chacha();
 
 
   //----------------------------------------------------------------
+  // write_reg
+  // Function that writes to a register in the dut.
+  //----------------------------------------------------------------
+  task write_reg(input [7 : 0] addr, input [31 : 0] data);
+    begin
+      $display("write: addr 0x%02x = 0x%08x", addr, data);
+      tb_write_read = 1;
+      tb_address    = addr;
+      tb_data_in    = data;
+      #(2 * CLK_HALF_PERIOD);
+      tb_cs         = 0;
+      tb_write_read = 0;
+      tb_address    = 8'h00;
+      tb_data_in    = 32'h00000000;
+    end
+  endtask // write_reg
+
+
+  //----------------------------------------------------------------
   // dump_state
   // Dump the internal CHACHA state to std out.
   //----------------------------------------------------------------
@@ -172,9 +191,15 @@ module tb_chacha();
       @(negedge tb_clk)
       tb_reset_n = 1;
       dump_state();
-        
+
+      // Try to write a few registers.
+      write_reg(8'h10, 32'h55555555);
+      write_reg(8'h11, 32'haaaaaaaa);
+      dump_state();
+      
       // Wait a while and observe what happens.
-      #(20 * CLK_HALF_PERIOD);
+      #(100 * CLK_HALF_PERIOD);
+      dump_state();
       
       // Finish in style.
       $display("*** chacha simulation done.");
