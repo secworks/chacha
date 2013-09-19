@@ -108,6 +108,25 @@ module tb_chacha();
     end // dut_monitor
 
 
+  //----------------------------------------------------------------
+  // read_reg
+  // Function that reads and display the value of 
+  // a register in the dut.
+  //----------------------------------------------------------------
+  task read_reg(input [7 : 0] addr);
+    begin
+      tb_write_read = 0;
+      tb_address    = addr;
+      #(2 * CLK_HALF_PERIOD);
+      $display("Read: addr 0x%02x = 0x%08x", addr, tb_data_out);
+      #(2 * CLK_HALF_PERIOD);
+      tb_cs         = 0;
+      tb_write_read = 0;
+      tb_address    = 8'h00;
+      tb_data_in    = 32'h00000000;
+    end
+  endtask // read_reg
+
 
   //----------------------------------------------------------------
   // write_reg
@@ -196,9 +215,10 @@ module tb_chacha();
       write_reg(8'h10, 32'h55555555);
       write_reg(8'h11, 32'haaaaaaaa);
       dump_state();
+      // read_reg(8'h10);
       
       // Wait a while and observe what happens.
-      #(100 * CLK_HALF_PERIOD);
+      #(10 * CLK_HALF_PERIOD);
       dump_state();
       
       // Finish in style.
