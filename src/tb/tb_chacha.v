@@ -104,7 +104,17 @@ module tb_chacha();
     begin : dut_monitor
       cycle_ctr = cycle_ctr + 1;
       $display("cycle = %016x:", cycle_ctr);
-      $display("");
+      if (dut.cs)
+        begin
+          if (dut.write_read)
+            begin
+              $display("*** Write acess: addr 0x%02x = 0x%08x", dut.address, dut.data_in);
+            end
+          else
+            begin
+              $display("*** Read acess: addr 0x%02x = 0x%08x", dut.address, dut.data_out_reg);
+            end
+        end
     end // dut_monitor
 
 
@@ -118,8 +128,6 @@ module tb_chacha();
       tb_cs         = 1;
       tb_write_read = 0;
       tb_address    = addr;
-      #(2 * CLK_HALF_PERIOD);
-      $display("Read: addr 0x%02x = 0x%08x", addr, tb_data_out);
       #(2 * CLK_HALF_PERIOD);
       tb_cs         = 0;
       tb_write_read = 0;
@@ -135,7 +143,6 @@ module tb_chacha();
   //----------------------------------------------------------------
   task write_reg(input [7 : 0] addr, input [31 : 0] data);
     begin
-      $display("write: addr 0x%02x = 0x%08x", addr, data);
       tb_cs         = 1;
       tb_write_read = 1;
       tb_address    = addr;
