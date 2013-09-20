@@ -273,7 +273,7 @@ module chacha(
   wire           core_data_out_valid;
 
   // Wires needed to connect the interface.
-  reg data_out_reg;
+  reg [31 : 0]   data_out_reg;
   
   
   //----------------------------------------------------------------

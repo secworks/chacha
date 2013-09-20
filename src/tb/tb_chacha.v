@@ -147,8 +147,8 @@ module tb_chacha();
       tb_data_in    = 32'h00000000;
     end
   endtask // write_reg
-
-
+    
+  
   //----------------------------------------------------------------
   // dump_state
   // Dump the internal CHACHA state to std out.
@@ -217,7 +217,19 @@ module tb_chacha();
       write_reg(8'h10, 32'h55555555);
       write_reg(8'h11, 32'haaaaaaaa);
       dump_state();
+      read_reg(8'h00);
+      read_reg(8'h01);
+      read_reg(8'h08);
+      read_reg(8'h09);
+
       read_reg(8'h10);
+      read_reg(8'h11);
+      read_reg(8'h12);
+      read_reg(8'h13);
+      read_reg(8'h14);
+      read_reg(8'h15);
+      read_reg(8'h16);
+      read_reg(8'h17);
       
       // Wait a while and observe what happens.
       #(10 * CLK_HALF_PERIOD);
