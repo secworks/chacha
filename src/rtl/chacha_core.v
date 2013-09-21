@@ -494,18 +494,18 @@ module chacha_core(
       endcase // case (quarterround_select)
         
       // The actual quarterround logic
-      a0     = a + b;
-      d0     = d ^ a0;
-      d1     = {d0[15:0], d0[31:16]};
-      c0     = c + d1;
-      b0     = b ^ c0;
-      b1     = {b0[20:0], b0[31:21]};
-      a1     = a0 + b1;
-      d2     = d1 ^ a1;
-      d3     = {d2[23:0], d2[31:24]};
-      c1     = c0 + d3;
-      b2     = b1 ^ c1;
-      b3     = {b2[24:0], b2[31:25]};
+      a0 = a + b;
+      d0 = d ^ a0;
+      d1 = {d0[15:0], d0[31:16]};
+      c0 = c + d1;
+      b0 = b ^ c0;
+      b1 = {b0[20:0], b0[31:21]};
+      a1 = a0 + b1;
+      d2 = d1 ^ a1;
+      d3 = {d2[23:0], d2[31:24]};
+      c1 = c0 + d3;
+      b2 = b1 ^ c1;
+      b3 = {b2[24:0], b2[31:25]};
 
       a_prim = a1;
       b_prim = b3;
