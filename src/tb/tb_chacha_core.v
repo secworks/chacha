@@ -261,9 +261,9 @@ module tb_chacha_core();
       // dump_inout();
 
       // Wait a while and observe what happens.
-      #(32 * CLK_HALF_PERIOD);
-      // dump_state();
-      // tdump_inout();
+      #(1000 * CLK_HALF_PERIOD);
+      dump_state();
+      dump_inout();
       
       // Finish in style.
       $display("*** chacha_core simulation done.");
