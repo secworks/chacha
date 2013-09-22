@@ -73,26 +73,36 @@ class ChaCha():
             pass
         
 
+    #---------------------------------------------------------------
+    #---------------------------------------------------------------
     def next(data_in):
         data_out = [data_in[i] ^ self.x[i] for i in range(16)]
         return data_out
 
 
-    def __doubleround():
-        self._quarterround(self.x, (0, 4,  8, 12))
-        self._quarterround(self.x, (1, 5,  9, 13))
-        self._quarterround(self.x, (2, 6, 10, 14))
-        self._quarterround(self.x, (3, 7, 11, 15))
-        
-        self._quarterround(self.x, (0, 5, 10, 15))
-        self._quarterround(self.x, (1, 6, 11, 12))
-        self._quarterround(self.x, (2, 7,  8, 13))
-        self._quarterround(self.x, (3, 4,  9, 14))
+    #---------------------------------------------------------------
+    # _doubleround()
+    #---------------------------------------------------------------
+    def _doubleround():
+        for i in range((self.rounds / 2)):
+            self._quarterround((0, 4,  8, 12))
+            self._quarterround((1, 5,  9, 13))
+            self._quarterround((2, 6, 10, 14))
+            self._quarterround((3, 7, 11, 15))
+            
+            self._quarterround((0, 5, 10, 15))
+            self._quarterround((1, 6, 11, 12))
+            self._quarterround((2, 7,  8, 13))
+            self._quarterround((3, 4,  9, 14))
 
             
-    def _quarterround(self, x, qi):
-        # Extract elemenst from x using the tuple with four indices.
-        self.a, self.b, self.c, self.d = x[qi[0]], x[qi[1]], x[qi[2]], x[qi[3]]
+    #---------------------------------------------------------------
+    #---------------------------------------------------------------
+    def _quarterround(self, qi):
+        # Extract four elemenst from x using the qi tuple.
+        self.a, self.b = self.x[qi[0]], self.x[qi[1]]
+        self.c, self.d = self.x[qi[2]], self.x[qi[3]]
+
         self.a0 = (a + b) & 0xffffffff
         self.d0 = d ^ self.a0
         self.d1 = ((self.d0 << 16) + (self.d0 >> 16)) & 0xffffffff
@@ -111,7 +121,21 @@ class ChaCha():
         self.c_prim = self.c1;
         self.d_prim = self.d3;
         
-        return (self.a_prim, self.b_prim, self.c_prim, self.d_prim)
+        # Update the four elemenst in x using the qi tuple.
+        self.x[qi[0]], self.x[qi[1]] = self.a_prim, self.b_prim
+        self.x[qi[2]], self.x[qi[3]] = self.c_prim, self.d_prim
+
+
+    # --------------------------------------------------------------
+    # _inc_counter()
+    # Increase the 64 bit block counter.
+    # --------------------------------------------------------------
+    def _inc_counter(self):
+        self.block_counter[0] += 1 & 0xffffffff
+        if not (self.block_counter[0] % 0xffffffff):
+            self.block_counter[1] += 1 & 0xffffffff
+            
+
 
     
 #-------------------------------------------------------------------
