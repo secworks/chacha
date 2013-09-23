@@ -108,13 +108,13 @@ class ChaCha():
         self.d1 = ((self.d0 << 16) + (self.d0 >> 16)) & 0xffffffff
         self.c0 = (c + self.d1) & 0xffffffff
         self.b0 = b ^ self.c0
-        self.b1 = ((self.b0 << 21) + (self.b0 >> 21)) & 0xffffffff
+        self.b1 = ((self.b0 << 12) + (self.b0 >> 20)) & 0xffffffff
         self.a1 = (self.a0 + self.b1) & 0xffffffff
         self.d2 = self.d1 ^ self.a1
-        self.d3 = ((self.d2 << 24) + self.d2 >> 24) & 0xffffffff
+        self.d3 = ((self.d2 << 8) + self.d2 >> 24) & 0xffffffff
         self.c1 = (self.c0 + self.d3) & 0xffffffff 
         self.b2 = self.b1 ^ self.c1
-        self.b3 = ((self.b2 << 25) + (self.b2 >> 25)) & 0xffffffff 
+        self.b3 = ((self.b2 << 7) + (self.b2 >> 25)) & 0xffffffff 
         
         self.a_prim = self.a1;
         self.b_prim = self.b3;
