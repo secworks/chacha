@@ -47,7 +47,7 @@ module chacha_core(
 
                    // Parameters.
                    input wire [255 : 0]  key,
-                   input wire            key_length,
+                   input wire            keylen,
                    input wire [63 : 0]   iv,
                    input wire [4 : 0]    rounds,
                    
@@ -583,7 +583,7 @@ module chacha_core(
           x14_new = iv[31 : 0];
           x15_new = iv[63 : 0];
 
-          if (key_length)
+          if (keylen)
             begin
               // 256 bit key.
               x0_new  = SIGMA0;

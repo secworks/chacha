@@ -310,7 +310,7 @@ module chacha(
                     
                     // Parameters.
                     .key(core_key),
-                    .key_length(core_keylen),
+                    .keylen(core_keylen),
                     .iv(core_iv),
                     .rounds(core_rounds),
                     

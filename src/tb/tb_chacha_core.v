@@ -62,7 +62,7 @@ module tb_chacha_core();
   reg            tb_core_init;
   reg            tb_core_next;
   reg [255 : 0]  tb_core_key;
-  reg            tb_core_keylength;
+  reg            tb_core_keylen;
   reg [4 : 0]    tb_core_rounds;
   reg [63 : 0]   tb_core_iv;
   wire           tb_core_ready;
@@ -84,7 +84,7 @@ module tb_chacha_core();
 
                    // Parameters.
                    .key(tb_core_key),
-                   .key_length(tb_core_keylength),
+                   .keylen(tb_core_keylen),
                    .iv(tb_core_iv),
                    .rounds(tb_core_rounds),
                    
@@ -227,7 +227,7 @@ module tb_chacha_core();
       tb_reset_n        = 0;
 
       tb_core_key       = 256'h0000000000000001000000000000000100000000000000010000000000000001;
-      tb_core_keylength = 1;
+      tb_core_keylen    = 1;
       tb_core_rounds    = 5'b00100;
       tb_core_iv        = 64'h0000000000000001;
       tb_core_init      = 0;
