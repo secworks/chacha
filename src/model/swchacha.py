@@ -100,30 +100,42 @@ class ChaCha():
     #---------------------------------------------------------------
     def _quarterround(self, qi):
         # Extract four elemenst from x using the qi tuple.
-        self.a, self.b = self.x[qi[0]], self.x[qi[1]]
-        self.c, self.d = self.x[qi[2]], self.x[qi[3]]
+        a, b = self.x[qi[0]], self.x[qi[1]]
+        c, d = self.x[qi[2]], self.x[qi[3]]
 
-        self.a0 = (a + b) & 0xffffffff
-        self.d0 = d ^ self.a0
-        self.d1 = ((self.d0 << 16) + (self.d0 >> 16)) & 0xffffffff
-        self.c0 = (c + self.d1) & 0xffffffff
-        self.b0 = b ^ self.c0
-        self.b1 = ((self.b0 << 12) + (self.b0 >> 20)) & 0xffffffff
-        self.a1 = (self.a0 + self.b1) & 0xffffffff
-        self.d2 = self.d1 ^ self.a1
-        self.d3 = ((self.d2 << 8) + self.d2 >> 24) & 0xffffffff
-        self.c1 = (self.c0 + self.d3) & 0xffffffff 
-        self.b2 = self.b1 ^ self.c1
-        self.b3 = ((self.b2 << 7) + (self.b2 >> 25)) & 0xffffffff 
+        if self.verbose:
+            print "Indata to quarterround:"
+            print "X state indices:", qi
+            print "a = 0x%08x, b = 0x%08x, c = 0x%08x, d = 0x%08x" % (a, b, c, d)
+
+        a0 = (a + b) & 0xffffffff
+        d0 = d ^ a0
+        d1 = ((d0 << 16) + (d0 >> 16)) & 0xffffffff
+        c0 = (c + d1) & 0xffffffff
+        b0 = b ^ c0
+        b1 = ((b0 << 12) + (b0 >> 20)) & 0xffffffff
+        a1 = (a0 + b1) & 0xffffffff
+        d2 = d1 ^ a1
+        d3 = ((d2 << 8) + d2 >> 24) & 0xffffffff
+        c1 = (c0 + d3) & 0xffffffff 
+        b2 = b1 ^ c1
+        b3 = ((b2 << 7) + (b2 >> 25)) & 0xffffffff 
         
-        self.a_prim = self.a1;
-        self.b_prim = self.b3;
-        self.c_prim = self.c1;
-        self.d_prim = self.d3;
+        a_prim = a1;
+        b_prim = b3;
+        c_prim = c1;
+        d_prim = d3;
         
+
+        if self.verbose:
+            print "Outdata from quarterround:"
+            print "a_prim = 0x%08x, b_prim = 0x%08x, c_prim = 0x%08x, d_prim = 0x%08x" %\
+                  (a_prim, b_prim, c_prim, d_prim)
+        
+
         # Update the four elemenst in x using the qi tuple.
-        self.x[qi[0]], self.x[qi[1]] = self.a_prim, self.b_prim
-        self.x[qi[2]], self.x[qi[3]] = self.c_prim, self.d_prim
+        self.x[qi[0]], self.x[qi[1]] = a_prim, b_prim
+        self.x[qi[2]], self.x[qi[3]] = c_prim, d_prim
 
 
     # --------------------------------------------------------------
@@ -134,8 +146,6 @@ class ChaCha():
         self.block_counter[0] += 1 & 0xffffffff
         if not (self.block_counter[0] % 0xffffffff):
             self.block_counter[1] += 1 & 0xffffffff
-            
-
 
     
 #-------------------------------------------------------------------
@@ -150,8 +160,10 @@ def main():
               0x44444444, 0x55555555, 0x66666666, 0x77777777]
     my_iv  = [0x00000000, 0x00000001]
     
-    my_cipher = ChaCha(my_key, my_iv)
-    
+    my_cipher = ChaCha(my_key, my_iv, verbose=True)
+    my_cipher.x = [0x11223344, 0xaaaa5555] * 8
+    my_cipher._quarterround((0, 2, 4, 6))
+
 
 #-------------------------------------------------------------------
 # __name__
