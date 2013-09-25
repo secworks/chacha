@@ -107,7 +107,8 @@ class ChaCha():
             print "Indata to quarterround:"
             print "X state indices:", qi
             print "a = 0x%08x, b = 0x%08x, c = 0x%08x, d = 0x%08x" % (a, b, c, d)
-
+            print
+            
         a0 = (a + b) & 0xffffffff
         d0 = d ^ a0
         d1 = ((d0 << 16) + (d0 >> 16)) & 0xffffffff
@@ -120,6 +121,14 @@ class ChaCha():
         c1 = (c0 + d3) & 0xffffffff 
         b2 = b1 ^ c1
         b3 = ((b2 << 7) + (b2 >> 25)) & 0xffffffff 
+
+        if self.verbose:
+            print "Intermediate values:"
+            print "a0 = 0x%08x, a1 = 0x%08x" % (a0, a1)
+            print "b0 = 0x%08x, b1 = 0x%08x, b2 = 0x%08x, b3 = 0x%08x" % (b0, b1, b2, b3)
+            print "c0 = 0x%08x, c1 = 0x%08x" % (c0, c1)
+            print "d0 = 0x%08x, d1 = 0x%08x, d2 = 0x%08x, d3 = 0x%08x" % (d0, d1, d2, d3)
+            print
         
         a_prim = a1;
         b_prim = b3;
