@@ -196,7 +196,7 @@ module tb_chacha_core();
 
       $display("init       = %01x", dut.init);
       $display("next       = %01x", dut.next);
-      $display("key_length = %01x", dut.key_length);
+      $display("keylen     = %01x", dut.keylen);
       $display("");
 
       $display("key = %032x", dut.key);
@@ -211,6 +211,41 @@ module tb_chacha_core();
     end
   endtask // dump_inout
 
+
+  //----------------------------------------------------------------
+  // test_quarterround
+  //
+  // Test the quarterround by forcing the inputs of the logic 
+  // to known given values and observing the result.
+  //----------------------------------------------------------------
+  task test_quarterround(input [31 : 0] a, input [31 : 0] b, 
+                         input [31 : 0] c, input [31 : 0] d);
+    begin
+      $display("Test of quarterround.");
+      $display("a = 0x%08x, b = 0x%08x", a, b);
+      $display("c = 0x%08x, d = 0x%08x", c, d);
+      $display("");
+      
+      dut.quarterround.a = a;
+      dut.quarterround.b = b;
+      dut.quarterround.c = c;
+      dut.quarterround.d = d;
+      #(2 * CLK_HALF_PERIOD);
+      
+      $display("a0 = 0x%08x, a1 = 0x%08x", dut.quarterround.a0, dut.quarterround.a1);
+      $display("b0 = 0x%08x, b1 = 0x%08x", dut.quarterround.b0, dut.quarterround.b1);
+      $display("b2 = 0x%08x, b3 = 0x%08x", dut.quarterround.b2, dut.quarterround.b3);
+      $display("c0 = 0x%08x, c1 = 0x%08x", dut.quarterround.c0, dut.quarterround.c1);
+      $display("d0 = 0x%08x, d1 = 0x%08x", dut.quarterround.d0, dut.quarterround.d1);
+      $display("d2 = 0x%08x, d3 = 0x%08x", dut.quarterround.d2, dut.quarterround.d3);
+      $display("");
+      
+      $display("a_prim = 0x%08x, b_prim = 0x%08x", dut.a_prim, dut.b_prim);
+      $display("c_prim = 0x%08x, d_prim = 0x%08x", dut.c_prim, dut.d_prim);
+      $display("");
+    end
+  endtask // write_reg
+
   
   //----------------------------------------------------------------
   // chacha_core_test
@@ -219,6 +254,8 @@ module tb_chacha_core();
   initial
     begin : chacha_core_test
       $display("   -- Testbench for chacha_core started --");
+      test_quarterround(32'h11223344, 32'h11223344, 32'h11223344, 32'h11223344);
+      test_quarterround(32'h55555555, 32'haaaaaaaa, 32'h55555555, 32'haaaaaaaa);
       
       // Set clock, reset and DUT input signals to 
       // defined values at simulation start.
