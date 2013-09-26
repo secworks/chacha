@@ -26,6 +26,15 @@ quarterounds version will achieve 1 cycle/round.
 
 
 ## Status ##
+(2013-09-26)
+- Debugging of the core is ongoing with quarterround at the focus.
+- The core goes through the motions of processing blocks.
+- There is a testbench for the top level the top seems to work ok.
+- There is a Python model being developed in src/model.
+- Quarterround in the Python model works. Used to debug the RTL.
+
+
+(old notation)
 The current implementation consists of a ChaCha core with (very) wide
 data interfaces.
 
@@ -37,7 +46,7 @@ basically completed but needs to be debugged. The initial version of the
 testbench for the core is done but the core is not yet connected.
 
 The top level wrapper is functionally completed, but not yet
-debugged. The wrapper does not yet have a testbench.
+debugged. There is no testbench.
 
 
 ## Notes ##
