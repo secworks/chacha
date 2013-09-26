@@ -35,18 +35,18 @@ quarterounds version will achieve 1 cycle/round.
 
 
 (old notation)
-The current implementation consists of a ChaCha core with (very) wide
-data interfaces.
+- The current implementation consists of a ChaCha core with (very) wide
+  data interfaces. 
 
-There is also a top level wrapper, chacha.v that provides a
-memory like 32-bit API. Note that with
+- There is also a top level wrapper, chacha.v that provides a memory
+  like 32-bit API. Note that with
 
-The core is currently not completed. The datapath and control is
-basically completed but needs to be debugged. The initial version of the
-testbench for the core is done but the core is not yet connected.
+- The core is currently not completed. The datapath and control is
+  basically completed but needs to be debugged. The initial version of
+  the testbench for the core is done but the core is not yet connected.
 
-The top level wrapper is functionally completed, but not yet
-debugged. There is no testbench.
+- The top level wrapper is functionally completed, but not yet
+  debugged. There is no testbench.
 
 
 ## Notes ##
