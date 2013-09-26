@@ -108,7 +108,7 @@ class ChaCha():
 
         if self.verbose:
             print "Indata to quarterround:"
-            print "X state indices:", qi
+            print "X state indices:", ai, bi, ci, di
             print "a = 0x%08x, b = 0x%08x, c = 0x%08x, d = 0x%08x" % (a, b, c, d)
             print
             
@@ -174,7 +174,7 @@ def main():
     
     my_cipher = ChaCha(my_key, my_iv, verbose=True)
     my_cipher.x = [0x11223344, 0xaaaa5555] * 8
-    my_cipher._quarterround((0, 2, 4, 6))
+    my_cipher._quarterround(0, 2, 4, 6)
 
 
 #-------------------------------------------------------------------
