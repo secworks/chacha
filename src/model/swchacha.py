@@ -98,6 +98,9 @@ class ChaCha():
             
     #---------------------------------------------------------------
     #  _quarterround()
+    #
+    # Updates four elements in the state vector x given by
+    # their indices.
     #---------------------------------------------------------------
     def _quarterround(self, ai, bi, ci, di):
         # Extract four elemenst from x using the qi tuple.
