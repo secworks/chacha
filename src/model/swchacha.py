@@ -85,23 +85,23 @@ class ChaCha():
     #---------------------------------------------------------------
     def _doubleround():
         for i in range((self.rounds / 2)):
-            self._quarterround((0, 4,  8, 12))
-            self._quarterround((1, 5,  9, 13))
-            self._quarterround((2, 6, 10, 14))
-            self._quarterround((3, 7, 11, 15))
+            self._quarterround(0, 4,  8, 12)
+            self._quarterround(1, 5,  9, 13)
+            self._quarterround(2, 6, 10, 14)
+            self._quarterround(3, 7, 11, 15)
             
-            self._quarterround((0, 5, 10, 15))
-            self._quarterround((1, 6, 11, 12))
-            self._quarterround((2, 7,  8, 13))
-            self._quarterround((3, 4,  9, 14))
+            self._quarterround(0, 5, 10, 15)
+            self._quarterround(1, 6, 11, 12)
+            self._quarterround(2, 7,  8, 13)
+            self._quarterround(3, 4,  9, 14)
 
             
     #---------------------------------------------------------------
+    #  _quarterround()
     #---------------------------------------------------------------
-    def _quarterround(self, qi):
+    def _quarterround(self, ai, bi, ci, di):
         # Extract four elemenst from x using the qi tuple.
-        a, b = self.x[qi[0]], self.x[qi[1]]
-        c, d = self.x[qi[2]], self.x[qi[3]]
+        a, b, c, d = self.x[ai], self.x[bi], self.x[ci], self.x[di]
 
         if self.verbose:
             print "Indata to quarterround:"
