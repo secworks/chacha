@@ -120,7 +120,7 @@ class ChaCha():
         b1 = ((b0 << 12) + (b0 >> 20)) & 0xffffffff
         a1 = (a0 + b1) & 0xffffffff
         d2 = d1 ^ a1
-        d3 = ((d2 << 8) + d2 >> 24) & 0xffffffff
+        d3 = ((d2 << 8) + (d2 >> 24)) & 0xffffffff
         c1 = (c0 + d3) & 0xffffffff 
         b2 = b1 ^ c1
         b3 = ((b2 << 7) + (b2 >> 25)) & 0xffffffff 
@@ -133,21 +133,19 @@ class ChaCha():
             print "d0 = 0x%08x, d1 = 0x%08x, d2 = 0x%08x, d3 = 0x%08x" % (d0, d1, d2, d3)
             print
         
-        a_prim = a1;
-        b_prim = b3;
-        c_prim = c1;
-        d_prim = d3;
-        
+        a_prim = a1
+        b_prim = b3
+        c_prim = c1
+        d_prim = d3
 
         if self.verbose:
             print "Outdata from quarterround:"
             print "a_prim = 0x%08x, b_prim = 0x%08x, c_prim = 0x%08x, d_prim = 0x%08x" %\
                   (a_prim, b_prim, c_prim, d_prim)
         
-
         # Update the four elemenst in x using the qi tuple.
-        self.x[qi[0]], self.x[qi[1]] = a_prim, b_prim
-        self.x[qi[2]], self.x[qi[3]] = c_prim, d_prim
+        self.x[ai], self.x[bi] = a_prim, b_prim
+        self.x[ci], self.x[di] = c_prim, d_prim
 
 
     # --------------------------------------------------------------
