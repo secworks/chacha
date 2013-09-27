@@ -255,52 +255,52 @@ module tb_chacha_core();
     begin : chacha_core_test
       $display("   -- Testbench for chacha_core started --");
       test_quarterround(32'h11223344, 32'h11223344, 32'h11223344, 32'h11223344);
-      test_quarterround(32'h55555555, 32'haaaaaaaa, 32'h55555555, 32'haaaaaaaa);
+      test_quarterround(32'h55555555, 32'h55555555, 32'h55555555, 32'h55555555);
       
       // Set clock, reset and DUT input signals to 
       // defined values at simulation start.
-      cycle_ctr         = 0;
-      tb_clk            = 0;
-      tb_reset_n        = 0;
+      // cycle_ctr         = 0;
+      // tb_clk            = 0;
+      // tb_reset_n        = 0;
 
-      tb_core_key       = 256'h0000000000000001000000000000000100000000000000010000000000000001;
-      tb_core_keylen    = 1;
-      tb_core_rounds    = 5'b00100;
-      tb_core_iv        = 64'h0000000000000001;
-      tb_core_init      = 0;
-      tb_core_next      = 0;
-      tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+      // tb_core_key       = 256'h0000000000000001000000000000000100000000000000010000000000000001;
+      // tb_core_keylen    = 1;
+      // tb_core_rounds    = 5'b00100;
+      // tb_core_iv        = 64'h0000000000000001;
+      // tb_core_init      = 0;
+      // tb_core_next      = 0;
+      // tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
       
       
-      $display("");
-      $display("*** State at init.");
-      dump_state();
+      // $display("");
+      // $display("*** State at init.");
+      // dump_state();
       
-      // Wait ten clock cycles and release reset.
-      #(4 * CLK_HALF_PERIOD);
-      @(negedge tb_clk)
-      tb_reset_n = 1;
+      // // Wait ten clock cycles and release reset.
+      // #(4 * CLK_HALF_PERIOD);
+      // @(negedge tb_clk)
+      // tb_reset_n = 1;
       
-      #(2 * CLK_HALF_PERIOD);
-      $display("");
-      $display("*** State after release of reset.");
-      //dump_state();
-      // dump_inout();
+      // #(2 * CLK_HALF_PERIOD);
+      // $display("");
+      // $display("*** State after release of reset.");
+      // //dump_state();
+      // // dump_inout();
 
-      // Try and init the cipher.
-      #(4 * CLK_HALF_PERIOD);
-      $display("");
-      $display("*** Initializing cipher to process first block.");
-      tb_core_init = 1;
-      // dump_inout();
-      #(4 * CLK_HALF_PERIOD);
-      tb_core_init = 0;
-      // dump_inout();
+      // // Try and init the cipher.
+      // #(4 * CLK_HALF_PERIOD);
+      // $display("");
+      // $display("*** Initializing cipher to process first block.");
+      // tb_core_init = 1;
+      // // dump_inout();
+      // #(4 * CLK_HALF_PERIOD);
+      // tb_core_init = 0;
+      // // dump_inout();
 
-      // Wait a while and observe what happens.
-      #(1000 * CLK_HALF_PERIOD);
-      dump_state();
-      dump_inout();
+      // // Wait a while and observe what happens.
+      // #(1000 * CLK_HALF_PERIOD);
+      // dump_state();
+      // dump_inout();
       
       // Finish in style.
       $display("*** chacha_core simulation done.");

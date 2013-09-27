@@ -171,8 +171,9 @@ def main():
     my_iv  = [0x00000000, 0x00000001]
     
     my_cipher = ChaCha(my_key, my_iv, verbose=True)
-    my_cipher.x = [0x11223344, 0xaaaa5555] * 8
+    my_cipher.x = [0x11223344, 0x55555555] * 8
     my_cipher._quarterround(0, 2, 4, 6)
+    my_cipher._quarterround(1, 3, 5, 7)
 
 
 #-------------------------------------------------------------------
