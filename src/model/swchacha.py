@@ -60,50 +60,92 @@ class ChaCha():
         self.key = key
         self.iv = iv
         self.rounds = rounds
-        self.x = [0] * 16
-        self.block_counter = [0, 0]
         self.verbose = verbose
+
+        self.key_iv(key, iv)
+
+
+    #---------------------------------------------------------------
+    # key_iv()
+    # Set key and iv. Basically reinitialize the cipher.
+    # This also resets the block counter.
+    #---------------------------------------------------------------
+    def key_iv(self, key, iv):
+        self.x = [0] * 16
         
         if len(key) == 4:
             # 128 bit key
-            pass
+            self.x[0]  = TAU[0]
+            self.x[1]  = TAU[1]
+            self.x[2]  = TAU[2]
+            self.x[3]  = TAU[3]
+            self.x[4]  = key[0]
+            self.x[5]  = key[1]
+            self.x[6]  = key[2]
+            self.x[7]  = key[3]
+            self.x[8]  = key[0]
+            self.x[9]  = key[1]
+            self.x[10] = key[2]
+            self.x[11] = key[3]
         
         else:
             # 256 bit key
-            pass
-        
+            self.x[0]  = SIGMA[0]
+            self.x[1]  = SIGMA[1]
+            self.x[2]  = SIGMA[2]
+            self.x[3]  = SIGMA[3]
+            self.x[4]  = key[0]
+            self.x[5]  = key[1]
+            self.x[6]  = key[2]
+            self.x[7]  = key[3]
+            self.x[8]  = key[4]
+            self.x[9]  = key[5]
+            self.x[10] = key[6]
+            self.x[11] = key[7]
+
+        # Common state init for both key lengths.
+        self.block_counter = [0, 0]
+        self.x[12] = self.block_counter[0]
+        self.x[13] = self.block_counter[1]
+        self.x[14] = iv[0]
+        self.x[14] = iv[1]
+
 
     #---------------------------------------------------------------
+    # next()
+    # Encyp/decrypt the next block. This also updates the
+    # internal state and increases the block counter.
     #---------------------------------------------------------------
-    def next(data_in):
-        # Load the block into state words
-        
-        # Perform rounds / 2 double rounds.
+    def next(self, data_in):
+        # Update the internal state by performing
+        # (rounds / 2) double rounds.
         for i in range(self.rounds / 2):
             self._doubleround()
+            
+        # Create the data out words.
+        data_out = [data_in[i] ^ self.x[i] for i in range(16)]
 
         # Update the block counter.
         self._inc_counter()
         
-        # Create the data out word and return it.
-        data_out = [data_in[i] ^ self.x[i] for i in range(16)]
         return data_out
 
 
     #---------------------------------------------------------------
     # _doubleround()
+    # Perform the two complete rounds that comprises the
+    # double round.
     #---------------------------------------------------------------
-    def _doubleround():
-        for i in range((self.rounds / 2)):
-            self._quarterround(0, 4,  8, 12)
-            self._quarterround(1, 5,  9, 13)
-            self._quarterround(2, 6, 10, 14)
-            self._quarterround(3, 7, 11, 15)
-            
-            self._quarterround(0, 5, 10, 15)
-            self._quarterround(1, 6, 11, 12)
-            self._quarterround(2, 7,  8, 13)
-            self._quarterround(3, 4,  9, 14)
+    def _doubleround(self):
+        self._quarterround(0, 4,  8, 12)
+        self._quarterround(1, 5,  9, 13)
+        self._quarterround(2, 6, 10, 14)
+        self._quarterround(3, 7, 11, 15)
+        
+        self._quarterround(0, 5, 10, 15)
+        self._quarterround(1, 6, 11, 12)
+        self._quarterround(2, 7,  8, 13)
+        self._quarterround(3, 4,  9, 14)
 
             
     #---------------------------------------------------------------
