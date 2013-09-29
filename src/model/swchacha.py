@@ -76,6 +76,16 @@ class ChaCha():
     #---------------------------------------------------------------
     #---------------------------------------------------------------
     def next(data_in):
+        # Load the block into state words
+        
+        # Perform rounds / 2 double rounds.
+        for i in range(self.rounds / 2):
+            self._doubleround()
+
+        # Update the block counter.
+        self._inc_counter()
+        
+        # Create the data out word and return it.
         data_out = [data_in[i] ^ self.x[i] for i in range(16)]
         return data_out
 
@@ -174,6 +184,10 @@ def main():
     my_cipher.x = [0x11223344, 0x55555555] * 8
     my_cipher._quarterround(0, 2, 4, 6)
     my_cipher._quarterround(1, 3, 5, 7)
+
+    my_block = [0x00000000] * 16
+    
+    my_cipher.next(my_block)
 
 
 #-------------------------------------------------------------------
