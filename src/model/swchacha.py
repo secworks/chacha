@@ -232,6 +232,18 @@ def main():
     my_cipher.next(my_block)
 
 
+    # Testing with all zero inputs.
+    my_key = [0x00000000, 0x00000000, 0x00000000, 0x00000000,
+              0x00000000, 0x00000000, 0x00000000, 0x00000000]
+    my_iv  = [0x00000000, 0x00000000]
+    my_block = [0x00000000] * 16
+    my_cipher = ChaCha(my_key, my_iv, verbose=True)
+    my_result = my_cipher.next(my_block)
+
+    for i in range(len(my_result)):
+        print "result[%02d] = 0x%08x" % (i, my_result[i])
+
+
 #-------------------------------------------------------------------
 # __name__
 # Python thingy which allows the file to be run standalone as
