@@ -100,8 +100,13 @@ module chacha_core(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
+  reg [511 : 0] state_reg;
+  reg [511 : 0] state_new;
+  reg           state_we;
+
+  
   // x0..x15
-  // 16 internal state registers including update vectors 
+  // 16 working state registers including update vectors 
   // and write enable signals.
   reg [31 : 0] x0_reg;
   reg [31 : 0] x0_new;
@@ -235,7 +240,9 @@ module chacha_core(
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
   // Data out assignment. Note that this adds one layer of XOR
-  assign data_out = data_in ^ {x15_reg, x14_reg, x13_reg, x12_reg, 
+  assign data_out = data_in ^ state_reg;
+  
+                    {x15_reg, x14_reg, x13_reg, x12_reg, 
                                x11_reg, x10_reg, x9_reg, x8_reg, 
                                x7_reg, x6_reg, x5_reg, x4_reg, 
                                x3_reg, x2_reg, x1_reg, x0_reg};
@@ -556,6 +563,42 @@ module chacha_core(
       x15_new = 32'h00000000;
       x15_we  = 0;
 
+      if (init_next)
+        begin
+          x0_new  = state_reg[31  :   0];
+          x1_new  = state_reg[63  :  32];
+          x2_new  = state_reg[95  :  64];
+          x3_new  = state_reg[127 :  96];
+          x4_new  = state_reg[159 : 128];
+          x5_new  = state_reg[191 : 160];
+          x6_new  = state_reg[223 : 192];
+          x7_new  = state_reg[255 : 224];
+          x8_new  = state_reg[287 : 256];
+          x9_new  = state_reg[319 : 288];
+          x10_new = state_reg[351 : 320];
+          x11_new = state_reg[383 : 352];
+          x12_new = state_reg[415 : 384];
+          x13_new = state_reg[447 : 416];
+          x14_new = state_reg[479 : 448];
+          x15_new = state_reg[511 : 480];
+          x0_we  = 1;
+          x1_we  = 1;
+          x2_we  = 1;
+          x3_we  = 1;
+          x4_we  = 1;
+          x5_we  = 1;
+          x6_we  = 1;
+          x7_we  = 1;
+          x8_we  = 1;
+          x9_we  = 1;
+          x10_we = 1;
+          x11_we = 1;
+          x12_we = 1;
+          x13_we = 1;
+          x14_we = 1;
+          x15_we = 1;
+        end
+      
       if (init_cipher)
         begin
           x0_we   = 1;
@@ -708,6 +751,54 @@ module chacha_core(
           endcase // case (quarterround_select)
         end // if (update_dp)
     end // state_update
+
+
+  //----------------------------------------------------------------
+  // Update the internal state by adding the new state with the old
+  // state. We do this as 16 separate words.
+  //----------------------------------------------------------------
+  always @*
+    begin : next_state
+      // Default assignment
+      state_new[31  :   0] = 32'h00000000;
+      state_new[63  :  32] = 32'h00000000;
+      state_new[95  :  64] = 32'h00000000;
+      state_new[127 :  96] = 32'h00000000;
+      state_new[159 : 128] = 32'h00000000;
+      state_new[191 : 160] = 32'h00000000;
+      state_new[223 : 192] = 32'h00000000;
+      state_new[255 : 224] = 32'h00000000;
+      state_new[287 : 256] = 32'h00000000;
+      state_new[319 : 288] = 32'h00000000;
+      state_new[351 : 320] = 32'h00000000;
+      state_new[383 : 352] = 32'h00000000;
+      state_new[415 : 384] = 32'h00000000;
+      state_new[447 : 416] = 32'h00000000;
+      state_new[479 : 448] = 32'h00000000;
+      state_new[511 : 480] = 32'h00000000;
+      state_we = 0;
+      
+      if (update_istate)
+        begin
+          state_new[31  :   0] = x0_reg  + state_reg[31  :   0];
+          state_new[63  :  32] = x1_reg  + state_reg[63  :  32];
+          state_new[95  :  64] = x2_reg  + state_reg[95  :  64];
+          state_new[127 :  96] = x3_reg  + state_reg[127 :  96];
+          state_new[159 : 128] = x4_reg  + state_reg[159 : 128];
+          state_new[191 : 160] = x5_reg  + state_reg[191 : 160];
+          state_new[223 : 192] = x6_reg  + state_reg[223 : 192];
+          state_new[255 : 224] = x7_reg  + state_reg[255 : 224];
+          state_new[287 : 256] = x8_reg  + state_reg[287 : 256];
+          state_new[319 : 288] = x9_reg  + state_reg[319 : 288];
+          state_new[351 : 320] = x10_reg + state_reg[351 : 320];
+          state_new[383 : 352] = x11_reg + state_reg[383 : 352];
+          state_new[415 : 384] = x12_reg + state_reg[415 : 384];
+          state_new[447 : 416] = x13_reg + state_reg[447 : 416];
+          state_new[479 : 448] = x14_reg + state_reg[479 : 448];
+          state_new[511 : 480] = x15_reg + state_reg[511 : 480];
+          state_we = 1;
+        end
+    end //
   
   
   //----------------------------------------------------------------
