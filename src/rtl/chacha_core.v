@@ -100,10 +100,10 @@ module chacha_core(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
+  // internal state.
   reg [511 : 0] state_reg;
   reg [511 : 0] state_new;
   reg           state_we;
-
   
   // x0..x15
   // 16 working state registers including update vectors 
@@ -221,8 +221,10 @@ module chacha_core(
   //----------------------------------------------------------------
   reg init_cipher;
   reg init_round;
+  reg init_block;
   reg next_block;
   reg update_dp;
+  reg update_state;
   reg finalize;
 
   // Wires to connect the pure combinational quarterround 
@@ -241,11 +243,6 @@ module chacha_core(
   //----------------------------------------------------------------
   // Data out assignment. Note that this adds one layer of XOR
   assign data_out = data_in ^ state_reg;
-  
-                    {x15_reg, x14_reg, x13_reg, x12_reg, 
-                               x11_reg, x10_reg, x9_reg, x8_reg, 
-                               x7_reg, x6_reg, x5_reg, x4_reg, 
-                               x3_reg, x2_reg, x1_reg, x0_reg};
 
   assign data_out_valid = data_out_valid_reg;
   
@@ -280,6 +277,7 @@ module chacha_core(
           x14_reg            <= 32'h00000000;
           x15_reg            <= 32'h00000000;
           data_in_reg        <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+          state_reg          <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
           rounds_reg         <= 4'h0;
           data_out_valid_reg <= 0;
           qr_ctr_reg         <= QR0;
@@ -388,6 +386,11 @@ module chacha_core(
           if (data_in_we)
             begin
               data_in_reg <= data_in;
+            end
+
+          if (state_we)
+            begin
+              state_reg <= state_new;
             end
 
           // Note we skip the low bit.
@@ -563,7 +566,7 @@ module chacha_core(
       x15_new = 32'h00000000;
       x15_we  = 0;
 
-      if (init_next)
+      if (init_block)
         begin
           x0_new  = state_reg[31  :   0];
           x1_new  = state_reg[63  :  32];
@@ -778,7 +781,7 @@ module chacha_core(
       state_new[511 : 480] = 32'h00000000;
       state_we = 0;
       
-      if (update_istate)
+      if (update_state)
         begin
           state_new[31  :   0] = x0_reg  + state_reg[31  :   0];
           state_new[63  :  32] = x1_reg  + state_reg[63  :  32];
@@ -918,6 +921,8 @@ module chacha_core(
       chacha_ctrl_new    = CTRL_IDLE;
       chacha_ctrl_we     = 0;
 
+      init_block         = 0;
+      update_state       = 0;
       
       case (chacha_ctrl_reg)
         // Wait for init signal. When init is given
@@ -935,6 +940,7 @@ module chacha_core(
                 block_ctr_rst   = 1;
                 data_in_we      = 1;
                 rounds_we       = 1;
+                init_block      = 1;
                 chacha_ctrl_new = CTRL_ROUNDS;
                 chacha_ctrl_we  = 1;
               end
@@ -970,6 +976,7 @@ module chacha_core(
             ready_wire = 1;
             if (init)
               begin
+                update_state       = 1;
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
                 init_cipher        = 1;
