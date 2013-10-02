@@ -61,7 +61,7 @@ class ChaCha():
         self.iv = iv
         self.rounds = rounds
         self.verbose = verbose
-
+        
         self.key_iv(key, iv)
 
 
@@ -71,59 +71,68 @@ class ChaCha():
     # This also resets the block counter.
     #---------------------------------------------------------------
     def key_iv(self, key, iv):
-        self.x = [0] * 16
+        self.state = [0] * 16
         
         if len(key) == 4:
             # 128 bit key
-            self.x[0]  = TAU[0]
-            self.x[1]  = TAU[1]
-            self.x[2]  = TAU[2]
-            self.x[3]  = TAU[3]
-            self.x[4]  = key[0]
-            self.x[5]  = key[1]
-            self.x[6]  = key[2]
-            self.x[7]  = key[3]
-            self.x[8]  = key[0]
-            self.x[9]  = key[1]
-            self.x[10] = key[2]
-            self.x[11] = key[3]
+            self.state[0]  = TAU[0]
+            self.state[1]  = TAU[1]
+            self.state[2]  = TAU[2]
+            self.state[3]  = TAU[3]
+            self.state[4]  = key[0]
+            self.state[5]  = key[1]
+            self.state[6]  = key[2]
+            self.state[7]  = key[3]
+            self.state[8]  = key[0]
+            self.state[9]  = key[1]
+            self.state[10] = key[2]
+            self.state[11] = key[3]
         
         else:
             # 256 bit key
-            self.x[0]  = SIGMA[0]
-            self.x[1]  = SIGMA[1]
-            self.x[2]  = SIGMA[2]
-            self.x[3]  = SIGMA[3]
-            self.x[4]  = key[0]
-            self.x[5]  = key[1]
-            self.x[6]  = key[2]
-            self.x[7]  = key[3]
-            self.x[8]  = key[4]
-            self.x[9]  = key[5]
-            self.x[10] = key[6]
-            self.x[11] = key[7]
+            self.state[0]  = SIGMA[0]
+            self.state[1]  = SIGMA[1]
+            self.state[2]  = SIGMA[2]
+            self.state[3]  = SIGMA[3]
+            self.state[4]  = key[0]
+            self.state[5]  = key[1]
+            self.state[6]  = key[2]
+            self.state[7]  = key[3]
+            self.state[8]  = key[4]
+            self.state[9]  = key[5]
+            self.state[10] = key[6]
+            self.state[11] = key[7]
 
         # Common state init for both key lengths.
         self.block_counter = [0, 0]
-        self.x[12] = self.block_counter[0]
-        self.x[13] = self.block_counter[1]
-        self.x[14] = iv[0]
-        self.x[14] = iv[1]
+        self.state[12] = self.block_counter[0]
+        self.state[13] = self.block_counter[1]
+        self.state[14] = iv[0]
+        self.state[14] = iv[1]
 
 
     #---------------------------------------------------------------
     # next()
     # Encyp/decrypt the next block. This also updates the
     # internal state and increases the block counter.
+    #
+    # TODO: Add the Adder of internal states.
     #---------------------------------------------------------------
     def next(self, data_in):
+        # Copy the current internal state to the temporary state x.
+        self.x = self.state[:]
+        
         # Update the internal state by performing
         # (rounds / 2) double rounds.
         for i in range(self.rounds / 2):
             self._doubleround()
-            
+
+        # Update the internal state by adding the elements
+        # of the temporary state to the internal state.
+        self.state = [((self.state[i] + self.x[i]) & 0xffffffff) for i in range(16)]
+        
         # Create the data out words.
-        data_out = [data_in[i] ^ self.x[i] for i in range(16)]
+        data_out = [data_in[i] ^ self.state[i] for i in range(16)]
 
         # Update the block counter.
         self._inc_counter()
