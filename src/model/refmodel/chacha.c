@@ -89,7 +89,7 @@ static const char TAU[16] = "expand 16-byte k";
 //------------------------------------------------------------------
 // doublerounds()
 // 
-// Perform rounds number of rounds.
+// Perform rounds/2 number of doublerounds.
 // TODO: Change output format to 16 words.
 //------------------------------------------------------------------
 static void doublerounds(uint8_t output[64], const uint32_t input[16], uint8_t rounds)
@@ -106,6 +106,7 @@ static void doublerounds(uint8_t output[64], const uint32_t input[16], uint8_t r
     QUARTERROUND( 1, 5, 9,13)
     QUARTERROUND( 2, 6,10,14)
     QUARTERROUND( 3, 7,11,15)
+
     QUARTERROUND( 0, 5,10,15)
     QUARTERROUND( 1, 6,11,12)
     QUARTERROUND( 2, 7, 8,13)
@@ -123,47 +124,46 @@ static void doublerounds(uint8_t output[64], const uint32_t input[16], uint8_t r
 
 
 //------------------------------------------------------------------
-// keysetup()
+// init()
 //
-// Initializes the given context with key and constants.
-// Note: ivbits is not used.
-//
-// TODO: Change to a function that also accepts iv.
+// Initializes the given cipher context with key, iv and constants.
+// This also resets the block counter.
 //------------------------------------------------------------------
-void keysetup(chacha_ctx *x, const uint8_t *k, uint32_t kbits)
+void init(chacha_ctx *x, uint8_t *key, uint32_t kbits, uint8_t *iv)
 {
-  const char *constants;
+  if (kbits == 256) {
+    // 256 bit key.
+    x->state[0]  = U8TO32_LITTLE(SIGMA + 0);
+    x->state[1]  = U8TO32_LITTLE(SIGMA + 4);
+    x->state[2]  = U8TO32_LITTLE(SIGMA + 8);
+    x->state[3]  = U8TO32_LITTLE(SIGMA + 12);
+    x->state[4]  = U8TO32_LITTLE(key + 0);
+    x->state[5]  = U8TO32_LITTLE(key + 4);
+    x->state[6]  = U8TO32_LITTLE(key + 8);
+    x->state[7]  = U8TO32_LITTLE(key + 12);
+    x->state[8]  = U8TO32_LITTLE(key + 16);
+    x->state[9]  = U8TO32_LITTLE(key + 20);
+    x->state[10] = U8TO32_LITTLE(key + 24);
+    x->state[11] = U8TO32_LITTLE(key + 28);
+  } 
 
-  x->state[4] = U8TO32_LITTLE(k + 0);
-  x->state[5] = U8TO32_LITTLE(k + 4);
-  x->state[6] = U8TO32_LITTLE(k + 8);
-  x->state[7] = U8TO32_LITTLE(k + 12);
-
-  if (kbits == 256) { /* recommended */
-    k += 16;
-    constants = SIGMA;
-  } else { /* kbits == 128 */
-    constants = TAU;
+  else {
+    // 128 bit key.
+    x->state[0]  = U8TO32_LITTLE(TAU + 0);
+    x->state[1]  = U8TO32_LITTLE(TAU + 4);
+    x->state[2]  = U8TO32_LITTLE(TAU + 8);
+    x->state[3]  = U8TO32_LITTLE(TAU + 12);
+    x->state[4]  = U8TO32_LITTLE(key + 0);
+    x->state[5]  = U8TO32_LITTLE(key + 4);
+    x->state[6]  = U8TO32_LITTLE(key + 8);
+    x->state[7]  = U8TO32_LITTLE(key + 12);
+    x->state[8]  = U8TO32_LITTLE(key + 0);
+    x->state[9]  = U8TO32_LITTLE(key + 4);
+    x->state[10] = U8TO32_LITTLE(key + 8);
+    x->state[11] = U8TO32_LITTLE(key + 12);
   }
-
-  x->state[8]  = U8TO32_LITTLE(k + 0);
-  x->state[9]  = U8TO32_LITTLE(k + 4);
-  x->state[10] = U8TO32_LITTLE(k + 8);
-  x->state[11] = U8TO32_LITTLE(k + 12);
-  x->state[0]  = U8TO32_LITTLE(constants + 0);
-  x->state[1]  = U8TO32_LITTLE(constants + 4);
-  x->state[2]  = U8TO32_LITTLE(constants + 8);
-  x->state[3]  = U8TO32_LITTLE(constants + 12);
-}
-
-
-//------------------------------------------------------------------
-// ivsetup()
-//
-// Set iv in the context. This also resets the block counter.
-//------------------------------------------------------------------
-void ivsetup(chacha_ctx *x, const uint8_t *iv)
-{
+    
+  // Reset block counter and add IV to state.
   x->state[12] = 0;
   x->state[13] = 0;
   x->state[14] = U8TO32_LITTLE(iv + 0);
@@ -262,6 +262,19 @@ void init_ctx(chacha_ctx *ctx, uint8_t rounds)
 
 
 //------------------------------------------------------------------
+// gen_testvectors()
+//
+// Given a key and iv generates test vectors for 128 and 256 bit
+// keys, for 1 and 2 blocks all for 8, 10, 12 and 20 rounds.
+//------------------------------------------------------------------
+void gen_testvectors(uint8_t *key, uint8_t *iv)
+{
+  
+
+}
+
+
+//------------------------------------------------------------------
 // main()
 //
 // Set up context and generate test vectors for different
@@ -274,8 +287,18 @@ int main(void)
   // Create a context.
   chacha_ctx my_ctx;
 
-  // Starting with 8 rouns.
+  // Starting with 8 rounds.
   init_ctx(&my_ctx, 8);
+
+
+  uint8_t my_result[64] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
   uint32_t my_keybits = 256;
   uint8_t my_key[32] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -285,9 +308,7 @@ int main(void)
 
   uint8_t my_iv[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-  keysetup(&my_ctx, my_key, my_keybits);
-  dump_ctx(&my_ctx);
-  ivsetup(&my_ctx, my_iv);
+  init(&my_ctx, my_key, my_keybits, my_iv);
   dump_ctx(&my_ctx);
 
   uint8_t testdata1[64] =  {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -298,15 +319,6 @@ int main(void)
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-  uint8_t my_result[64] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
   next(&my_ctx, testdata1, my_result);
   dump_ctx(&my_ctx);
