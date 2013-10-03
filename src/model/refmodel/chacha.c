@@ -54,6 +54,7 @@
 typedef struct
 {
   uint32_t state[16];
+  uint8_t rounds; 
 } chacha_ctx;
 
 
@@ -86,13 +87,12 @@ static const char TAU[16] = "expand 16-byte k";
 
 
 //------------------------------------------------------------------
-// salsa20_wordtobyte()
+// doublerounds()
 // 
-// This is basically the doubleround function.
-// Note: Is _not_ salsa20, but chacha. And does much more than
-// simply convert from words to bytes.
+// Perform rounds number of rounds.
+// TODO: Change output format to 16 words.
 //------------------------------------------------------------------
-static void salsa20_wordtobyte(uint8_t output[64],const uint32_t input[16])
+static void doublerounds(uint8_t output[64], const uint32_t input[16], uint8_t rounds)
 {
   uint32_t x[16];
   int32_t i;
@@ -101,7 +101,7 @@ static void salsa20_wordtobyte(uint8_t output[64],const uint32_t input[16])
     x[i] = input[i];
   }
 
-  for (i = 8 ; i > 0 ; i -= 2) {
+  for (i = rounds ; i > 0 ; i -= 2) {
     QUARTERROUND( 0, 4, 8,12)
     QUARTERROUND( 1, 5, 9,13)
     QUARTERROUND( 2, 6,10,14)
@@ -138,12 +138,14 @@ void keysetup(chacha_ctx *x, const uint8_t *k, uint32_t kbits)
   x->state[5] = U8TO32_LITTLE(k + 4);
   x->state[6] = U8TO32_LITTLE(k + 8);
   x->state[7] = U8TO32_LITTLE(k + 12);
+
   if (kbits == 256) { /* recommended */
     k += 16;
     constants = SIGMA;
   } else { /* kbits == 128 */
     constants = TAU;
   }
+
   x->state[8]  = U8TO32_LITTLE(k + 0);
   x->state[9]  = U8TO32_LITTLE(k + 4);
   x->state[10] = U8TO32_LITTLE(k + 8);
@@ -184,7 +186,7 @@ void next(chacha_ctx *ctx, const uint8_t *m, uint8_t *c)
 
   
   // Update the internal state and increase the block counter.
-  salsa20_wordtobyte(x, ctx->state);
+  doublerounds(x, ctx->state, ctx->rounds);
   ctx->state[12] = PLUSONE(ctx->state[12]);
   if (!ctx->state[12]) {
     ctx->state[13] = PLUSONE(ctx->state[13]);
@@ -203,15 +205,15 @@ void next(chacha_ctx *ctx, const uint8_t *m, uint8_t *c)
 //
 // Given a chacha context will dump the contents to std out.
 //------------------------------------------------------------------
-void dump_ctx(chacha_ctx *x)
+void dump_ctx(chacha_ctx *ctx)
 {
-
   uint8_t i;
+
   printf("Current ChaCha context:\n");
   printf("-----------------------\n");
   
   for (i = 0; i < 16; i++) {
-    printf("ctx[%02d] = 0x%08x\n", i, x->state[i]);
+    printf("ctx[%02d] = 0x%08x\n", i, ctx->state[i]);
   }
   printf("\n");
 }
@@ -224,7 +226,9 @@ void dump_ctx(chacha_ctx *x)
 //------------------------------------------------------------------
 void dump_block(uint8_t block[64])
 {
-  for (uint8_t i = 0; i < 64; i++) {
+  uint8_t i;
+
+  for (i = 0 ; i < 64 ; i++) {
     if ((i % 8) == 0) {
         printf("block[%02d - %02d]: ", i, (i + 7));
       }
@@ -240,6 +244,24 @@ void dump_block(uint8_t block[64])
 
 
 //------------------------------------------------------------------
+// init_ctx()
+//
+// Init a given ChaCha context by setting state to zero and
+// setting the given number of rounds.
+//------------------------------------------------------------------
+void init_ctx(chacha_ctx *ctx, uint8_t rounds)
+{
+  uint8_t i;
+
+  for (i = 0 ; i < 16 ; i++) {
+    ctx->state[i] = 0;
+  }
+
+  ctx->rounds = rounds;
+}
+
+
+//------------------------------------------------------------------
 // main()
 //
 // Set up context and generate test vectors for different
@@ -248,8 +270,12 @@ void dump_block(uint8_t block[64])
 int main(void)
 {
   printf("Generating test vectors for ChaCha with 8 rounds.");
-  
+
+  // Create a context.
   chacha_ctx my_ctx;
+
+  // Starting with 8 rouns.
+  init_ctx(&my_ctx, 8);
 
   uint32_t my_keybits = 256;
   uint8_t my_key[32] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -290,3 +316,6 @@ int main(void)
 }
 
 
+//======================================================================
+// EOF chacha.c
+//======================================================================
