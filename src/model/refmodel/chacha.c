@@ -48,7 +48,7 @@
 
 
 //------------------------------------------------------------------
-// Types
+// Types.
 //------------------------------------------------------------------
 // The chacha state context.
 typedef struct
@@ -60,10 +60,11 @@ typedef struct
 //------------------------------------------------------------------
 // Macros.
 //------------------------------------------------------------------
+// Basic 32-bit operators.
 #define ROTATE(v,c) ((uint32_t)((v) << (c)) | ((v) >> (32 - (c))))
 #define XOR(v,w) ((v) ^ (w))
 #define PLUS(v,w) ((uint32_t)((v) + (w)))
-#define PLUSONE(v) (PLUS((v),1))
+#define PLUSONE(v) (PLUS((v), 1))
 
 // Little endian machine assumed (x86-64).
 #define U32TO32_LITTLE(v) (v)
@@ -85,7 +86,7 @@ static const char TAU[16] = "expand 16-byte k";
 
 
 //------------------------------------------------------------------
-// salsa20_wordtobyte
+// salsa20_wordtobyte()
 // 
 // This is basically the doubleround function.
 // Note: Is _not_ salsa20, but chacha. And does much more than
@@ -116,7 +117,7 @@ static void salsa20_wordtobyte(uint8_t output[64],const uint32_t input[16])
   }
 
   for (i = 0;i < 16;++i) {
-    U32TO8_LITTLE(output + 4 * i,x[i]);
+    U32TO8_LITTLE(output + 4 * i, x[i]);
   }
 }
 
@@ -129,7 +130,7 @@ static void salsa20_wordtobyte(uint8_t output[64],const uint32_t input[16])
 //
 // TODO: Change to a function that also accepts iv.
 //------------------------------------------------------------------
-void keysetup(chacha_ctx *x,const uint8_t *k,uint32_t kbits,uint32_t ivbits)
+void keysetup(chacha_ctx *x, const uint8_t *k, uint32_t kbits)
 {
   const char *constants;
 
@@ -159,7 +160,7 @@ void keysetup(chacha_ctx *x,const uint8_t *k,uint32_t kbits,uint32_t ivbits)
 //
 // Set iv in the context. This also resets the block counter.
 //------------------------------------------------------------------
-void ivsetup(chacha_ctx *x,const uint8_t *iv)
+void ivsetup(chacha_ctx *x, const uint8_t *iv)
 {
   x->state[12] = 0;
   x->state[13] = 0;
@@ -169,61 +170,31 @@ void ivsetup(chacha_ctx *x,const uint8_t *iv)
 
 
 //------------------------------------------------------------------
-// encrypt_bytes()
+// next()
 // 
-// Given a pointer to message m of cleartext bytes will use the
-// current context to encrypt bytes number of bytes of m.
-// The ciphertext will be bytes in c.
+// Given a pointer to the next block m of 64 cleartext bytes will 
+// use the given context to transform (encrypt/decrypt) the 
+// block. The result will be stored in c.
 //------------------------------------------------------------------
-void encrypt_bytes(chacha_ctx *x,const uint8_t *m,uint8_t *c,uint32_t bytes)
+void next(chacha_ctx *ctx, const uint8_t *m, uint8_t *c)
 {
-  uint8_t output[64];
-  int i;
+  // Temporary internal state x.
+  uint8_t x[64];
+  uint8_t i;
 
-  if (!bytes) {
-    return;
+  
+  // Update the internal state and increase the block counter.
+  salsa20_wordtobyte(x, ctx->state);
+  ctx->state[12] = PLUSONE(ctx->state[12]);
+  if (!ctx->state[12]) {
+    ctx->state[13] = PLUSONE(ctx->state[13]);
   }
 
-  for (;;) {
-    salsa20_wordtobyte(output,x->state);
-    x->state[12] = PLUSONE(x->state[12]);
-
-    if (!x->state[12]) {
-      x->state[13] = PLUSONE(x->state[13]);
-      /* stopping at 2^70 bytes per nonce is user's responsibility */
-    }
-
-    if (bytes <= 64) {
-      for (i = 0;i < bytes;++i) c[i] = m[i] ^ output[i];
-      return;
-    }
-
-    for (i = 0;i < 64;++i){ 
-      c[i] = m[i] ^ output[i];
-    }
-
-    bytes -= 64;
-    c += 64;
-    m += 64;
+  // XOR the input block with the new temporal state to
+  // create the transformed block.
+  for (i = 0 ; i < 64 ; ++i) { 
+    c[i] = m[i] ^ x[i];
   }
-}
-
-
-//------------------------------------------------------------------
-//------------------------------------------------------------------
-void decrypt_bytes(chacha_ctx *x,const uint8_t *c,uint8_t *m,uint32_t bytes)
-{
-  encrypt_bytes(x,c,m,bytes);
-}
-
-
-//------------------------------------------------------------------
-//------------------------------------------------------------------
-void keystream_bytes(chacha_ctx *x,uint8_t *stream,uint32_t bytes)
-{
-  uint32_t i;
-  for (i = 0;i < bytes;++i) stream[i] = 0;
-  encrypt_bytes(x,stream,stream,bytes);
 }
 
 
@@ -242,6 +213,7 @@ void dump_ctx(chacha_ctx *x)
   for (i = 0; i < 16; i++) {
     printf("ctx[%02d] = 0x%08x\n", i, x->state[i]);
   }
+  printf("\n");
 }
 
 
@@ -263,6 +235,7 @@ void dump_block(uint8_t block[64])
       printf("\n");
     }
   }
+  printf("\n");
 }
 
 
@@ -284,10 +257,9 @@ int main(void)
                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-  uint32_t my_ivbits = 64;
   uint8_t my_iv[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-  keysetup(&my_ctx, my_key, my_keybits, my_ivbits);
+  keysetup(&my_ctx, my_key, my_keybits);
   dump_ctx(&my_ctx);
   ivsetup(&my_ctx, my_iv);
   dump_ctx(&my_ctx);
@@ -310,7 +282,7 @@ int main(void)
                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-  encrypt_bytes(&my_ctx, testdata1, my_result, 64);
+  next(&my_ctx, testdata1, my_result);
   dump_ctx(&my_ctx);
   dump_block(my_result);
 
