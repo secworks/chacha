@@ -82,8 +82,8 @@ typedef struct
 //------------------------------------------------------------------
 // Constants.
 //------------------------------------------------------------------
-static const char SIGMA[16] = "expand 32-byte k";
-static const char TAU[16] = "expand 16-byte k";
+static const uint8_t SIGMA[16] = "expand 32-byte k";
+static const uint8_t TAU[16]   = "expand 16-byte k";
 
 
 //------------------------------------------------------------------
@@ -129,9 +129,9 @@ static void doublerounds(uint8_t output[64], const uint32_t input[16], uint8_t r
 // Initializes the given cipher context with key, iv and constants.
 // This also resets the block counter.
 //------------------------------------------------------------------
-void init(chacha_ctx *x, uint8_t *key, uint32_t kbits, uint8_t *iv)
+void init(chacha_ctx *x, uint8_t *key, uint32_t keylen, uint8_t *iv)
 {
-  if (kbits == 256) {
+  if (keylen == 256) {
     // 256 bit key.
     x->state[0]  = U8TO32_LITTLE(SIGMA + 0);
     x->state[1]  = U8TO32_LITTLE(SIGMA + 4);
@@ -201,17 +201,32 @@ void next(chacha_ctx *ctx, const uint8_t *m, uint8_t *c)
 
 
 //------------------------------------------------------------------
-// dump_ctx()
+// init_ctx()
 //
-// Given a chacha context will dump the contents to std out.
+// Init a given ChaCha context by setting state to zero and
+// setting the given number of rounds.
 //------------------------------------------------------------------
-void dump_ctx(chacha_ctx *ctx)
+void init_ctx(chacha_ctx *ctx, uint8_t rounds)
 {
   uint8_t i;
 
-  printf("Current ChaCha context:\n");
-  printf("-----------------------\n");
-  
+  for (i = 0 ; i < 16 ; i++) {
+    ctx->state[i] = 0;
+  }
+
+  ctx->rounds = rounds;
+}
+
+
+//------------------------------------------------------------------
+// print_ctx()
+//
+// Print the state of the given context.
+//------------------------------------------------------------------
+void print_ctx(chacha_ctx *ctx)
+{
+  uint8_t i;
+
   for (i = 0; i < 16; i++) {
     printf("ctx[%02d] = 0x%08x\n", i, ctx->state[i]);
   }
@@ -220,11 +235,11 @@ void dump_ctx(chacha_ctx *ctx)
 
 
 //------------------------------------------------------------------
-// dump_block()
+// print_block()
 //
-// Given a block of 64 bytes, dump the contents to std out.
+// Print the contents of the given 64 bytes block.
 //------------------------------------------------------------------
-void dump_block(uint8_t block[64])
+void print_block(uint8_t block[64])
 {
   uint8_t i;
 
@@ -244,20 +259,27 @@ void dump_block(uint8_t block[64])
 
 
 //------------------------------------------------------------------
-// init_ctx()
+// print_key_iv()
 //
-// Init a given ChaCha context by setting state to zero and
-// setting the given number of rounds.
+// Print the given key and iv.
 //------------------------------------------------------------------
-void init_ctx(chacha_ctx *ctx, uint8_t rounds)
-{
+void print_key_iv(uint8_t *key, uint32_t keylen,  uint8_t *iv) {
   uint8_t i;
 
-  for (i = 0 ; i < 16 ; i++) {
-    ctx->state[i] = 0;
+  printf("Key: ");
+  for (i = 0 ; i < (keylen / 8) ; i++) {
+    if (0 == ((i+1) % 17)) {
+        printf("\n     ");
+      }
+    printf("0x%02x ", key[i]);
   }
+  printf("\n");
 
-  ctx->rounds = rounds;
+  printf("IV:  ");
+  for (i = 0 ; i < 8 ; i++) {
+    printf("0x%02x ", iv[i]);
+  }
+  printf("\n");
 }
 
 
@@ -269,8 +291,58 @@ void init_ctx(chacha_ctx *ctx, uint8_t rounds)
 //------------------------------------------------------------------
 void gen_testvectors(uint8_t *key, uint8_t *iv)
 {
-  
+  uint32_t keylens[2] = {128, 256};
+  uint8_t rounds[4] = {8, 12, 20};
 
+  uint8_t data[64] =  {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  
+  uint8_t result[64] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+  uint32_t ki;
+  uint8_t ri;
+  chacha_ctx my_ctx;
+
+  // For a given key and iv we process two consecutive blocks
+  // performing 8, 12 or 20 rounds.
+  for (ki = 0 ; ki < 2 ; ki++) {
+    for (ri = 0 ; ri < 3 ; ri++) {
+      print_key_iv(key, keylens[ki], iv);
+      printf("Key lenght: %d, Number of rounds: %d\n", keylens[ki], rounds[ri]);
+      printf("---------------------------------------\n");
+      // Start with clean context.
+      init_ctx(&my_ctx, rounds[ri]);
+      init(&my_ctx, key, keylens[ki], iv);
+      
+      // Block 0.
+      next(&my_ctx, data, result);
+      printf("Internal state after block 0:\n");
+      print_ctx(&my_ctx);
+      printf("Keystream block 0:\n");
+      print_block(result);
+      
+      // Block 1.
+      next(&my_ctx, data, result);
+      printf("Internal state after block 1:\n");
+      print_ctx(&my_ctx);
+      printf("Keystream block 1:\n");
+      print_block(result);
+      printf("\n");
+    }
+  }
 }
 
 
@@ -282,48 +354,51 @@ void gen_testvectors(uint8_t *key, uint8_t *iv)
 //------------------------------------------------------------------
 int main(void)
 {
-  printf("Generating test vectors for ChaCha with 8 rounds.");
+  printf("Test vectors for the ChaCha stream cipher\n");
+  printf("-----------------------------------------\n");
+  printf("\n");
 
-  // Create a context.
-  chacha_ctx my_ctx;
+  // TC1: All zero key and IV.
+  uint8_t tc1_key[32] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+                         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  uint8_t tc1_iv[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  gen_testvectors(tc1_key, tc1_iv);
 
-  // Starting with 8 rounds.
-  init_ctx(&my_ctx, 8);
+
+  // TC2: All one key and IV.
+  uint8_t tc2_key[32] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+                         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+  uint8_t tc2_iv[8] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+  gen_testvectors(tc2_key, tc2_iv);
+
+ 
+  // TC3: Every second bit set.
+  uint8_t tc3_key[32] = {0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+                         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+                         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55,
+                         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55};
+  uint8_t tc3_iv[8] = {0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
+  gen_testvectors(tc3_key, tc3_iv);
 
 
-  uint8_t my_result[64] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  // TC4: Sequence patterns.
+  uint8_t tc4_key[32] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+                         0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
+                         0xff, 0xee, 0xdd, 0xcc, 0xbb, 0xaa, 0x99, 0x88,
+                         0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00};
+  uint8_t tc4_iv[8] = {0x0f, 0x1e, 0x2d, 0x3c, 0x4b, 0x59, 0x68, 0x77};
+  gen_testvectors(tc4_key, tc4_iv);
 
-  uint32_t my_keybits = 256;
-  uint8_t my_key[32] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-  uint8_t my_iv[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-  init(&my_ctx, my_key, my_keybits, my_iv);
-  dump_ctx(&my_ctx);
-
-  uint8_t testdata1[64] =  {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-  next(&my_ctx, testdata1, my_result);
-  dump_ctx(&my_ctx);
-  dump_block(my_result);
-
+  // TC 10: A random key and IV.
+  uint8_t tc10_key[32] = "All your base are belong to us!";
+  uint8_t tc10_iv[8]   = "IETF2013";
+  gen_testvectors(tc10_key, tc10_iv);
+  
   return 0;
 }
 
