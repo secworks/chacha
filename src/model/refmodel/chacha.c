@@ -60,17 +60,17 @@ typedef struct
 //------------------------------------------------------------------
 // Macros.
 //------------------------------------------------------------------
-#define ROTATE(v,c) ((((v) << (c)) & 0xffffffff) | ((v) >> (32 - (c))))
+#define ROTATE(v,c) ((uint32_t)((v) << (c)) | ((v) >> (32 - (c))))
 #define XOR(v,w) ((v) ^ (w))
-#define PLUS(v,w) (((v) + (w)) & 0xffffffff)
+#define PLUS(v,w) ((uint32_t)((v) + (w)))
 #define PLUSONE(v) (PLUS((v),1))
 
-// Little endian machine assumed (x86-64)
+// Little endian machine assumed (x86-64).
 #define U32TO32_LITTLE(v) (v)
 #define U32TO8_LITTLE(p, v) (((uint32_t*)(p))[0] = U32TO32_LITTLE(v))
 #define U8TO32_LITTLE(p) U32TO32_LITTLE(((uint32_t*)(p))[0])
 
-#define QUARTERROUND(a,b,c,d) \
+#define QUARTERROUND(a, b, c, d) \
   x[a] = PLUS(x[a],x[b]); x[d] = ROTATE(XOR(x[d],x[a]),16); \
   x[c] = PLUS(x[c],x[d]); x[b] = ROTATE(XOR(x[b],x[c]),12); \
   x[a] = PLUS(x[a],x[b]); x[d] = ROTATE(XOR(x[d],x[a]), 8); \
@@ -112,7 +112,7 @@ static void salsa20_wordtobyte(uint8_t output[64],const uint32_t input[16])
   }
 
   for (i = 0;i < 16;++i) {
-    x[i] = PLUS(x[i],input[i]);
+    x[i] = PLUS(x[i], input[i]);
   }
 
   for (i = 0;i < 16;++i) {
@@ -133,24 +133,24 @@ void keysetup(chacha_ctx *x,const uint8_t *k,uint32_t kbits,uint32_t ivbits)
 {
   const char *constants;
 
-  x->input[4] = U8TO32_LITTLE(k + 0);
-  x->input[5] = U8TO32_LITTLE(k + 4);
-  x->input[6] = U8TO32_LITTLE(k + 8);
-  x->input[7] = U8TO32_LITTLE(k + 12);
+  x->state[4] = U8TO32_LITTLE(k + 0);
+  x->state[5] = U8TO32_LITTLE(k + 4);
+  x->state[6] = U8TO32_LITTLE(k + 8);
+  x->state[7] = U8TO32_LITTLE(k + 12);
   if (kbits == 256) { /* recommended */
     k += 16;
     constants = SIGMA;
   } else { /* kbits == 128 */
     constants = TAU;
   }
-  x->input[8]  = U8TO32_LITTLE(k + 0);
-  x->input[9]  = U8TO32_LITTLE(k + 4);
-  x->input[10] = U8TO32_LITTLE(k + 8);
-  x->input[11] = U8TO32_LITTLE(k + 12);
-  x->input[0]  = U8TO32_LITTLE(constants + 0);
-  x->input[1]  = U8TO32_LITTLE(constants + 4);
-  x->input[2]  = U8TO32_LITTLE(constants + 8);
-  x->input[3]  = U8TO32_LITTLE(constants + 12);
+  x->state[8]  = U8TO32_LITTLE(k + 0);
+  x->state[9]  = U8TO32_LITTLE(k + 4);
+  x->state[10] = U8TO32_LITTLE(k + 8);
+  x->state[11] = U8TO32_LITTLE(k + 12);
+  x->state[0]  = U8TO32_LITTLE(constants + 0);
+  x->state[1]  = U8TO32_LITTLE(constants + 4);
+  x->state[2]  = U8TO32_LITTLE(constants + 8);
+  x->state[3]  = U8TO32_LITTLE(constants + 12);
 }
 
 
@@ -161,10 +161,10 @@ void keysetup(chacha_ctx *x,const uint8_t *k,uint32_t kbits,uint32_t ivbits)
 //------------------------------------------------------------------
 void ivsetup(chacha_ctx *x,const uint8_t *iv)
 {
-  x->input[12] = 0;
-  x->input[13] = 0;
-  x->input[14] = U8TO32_LITTLE(iv + 0);
-  x->input[15] = U8TO32_LITTLE(iv + 4);
+  x->state[12] = 0;
+  x->state[13] = 0;
+  x->state[14] = U8TO32_LITTLE(iv + 0);
+  x->state[15] = U8TO32_LITTLE(iv + 4);
 }
 
 
@@ -316,4 +316,5 @@ int main(void)
 
   return 0;
 }
+
 
