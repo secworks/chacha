@@ -26,6 +26,11 @@ quarterounds version will achieve 1 cycle/round.
 
 
 ## Status ##
+(2013-10-03)
+- There is now also a c reference model that is intended to generate
+test vectors for different combinations of keys, iv, blocks and rounds.
+
+
 (2013-09-26)
 - Debugging of the core is ongoing with quarterround at the focus.
 - The core goes through the motions of processing blocks.
