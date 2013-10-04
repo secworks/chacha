@@ -26,6 +26,12 @@ quarterounds version will achieve 1 cycle/round.
 
 
 ## Status ##
+(2013-10-04)
+- The reference model has been moved to a separate project created just
+  to generate and document ChaCha test vectors. See:
+  https://github.com/secworks/chacha_testvectors
+
+
 (2013-10-03)
 - There is now also a c reference model that is intended to generate
 test vectors for different combinations of keys, iv, blocks and rounds.
