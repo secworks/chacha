@@ -227,8 +227,9 @@ void print_ctx(chacha_ctx *ctx)
 {
   uint8_t i;
 
-  for (i = 0; i < 16; i++) {
-    printf("ctx[%02d] = 0x%08x\n", i, ctx->state[i]);
+  for (i = 0; i < 16; i+= 2) {
+    printf("state[%02d - %02d] = 0x%08x 0x%08x\n", 
+           i, (i + 1), ctx->state[i], ctx->state[(i + 1)]);
   }
   printf("\n");
 }
@@ -268,7 +269,7 @@ void print_key_iv(uint8_t *key, uint32_t keylen,  uint8_t *iv) {
 
   printf("Key: ");
   for (i = 0 ; i < (keylen / 8) ; i++) {
-    if (0 == ((i+1) % 17)) {
+    if (0 == ((i+1) % 9)) {
         printf("\n     ");
       }
     printf("0x%02x ", key[i]);
