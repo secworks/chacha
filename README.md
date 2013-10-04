@@ -45,7 +45,7 @@ test vectors for different combinations of keys, iv, blocks and rounds.
 - Quarterround in the Python model works. Used to debug the RTL.
 
 
-(old notation)
+(Older stuff)
 - The current implementation consists of a ChaCha core with (very) wide
   data interfaces. 
 
