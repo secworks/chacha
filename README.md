@@ -26,6 +26,13 @@ quarterounds version will achieve 1 cycle/round.
 
 
 ## Status ##
+(2013-10-06)
+- Added TC1 from chacha_testvectors. Testing shows that the Python model
+generates correct result, but is intra word-big endian, not little
+endian. We need to flip the words around.
+
+
+
 (2013-10-04)
 - The reference model has been moved to a separate project created just
   to generate and document ChaCha test vectors. See:
