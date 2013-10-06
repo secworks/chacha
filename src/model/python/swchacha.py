@@ -226,24 +226,16 @@ class ChaCha():
 #-------------------------------------------------------------------
 def main():
     print "Testing the ChaCha Python model."
-
-    my_key = [0x00000000, 0x11111111, 0x22222222, 0x33333333,
-              0x44444444, 0x55555555, 0x66666666, 0x77777777]
-    my_iv  = [0x00000000, 0x00000001]
     
-    my_cipher = ChaCha(my_key, my_iv, verbose=True)
-    my_cipher.x = [0x11223344, 0x55555555] * 8
-    my_cipher._quarterround(0, 2, 4, 6)
-    my_cipher._quarterround(1, 3, 5, 7)
+    # Code that tests the quarterround directly.
+    # my_cipher = ChaCha(my_key, my_iv, verbose=True)
+    # my_cipher.x = [0x11223344, 0x55555555] * 8
+    # my_cipher._quarterround(0, 2, 4, 6)
+    # my_cipher._quarterround(1, 3, 5, 7)
 
-    my_block = [0x00000000] * 16
-    
-    my_cipher.next(my_block)
-
-
-    # Testing with all zero inputs.
-    my_key = [0x00000000, 0x00000000, 0x00000000, 0x00000000,
-              0x00000000, 0x00000000, 0x00000000, 0x00000000]
+    # Testing with TC1.
+    # All zero inputs, 128 bit key.
+    my_key = [0x00000000, 0x00000000, 0x00000000, 0x00000000]
     my_iv  = [0x00000000, 0x00000000]
     my_block = [0x00000000] * 16
     my_cipher = ChaCha(my_key, my_iv, verbose=True)
