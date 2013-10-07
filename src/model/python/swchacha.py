@@ -218,6 +218,16 @@ class ChaCha():
         if not (self.block_counter[0] % 0xffffffff):
             self.block_counter[1] += 1 & 0xffffffff
 
+
+#-------------------------------------------------------------------
+# print_block()
+#
+# Print a given block (array) of bytes as 32 bit words.
+#-------------------------------------------------------------------
+def print_block(block):
+    for i in range(len(block)):
+        print "result[%02d] = 0x%08x" % (i, block[i])
+
     
 #-------------------------------------------------------------------
 # main()
@@ -235,15 +245,24 @@ def main():
 
     # Testing with TC1.
     # All zero inputs, 128 bit key.
-    my_key = [0x00000000, 0x00000000, 0x00000000, 0x00000000]
-    my_iv  = [0x00000000, 0x00000000]
+    print "TC1: All zero inputs. 128 bit key, 8 rounds."
+    my_key1 = [0x00000000, 0x00000000, 0x00000000, 0x00000000]
+    my_iv1  = [0x00000000, 0x00000000]
     my_block = [0x00000000] * 16
-    my_cipher = ChaCha(my_key, my_iv, verbose=True)
-    my_result = my_cipher.next(my_block)
-
-    for i in range(len(my_result)):
-        print "result[%02d] = 0x%08x" % (i, my_result[i])
-
+    my_cipher = ChaCha(my_key1, my_iv1, verbose=True)
+    my_result1 = my_cipher.next(my_block)
+    print_block(my_result1)
+    print ""
+    
+    # Testing with TC8
+    print "TC8: Random inputs. 128 bit key, 8 rounds."
+    my_key8 = [0xc46ec1b1, 0x8ce8a878, 0x725a37e7, 0x80dfb35]
+    my_iv8  = [0x1ada31d5, 0xcf688221]
+    my_block = [0x00000000] * 16
+    my_cipher = ChaCha(my_key8, my_iv8, verbose=True)
+    my_result8 = my_cipher.next(my_block)
+    print_block(my_result8)
+    
 
 #-------------------------------------------------------------------
 # __name__
