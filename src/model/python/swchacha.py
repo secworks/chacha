@@ -249,20 +249,31 @@ def main():
     my_key1 = [0x00000000, 0x00000000, 0x00000000, 0x00000000]
     my_iv1  = [0x00000000, 0x00000000]
     my_block = [0x00000000] * 16
-    my_cipher = ChaCha(my_key1, my_iv1, verbose=True)
+    my_cipher = ChaCha(my_key1, my_iv1, verbose=False)
     my_result1 = my_cipher.next(my_block)
     print_block(my_result1)
+    print ""
+
+    # Testing with TC2.
+    # Single bit set in key. IV all zero. 128 bit key.
+    print "TC2: One bit in key set. IV all zeros. 128 bit key, 8 rounds."
+    my_key2 = [0x01000000, 0x00000000, 0x00000000, 0x00000000]
+    my_iv2  = [0x00000000, 0x00000000]
+    my_block = [0x00000000] * 16
+    my_cipher = ChaCha(my_key2, my_iv2, verbose=False)
+    my_result2 = my_cipher.next(my_block)
+    print_block(my_result2)
     print ""
     
     # Testing with TC8
     print "TC8: Random inputs. 128 bit key, 8 rounds."
-    my_key8 = [0xc46ec1b1, 0x8ce8a878, 0x725a37e7, 0x80dfb35]
-    my_iv8  = [0x1ada31d5, 0xcf688221]
+    my_key8 = [0xb1c16ec4, 0x78a8e88c, 0xe7375a72, 0x35b7df80]
+    my_iv8  = [0xd531da1a, 0x218268cf]
     my_block = [0x00000000] * 16
-    my_cipher = ChaCha(my_key8, my_iv8, verbose=True)
+    my_cipher = ChaCha(my_key8, my_iv8, verbose=False)
     my_result8 = my_cipher.next(my_block)
     print_block(my_result8)
-    
+        
 
 #-------------------------------------------------------------------
 # __name__
