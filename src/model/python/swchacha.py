@@ -145,9 +145,12 @@ class ChaCha():
         # Update the internal state by adding the elements
         # of the temporary state to the internal state.
         self.state = [((self.state[i] + self.x[i]) & 0xffffffff) for i in range(16)]
+        bytestate = []
+        for i in self.state:
+            bytestate += self._w2b(i)
         
         # Create the data out words.
-        data_out = [data_in[i] ^ self.state[i] for i in range(16)]
+        data_out = [data_in[i] ^ bytestate[i] for i in range(64)]
 
         # Update the block counter.
         self._inc_counter()
@@ -238,24 +241,36 @@ class ChaCha():
     #---------------------------------------------------------------
     # _b2w()
     #
-    # Given a set of four bytes returns the little endian
+    # Given a list of four bytes returns the little endian
     # 32 bit word representation of the bytes.
     #---------------------------------------------------------------
     def _b2w(self, bytes):
-        print bytes
-        print len(bytes)
         return (bytes[0] + (bytes[1] << 8)
                 + (bytes[2] << 16) + (bytes[3] << 24)) & 0xffffffff
+
+
+    #---------------------------------------------------------------
+    # _w2b()
+    #
+    # Given a 32-bit word returns a list of set of four bytes
+    # that is the little endian byte representation of the word.
+    #---------------------------------------------------------------
+    def _w2b(self, word):
+        return [(word & 0x000000ff), ((word & 0x0000ff00) >> 8),
+                ((word & 0x00ff0000) >> 16), ((word & 0xff000000) >> 24)]
 
 
 #-------------------------------------------------------------------
 # print_block()
 #
-# Print a given block (array) of bytes as 32 bit words.
+# Print a given block (list) of bytes ordered in
+# rows of eight bytes.
 #-------------------------------------------------------------------
 def print_block(block):
-    for i in range(len(block)):
-        print "result[%02d] = 0x%08x" % (i, block[i])
+    for i in range(0, len(block), 8):
+        print "0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x" %\
+              (block[i], block[i+1], block[i+2], block[i+3],
+               block[i+4], block[i+5], block[i+6], block[i+7])
 
     
 #-------------------------------------------------------------------
@@ -289,20 +304,21 @@ def main():
     my_key2 = [0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
     my_iv2  = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-    my_block = [0x00000000] * 16
+    my_block = [0x00] * 64
     my_cipher = ChaCha(my_key2, my_iv2, verbose=False)
     my_result2 = my_cipher.next(my_block)
     print_block(my_result2)
     print ""
     
     # Testing with TC8
-    # print "TC8: Random inputs. 128 bit key, 8 rounds."
-    # my_key8 = [0xb1c16ec4, 0x78a8e88c, 0xe7375a72, 0x35b7df80]
-    # my_iv8  = [0xd531da1a, 0x218268cf]
-    # my_block = [0x00000000] * 16
-    # my_cipher = ChaCha(my_key8, my_iv8, verbose=False)
-    # my_result8 = my_cipher.next(my_block)
-    # print_block(my_result8)
+    print "TC8: Random inputs. 128 bit key, 8 rounds."
+    my_key8 = [0xc4, 0x6e, 0xc1, 0xb1, 0x8c, 0xe8, 0xa8, 0x78,
+               0x72, 0x5a, 0x37, 0xe7, 0x80, 0xdf, 0xb7, 0x35]
+    my_iv8  = [0x1a, 0xda, 0x31, 0xd5, 0xcf, 0x68, 0x82, 0x21]
+    my_block = [0x00] * 64
+    my_cipher = ChaCha(my_key8, my_iv8, verbose=False)
+    my_result8 = my_cipher.next(my_block)
+    print_block(my_result8)
         
 
 #-------------------------------------------------------------------
