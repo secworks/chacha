@@ -56,7 +56,6 @@ SIGMA = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574]
 # ChaCha()
 #-------------------------------------------------------------------
 class ChaCha():
-
     
     #---------------------------------------------------------------
     # __init()
@@ -160,6 +159,7 @@ class ChaCha():
 
     #---------------------------------------------------------------
     # _doubleround()
+    #
     # Perform the two complete rounds that comprises the
     # double round.
     #---------------------------------------------------------------
@@ -276,7 +276,7 @@ def print_block(block):
 #-------------------------------------------------------------------
 # main()
 #
-# Parse arguments.
+# If executed tests the ChaCha class using known test vectors.
 #-------------------------------------------------------------------
 def main():
     print "Testing the ChaCha Python model."
