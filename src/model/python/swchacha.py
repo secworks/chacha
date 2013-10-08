@@ -56,67 +56,82 @@ SIGMA = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574]
 # ChaCha()
 #-------------------------------------------------------------------
 class ChaCha():
+
+    
+    #---------------------------------------------------------------
+    # __init()
+    #
+    # Given the key, iv initializes the state of the cipher.
+    # The number of rounds used can be set. By default 8 rounds
+    # are used. Accepts a list of either 16 or 32 bytes as key.
+    # Accepts a list of 8 bytes as IV.
+    #---------------------------------------------------------------
     def __init__(self, key, iv, rounds = 8, verbose = False):
-        self.key = key
-        self.iv = iv
+        self.state = [0] * 16
         self.rounds = rounds
         self.verbose = verbose
-        
-        self.key_iv(key, iv)
+        self.set_key_iv(key, iv)
 
 
     #---------------------------------------------------------------
-    # key_iv()
+    # set_key_iv()
+    # 
     # Set key and iv. Basically reinitialize the cipher.
     # This also resets the block counter.
     #---------------------------------------------------------------
-    def key_iv(self, key, iv):
-        self.state = [0] * 16
+    def set_key_iv(self, key, iv):
+        keyword0 = self._b2w(key[0:4])
+        keyword1 = self._b2w(key[4:8])
+        keyword2 = self._b2w(key[8:12])
+        keyword3 = self._b2w(key[12:16])
         
-        if len(key) == 4:
-            # 128 bit key
+        if len(key) == 16:
             self.state[0]  = TAU[0]
             self.state[1]  = TAU[1]
             self.state[2]  = TAU[2]
             self.state[3]  = TAU[3]
-            self.state[4]  = key[0]
-            self.state[5]  = key[1]
-            self.state[6]  = key[2]
-            self.state[7]  = key[3]
-            self.state[8]  = key[0]
-            self.state[9]  = key[1]
-            self.state[10] = key[2]
-            self.state[11] = key[3]
-        
-        else:
-            # 256 bit key
+            self.state[4]  = keyword0
+            self.state[5]  = keyword1
+            self.state[6]  = keyword2
+            self.state[7]  = keyword3
+            self.state[8]  = keyword0
+            self.state[9]  = keyword1
+            self.state[10] = keyword2
+            self.state[11] = keyword3
+
+        elif len(key) == 32:
+            keyword4 = self._b2w(key[16:19])
+            keyword5 = self._b2w(key[20:23])
+            keyword6 = self._b2w(key[24:27])
+            keyword7 = self._b2w(key[28:31])
             self.state[0]  = SIGMA[0]
             self.state[1]  = SIGMA[1]
             self.state[2]  = SIGMA[2]
             self.state[3]  = SIGMA[3]
-            self.state[4]  = key[0]
-            self.state[5]  = key[1]
-            self.state[6]  = key[2]
-            self.state[7]  = key[3]
-            self.state[8]  = key[4]
-            self.state[9]  = key[5]
-            self.state[10] = key[6]
-            self.state[11] = key[7]
+            self.state[4]  = keyword0
+            self.state[5]  = keyword1
+            self.state[6]  = keyword2
+            self.state[7]  = keyword3
+            self.state[8]  = keyword4
+            self.state[9]  = keyword5
+            self.state[10] = keyword6
+            self.state[11] = keyword7
+        else:
+            print "Key length of %d bits, is not supported." % (len(key) * 8)
 
         # Common state init for both key lengths.
         self.block_counter = [0, 0]
         self.state[12] = self.block_counter[0]
         self.state[13] = self.block_counter[1]
-        self.state[14] = iv[0]
-        self.state[14] = iv[1]
+        self.state[14] = self._b2w(iv[0:4])
+        self.state[15] = self._b2w(iv[4:8])
 
 
     #---------------------------------------------------------------
     # next()
+    #
     # Encyp/decrypt the next block. This also updates the
     # internal state and increases the block counter.
-    #
-    # TODO: Add the Adder of internal states.
     #---------------------------------------------------------------
     def next(self, data_in):
         # Copy the current internal state to the temporary state x.
@@ -209,14 +224,28 @@ class ChaCha():
         self.x[ci], self.x[di] = c_prim, d_prim
 
 
-    # --------------------------------------------------------------
+    #---------------------------------------------------------------
     # _inc_counter()
+    #
     # Increase the 64 bit block counter.
-    # --------------------------------------------------------------
+    #---------------------------------------------------------------
     def _inc_counter(self):
         self.block_counter[0] += 1 & 0xffffffff
         if not (self.block_counter[0] % 0xffffffff):
             self.block_counter[1] += 1 & 0xffffffff
+
+
+    #---------------------------------------------------------------
+    # _b2w()
+    #
+    # Given a set of four bytes returns the little endian
+    # 32 bit word representation of the bytes.
+    #---------------------------------------------------------------
+    def _b2w(self, bytes):
+        print bytes
+        print len(bytes)
+        return (bytes[0] + (bytes[1] << 8)
+                + (bytes[2] << 16) + (bytes[3] << 24)) & 0xffffffff
 
 
 #-------------------------------------------------------------------
@@ -245,20 +274,21 @@ def main():
 
     # Testing with TC1.
     # All zero inputs, 128 bit key.
-    print "TC1: All zero inputs. 128 bit key, 8 rounds."
-    my_key1 = [0x00000000, 0x00000000, 0x00000000, 0x00000000]
-    my_iv1  = [0x00000000, 0x00000000]
-    my_block = [0x00000000] * 16
-    my_cipher = ChaCha(my_key1, my_iv1, verbose=False)
-    my_result1 = my_cipher.next(my_block)
-    print_block(my_result1)
-    print ""
+#    print "TC1: All zero inputs. 128 bit key, 8 rounds."
+#    my_key1 = [0x00000000, 0x00000000, 0x00000000, 0x00000000]
+#    my_iv1  = [0x00000000, 0x00000000]
+#    my_block = [0x00000000] * 16
+#    my_cipher = ChaCha(my_key1, my_iv1, verbose=False)
+#    my_result1 = my_cipher.next(my_block)
+#    print_block(my_result1)
+#    print ""
 
     # Testing with TC2.
     # Single bit set in key. IV all zero. 128 bit key.
     print "TC2: One bit in key set. IV all zeros. 128 bit key, 8 rounds."
-    my_key2 = [0x01000000, 0x00000000, 0x00000000, 0x00000000]
-    my_iv2  = [0x00000000, 0x00000000]
+    my_key2 = [0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+    my_iv2  = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
     my_block = [0x00000000] * 16
     my_cipher = ChaCha(my_key2, my_iv2, verbose=False)
     my_result2 = my_cipher.next(my_block)
@@ -266,13 +296,13 @@ def main():
     print ""
     
     # Testing with TC8
-    print "TC8: Random inputs. 128 bit key, 8 rounds."
-    my_key8 = [0xb1c16ec4, 0x78a8e88c, 0xe7375a72, 0x35b7df80]
-    my_iv8  = [0xd531da1a, 0x218268cf]
-    my_block = [0x00000000] * 16
-    my_cipher = ChaCha(my_key8, my_iv8, verbose=False)
-    my_result8 = my_cipher.next(my_block)
-    print_block(my_result8)
+    # print "TC8: Random inputs. 128 bit key, 8 rounds."
+    # my_key8 = [0xb1c16ec4, 0x78a8e88c, 0xe7375a72, 0x35b7df80]
+    # my_iv8  = [0xd531da1a, 0x218268cf]
+    # my_block = [0x00000000] * 16
+    # my_cipher = ChaCha(my_key8, my_iv8, verbose=False)
+    # my_result8 = my_cipher.next(my_block)
+    # print_block(my_result8)
         
 
 #-------------------------------------------------------------------
