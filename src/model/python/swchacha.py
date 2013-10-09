@@ -297,7 +297,7 @@ def main():
     print
 
     # Testing with TC1-128-8.
-    # All zero inputs. IV all zero. 128 bit key.
+    # All zero inputs. IV all zero. 128 bit key, 8 rounds.
     print "TC1-128-8: All zero inputs. 128 bit key, 8 rounds."
     key1 = [0x00] * 16
     iv1  = [0x00] * 8
@@ -315,7 +315,28 @@ def main():
     print_block(result1)
     check_block(result1, expected1, "TC1-128-8")
     print ""
-    
+
+
+    # Testing with TC1-128-12.
+    # All zero inputs. IV all zero. 128 bit key, 12 rounds.
+    print "TC1-128-12: All zero inputs. 128 bit key, 12 rounds."
+    key1 = [0x00] * 16
+    iv1  = [0x00] * 8
+    expected1 = [0xe1, 0x04, 0x7b, 0xa9, 0x47, 0x6b, 0xf8, 0xff,
+                 0x31, 0x2c, 0x01, 0xb4, 0x34, 0x5a, 0x7d, 0x8c,
+                 0xa5, 0x79, 0x2b, 0x0a, 0xd4, 0x67, 0x31, 0x3f,
+                 0x1d, 0xc4, 0x12, 0xb5, 0xfd, 0xce, 0x32, 0x41,
+                 0x0d, 0xea, 0x8b, 0x68, 0xbd, 0x77, 0x4c, 0x36,
+                 0xa9, 0x20, 0xf0, 0x92, 0xa0, 0x4d, 0x3f, 0x95,
+                 0x27, 0x4f, 0xbe, 0xff, 0x97, 0xbc, 0x84, 0x91,
+                 0xfc, 0xef, 0x37, 0xf8, 0x59, 0x70, 0xb4, 0x50]
+    block1 = [0x00] * 64
+    cipher1 = ChaCha(key1, iv1, rounds=12, verbose=False)
+    result1 = cipher1.next(block1)
+    print_block(result1)
+    check_block(result1, expected1, "TC1-128-12")
+    print ""
+
     
     # Testing with TC2-128-8.
     # Single bit set in key. IV all zero. 128 bit key.
