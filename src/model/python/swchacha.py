@@ -272,6 +272,19 @@ def print_block(block):
               (block[i], block[i+1], block[i+2], block[i+3],
                block[i+4], block[i+5], block[i+6], block[i+7])
 
+
+#-------------------------------------------------------------------
+# check_block()
+#
+# Compare the result block with the expected block and print
+# if the result for the given test case was correct or not.
+#-------------------------------------------------------------------
+def check_block(result, expected, test_case):
+    if result == expected:
+        print "SUCCESS: %s was correct." % test_case
+    else:
+        print "ERROR: %s was not correct." % test_case
+
     
 #-------------------------------------------------------------------
 # main()
@@ -301,13 +314,15 @@ def main():
     # Testing with TC2.
     # Single bit set in key. IV all zero. 128 bit key.
     print "TC2: One bit in key set. IV all zeros. 128 bit key, 8 rounds."
-    my_key2 = [0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-               0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-    my_iv2  = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-    my_block = [0x00] * 64
-    my_cipher = ChaCha(my_key2, my_iv2, verbose=False)
-    my_result2 = my_cipher.next(my_block)
-    print_block(my_result2)
+    key2 = [0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+    iv2  = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+    expected2 = [0, 1, 2, 3]
+    block2 = [0x00] * 64
+    cipher2 = ChaCha(key2, iv2, verbose=False)
+    result2 = cipher2.next(block2)
+    print_block(result2)
+    check_block(result2, expected2, "TC2")
     print ""
     
     # Testing with TC8
