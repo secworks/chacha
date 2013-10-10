@@ -284,7 +284,12 @@ def check_block(result, expected, test_case):
         print "SUCCESS: %s was correct." % test_case
     else:
         print "ERROR: %s was not correct." % test_case
-
+        print "Expected:"
+        print_block(expected)
+        print ""
+        print "Result:"
+        print_block(result)
+        
     
 #-------------------------------------------------------------------
 # main()
@@ -312,7 +317,6 @@ def main():
     block1 = [0x00] * 64
     cipher1 = ChaCha(key1, iv1, verbose=False)
     result1 = cipher1.next(block1)
-    print_block(result1)
     check_block(result1, expected1, "TC1-128-8")
     print ""
 
@@ -332,7 +336,6 @@ def main():
                  0xfc, 0xef, 0x37, 0xf8, 0x59, 0x70, 0xb4, 0x50]
     block1 = [0x00] * 64
     cipher1 = ChaCha(key1, iv1, rounds=12, verbose=False)
-    result1 = cipher1.next(block1)
     print_block(result1)
     check_block(result1, expected1, "TC1-128-12")
     print ""
@@ -355,29 +358,28 @@ def main():
     block2 = [0x00] * 64
     cipher2 = ChaCha(key2, iv2, verbose=False)
     result2 = cipher2.next(block2)
-    print_block(result2)
     check_block(result2, expected2, "TC2-128-8")
     print ""
 
     
-    # Testing with TC5
-    # print "TC5: Even bits set.. 256 bit key, 20 rounds."
-    # key5 = [0x55] * 32
-    # iv5  = [0x55] * 8
-    # expected5 = [0xaf, 0xf7, 0x41, 0x82, 0x93, 0xf3, 0xa5, 0x53,
-    #              0x89, 0x4b, 0x1e, 0x74, 0x84, 0xbd, 0x1e, 0x8e,
-    #              0xde, 0x19, 0x6e, 0xce, 0xd5, 0xa1, 0xd6, 0x81,
-    #              0x4d, 0xe3, 0x70, 0x91, 0xe0, 0x7e, 0x07, 0x6e,
-    #              0x34, 0xbb, 0xba, 0x81, 0x07, 0xa6, 0x86, 0xc9,
-    #              0x82, 0x85, 0x0f, 0x0a, 0x73, 0x53, 0x94, 0x0d,
-    #              0x40, 0xdb, 0x1a, 0xb0, 0xb5, 0x76, 0x5b, 0x78,
-    #              0xb4, 0xcf, 0x47, 0x3d, 0x94, 0x85, 0xa3, 0xdd]
-    # block5 = [0x00] * 64
-    # cipher5 = ChaCha(key5, iv5, rounds=20, verbose=False)
-    # result5 = cipher5.next(block5)
-    # print_block(result5)
-    # check_block(result5, expected5, "TC5")
-
+    # Testing with TC5-128-8
+    print "TC5-128-8: Even bits set. 128 bit key, 8 rounds."
+    key5 = [0x55] * 16
+    iv5  = [0x55] * 8
+    expected5 = [0x22, 0xd7, 0xee, 0x01, 0xf7, 0x0b, 0xad, 0xd4,
+                 0xe7, 0x99, 0x8b, 0x0f, 0x3b, 0x87, 0x3d, 0xa8,
+                 0x2b, 0x32, 0x34, 0xc4, 0x76, 0x46, 0x6e, 0xc0,
+                 0x0f, 0xb5, 0x90, 0xe1, 0x69, 0x54, 0x19, 0xd7,
+                 0xff, 0x8b, 0x63, 0x0d, 0xd3, 0x44, 0xda, 0x83,
+                 0xcf, 0xc8, 0xc0, 0x03, 0x10, 0x3a, 0x5a, 0x25,
+                 0x4f, 0x8a, 0x97, 0x79, 0xf8, 0xf4, 0x34, 0x5d,
+                 0xfd, 0x27, 0x61, 0xb1, 0xf3, 0x82, 0x52, 0xca]
+    block5 = [0x00] * 64
+    cipher5 = ChaCha(key5, iv5, verbose=False)
+    result5 = cipher5.next(block5)
+    check_block(result5, expected5, "TC5-128-8")
+    print ""
+    
     
     # Testing with TC8-128-8
     print "TC8-128-8: Random inputs. 128 bit key, 8 rounds."
@@ -395,7 +397,6 @@ def main():
     block8 = [0x00] * 64
     cipher8 = ChaCha(key8, iv8, verbose=False)
     result8 = cipher8.next(block8)
-    print_block(result8)
     check_block(result8, expected8, "TC8-128-8")
         
 
