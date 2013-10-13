@@ -58,7 +58,7 @@ SIGMA = [0x61707865, 0x3320646e, 0x79622d32, 0x6b206574]
 class ChaCha():
     
     #---------------------------------------------------------------
-    # __init()
+    # __init__()
     #
     # Given the key, iv initializes the state of the cipher.
     # The number of rounds used can be set. By default 8 rounds
@@ -70,7 +70,7 @@ class ChaCha():
         self.rounds = rounds
         self.verbose = verbose
         self.set_key_iv(key, iv)
-
+        
 
     #---------------------------------------------------------------
     # set_key_iv()
@@ -335,8 +335,8 @@ def main():
                  0x27, 0x4f, 0xbe, 0xff, 0x97, 0xbc, 0x84, 0x91,
                  0xfc, 0xef, 0x37, 0xf8, 0x59, 0x70, 0xb4, 0x50]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, rounds=12, verbose=False)
-    print_block(result1)
+    cipher1 = ChaCha(key1, iv1, rounds = 12, verbose=False)
+    result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-128-12")
     print ""
 
@@ -355,8 +355,8 @@ def main():
                  0x0f, 0xdd, 0xfb, 0xc1, 0x21, 0x23, 0xd4, 0xb9,
                  0xe4, 0x4f, 0x34, 0xdc, 0xa0, 0x5a, 0x10, 0x3f]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, rounds=20, verbose=False)
-    print_block(result1)
+    cipher1 = ChaCha(key1, iv1, rounds = 20, verbose=False)
+    result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-128-20")
     print ""
 
@@ -395,7 +395,7 @@ def main():
                  0x3a, 0x62, 0x9f, 0x2c, 0xa0, 0xde, 0x69, 0x19,
                  0x61, 0x0b, 0xe8, 0x2f, 0x41, 0x13, 0x26, 0xbe]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, verbose=False)
+    cipher1 = ChaCha(key1, iv1, rounds = 12, verbose=False)
     result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-256-12")
     print ""
@@ -415,7 +415,7 @@ def main():
                  0x6a, 0x43, 0xb8, 0xf4, 0x15, 0x18, 0xa1, 0x1c,
                  0xc3, 0x87, 0xb6, 0x69, 0xb2, 0xee, 0x65, 0x86]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, verbose=False)
+    cipher1 = ChaCha(key1, iv1, rounds = 20, verbose=False)
     result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-256-20")
     print ""
@@ -546,7 +546,7 @@ def main():
     # Testing with TC8-128-8
     print "TC8-128-8: Random inputs. 128 bit key, 8 rounds."
     key8 = [0xc4, 0x6e, 0xc1, 0xb1, 0x8c, 0xe8, 0xa8, 0x78,
-               0x72, 0x5a, 0x37, 0xe7, 0x80, 0xdf, 0xb7, 0x35]
+            0x72, 0x5a, 0x37, 0xe7, 0x80, 0xdf, 0xb7, 0x35]
     iv8  = [0x1a, 0xda, 0x31, 0xd5, 0xcf, 0x68, 0x82, 0x21]
     expected8 = [0x6a, 0x87, 0x01, 0x08, 0x85, 0x9f, 0x67, 0x91,
                  0x18, 0xf3, 0xe2, 0x05, 0xe2, 0xa5, 0x6a, 0x68,
