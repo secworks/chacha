@@ -273,7 +273,7 @@ module tb_chacha_core();
       
       
       $display("");
-      $display("*** State at init.");
+      $display("*** State at init ***");
       dump_state();
       
       // Wait ten clock cycles and release reset.
@@ -283,14 +283,14 @@ module tb_chacha_core();
       
       #(2 * CLK_HALF_PERIOD);
       $display("");
-      $display("*** State after release of reset.");
+      $display("*** State after release of reset ***");
       //dump_state();
       // dump_inout();
 
       // Try and init the cipher.
       #(4 * CLK_HALF_PERIOD);
       $display("");
-      $display("*** Initializing cipher to process first block.");
+      $display("*** Initializing cipher to process first block ***");
       tb_core_init = 1;
       // dump_inout();
       #(4 * CLK_HALF_PERIOD);
@@ -303,7 +303,7 @@ module tb_chacha_core();
       dump_inout();
       
       // Finish in style.
-      $display("*** chacha_core simulation done.");
+      $display("*** chacha_core simulation done ***");
       $finish;
     end // chacha_core_test
   
