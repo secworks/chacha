@@ -52,13 +52,13 @@ module chacha_core(
                    input wire [4 : 0]    rounds,
                    
                    // Data input.
-                   input wire [511 : 0]  data_in,
+                   input wire [0 : 511]  data_in,
                    
                    // Status output.
                    output wire           ready,
                     
                    // Data out with valid signal.
-                   output wire [511 : 0] data_out,
+                   output wire [0 : 511] data_out,
                    output wire           data_out_valid
                   );
 
@@ -172,7 +172,7 @@ module chacha_core(
   reg [31 : 0] x15_new;
   reg          x15_we;
 
-  reg [511 : 0] data_in_reg;
+  reg [0 : 511] data_in_reg;
   reg           data_in_we;
 
   // Note: 4 bits since we count double rounds.
@@ -242,7 +242,7 @@ module chacha_core(
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
   // Data out assignment. Note that this adds one layer of XOR
-  assign data_out = data_in ^ state_reg;
+  assign data_out = data_in_reg ^ state_reg;
 
   assign data_out_valid = data_out_valid_reg;
   

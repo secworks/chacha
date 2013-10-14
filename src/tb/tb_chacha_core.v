@@ -66,8 +66,8 @@ module tb_chacha_core();
   reg [4 : 0]    tb_core_rounds;
   reg [63 : 0]   tb_core_iv;
   wire           tb_core_ready;
-  reg [511 : 0]  tb_core_data_in;
-  wire [511 : 0] tb_core_data_out;
+  reg [0 : 511]  tb_core_data_in;
+  wire [0 : 511] tb_core_data_out;
   
   
   //----------------------------------------------------------------
