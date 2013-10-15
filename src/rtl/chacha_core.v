@@ -92,9 +92,11 @@ module chacha_core(
   parameter SIGMA3 = 32'h6b206574;
   
   // State names for the control FSM.
-  parameter CTRL_IDLE   = 3'h0;
-  parameter CTRL_ROUNDS = 3'h1;
-  parameter CTRL_DONE   = 3'h2;
+  parameter CTRL_IDLE     = 3'h0;
+  parameter CTRL_INIT     = 3'h1;
+  parameter CTRL_ROUNDS   = 3'h2;
+  parameter CTRL_FINALIZE = 3'h3;
+  parameter CTRL_DONE     = 3'h4;
 
   
   //----------------------------------------------------------------
@@ -946,6 +948,13 @@ module chacha_core(
               end
           end
 
+        // We initialize the block processing by
+        // copying the state into the round regs.
+        CTRL_INIT:
+          begin
+
+          end
+        
         // We perform 8 quarterrounds for each
         // double round and repeat until we have
         // processed the block. We then set data 
@@ -967,6 +976,16 @@ module chacha_core(
               end
           end
 
+
+        // We finalize the round processing by
+        // adding the round registers to the
+        // state.
+        CTRL_FINALIZE:
+          begin
+
+          end
+        
+        
         // We wait for either next block signal or
         // init signal. When then drop valid, perform
         // initialization or 
