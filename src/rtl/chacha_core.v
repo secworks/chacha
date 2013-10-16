@@ -93,10 +93,9 @@ module chacha_core(
   
   // State names for the control FSM.
   parameter CTRL_IDLE     = 3'h0;
-  parameter CTRL_INIT     = 3'h1;
-  parameter CTRL_ROUNDS   = 3'h2;
-  parameter CTRL_FINALIZE = 3'h3;
-  parameter CTRL_DONE     = 3'h4;
+  parameter CTRL_ROUNDS   = 3'h1;
+  parameter CTRL_FINALIZE = 3'h2;
+  parameter CTRL_DONE     = 3'h3;
 
   
   //----------------------------------------------------------------
@@ -224,10 +223,10 @@ module chacha_core(
   reg init_cipher;
   reg init_round;
   reg init_block;
+  reg finalize_block;
   reg next_block;
   reg update_dp;
   reg update_state;
-  reg finalize;
 
   // Wires to connect the pure combinational quarterround 
   // to the state update logic.
@@ -281,6 +280,7 @@ module chacha_core(
           data_in_reg        <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
           state_reg          <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
           rounds_reg         <= 4'h0;
+          state_reg          <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
           data_out_valid_reg <= 0;
           qr_ctr_reg         <= QR0;
           dr_ctr_reg         <= 0;
@@ -290,6 +290,11 @@ module chacha_core(
         end
       else
         begin
+          if (state_we)
+            begin
+              state_reg <= state_new;
+            end
+          
           if (x0_we)
             begin
               x0_reg <= x0_new;
@@ -567,25 +572,48 @@ module chacha_core(
       x14_we  = 0;
       x15_new = 32'h00000000;
       x15_we  = 0;
-
+      state_we = 0;
+      
+      state_new[0   :  31] = x0_reg + state_reg[0   :  31];
+      state_new[32  :  63] = x0_reg + state_reg[32  :  63];
+      state_new[64  :  95] = x0_reg + state_reg[64  :  95];
+      state_new[96  : 127] = x0_reg + state_reg[96  : 127];
+      state_new[128 : 159] = x0_reg + state_reg[128 : 159];
+      state_new[160 : 191] = x0_reg + state_reg[160 : 191];
+      state_new[192 : 223] = x0_reg + state_reg[192 : 223];
+      state_new[224 : 255] = x0_reg + state_reg[224 : 255];
+      state_new[256 : 287] = x0_reg + state_reg[256 : 287];
+      state_new[288 : 319] = x0_reg + state_reg[288 : 319]; 
+      state_new[320 : 351] = x0_reg + state_reg[320 : 351];
+      state_new[352 : 383] = x0_reg + state_reg[352 : 383];
+      state_new[284 : 415] = x0_reg + state_reg[284 : 415];
+      state_new[416 : 447] = x0_reg + state_reg[416 : 447];
+      state_new[448 : 479] = x0_reg + state_reg[448 : 479];
+      state_new[480 : 511] = x0_reg + state_reg[480 : 511];
+      
+      if (finalize_block)
+        begin
+          state_we = 1;
+        end
+      
       if (init_block)
         begin
-          x0_new  = state_reg[31  :   0];
-          x1_new  = state_reg[63  :  32];
-          x2_new  = state_reg[95  :  64];
-          x3_new  = state_reg[127 :  96];
-          x4_new  = state_reg[159 : 128];
-          x5_new  = state_reg[191 : 160];
-          x6_new  = state_reg[223 : 192];
-          x7_new  = state_reg[255 : 224];
-          x8_new  = state_reg[287 : 256];
-          x9_new  = state_reg[319 : 288];
-          x10_new = state_reg[351 : 320];
-          x11_new = state_reg[383 : 352];
-          x12_new = state_reg[415 : 384];
-          x13_new = state_reg[447 : 416];
-          x14_new = state_reg[479 : 448];
-          x15_new = state_reg[511 : 480];
+          x0_new  = state_reg[0   :  31];
+          x1_new  = state_reg[32  :  63];
+          x2_new  = state_reg[64  :  95];
+          x3_new  = state_reg[96  : 127];
+          x4_new  = state_reg[128 : 159];
+          x5_new  = state_reg[160 : 191];
+          x6_new  = state_reg[192 : 223];
+          x7_new  = state_reg[224 : 255];
+          x8_new  = state_reg[256 : 287];
+          x9_new  = state_reg[288 : 319];
+          x10_new = state_reg[320 : 351];
+          x11_new = state_reg[352 : 383];
+          x12_new = state_reg[284 : 415];
+          x13_new = state_reg[416 : 447];
+          x14_new = state_reg[448 : 479];
+          x15_new = state_reg[480 : 511];
           x0_we  = 1;
           x1_we  = 1;
           x2_we  = 1;
@@ -900,8 +928,9 @@ module chacha_core(
       init_cipher        = 0;
       init_round         = 0;
       update_dp          = 0;
+      init_block         = 0;
       next_block         = 0;
-      finalize           = 0;
+      finalize_block     = 0;
                          
       qr_ctr_inc         = 0;
       qr_ctr_rst         = 0;
@@ -923,7 +952,6 @@ module chacha_core(
       chacha_ctrl_new    = CTRL_IDLE;
       chacha_ctrl_we     = 0;
 
-      init_block         = 0;
       update_state       = 0;
       
       case (chacha_ctrl_reg)
@@ -948,12 +976,6 @@ module chacha_core(
               end
           end
 
-        // We initialize the block processing by
-        // copying the state into the round regs.
-        CTRL_INIT:
-          begin
-
-          end
         
         // We perform 8 quarterrounds for each
         // double round and repeat until we have
@@ -968,10 +990,8 @@ module chacha_core(
                 dr_ctr_inc = 1;
                 if (dr_ctr_reg == rounds_reg)
                   begin
-                    data_out_valid_new = 1;
-                    data_out_valid_we  = 1;
-                    chacha_ctrl_new    = CTRL_DONE;
-                    chacha_ctrl_we     = 1;
+                    chacha_ctrl_new = CTRL_FINALIZE;
+                    chacha_ctrl_we  = 1;
                   end
               end
           end
@@ -982,7 +1002,11 @@ module chacha_core(
         // state.
         CTRL_FINALIZE:
           begin
-
+            finalize_block     = 1;
+            data_out_valid_new = 1;
+            data_out_valid_we  = 1;
+            chacha_ctrl_new    = CTRL_DONE;
+            chacha_ctrl_we     = 1;
           end
         
         
