@@ -102,8 +102,8 @@ module chacha_core(
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
   // internal state.
-  reg [511 : 0] state_reg;
-  reg [511 : 0] state_new;
+  reg [0 : 511] state_reg;
+  reg [0 : 511] state_new;
   reg           state_we;
   
   // x0..x15
@@ -793,7 +793,7 @@ module chacha_core(
   always @*
     begin : next_state
       // Default assignment
-      state_new[31  :   0] = 32'h00000000;
+      state_new[0  :   31] = 32'h00000000;
       state_new[63  :  32] = 32'h00000000;
       state_new[95  :  64] = 32'h00000000;
       state_new[127 :  96] = 32'h00000000;
@@ -813,7 +813,7 @@ module chacha_core(
       
       if (update_state)
         begin
-          state_new[31  :   0] = x0_reg  + state_reg[31  :   0];
+          state_new[0  :   31] = x0_reg  + state_reg[0  :   31];
           state_new[63  :  32] = x1_reg  + state_reg[63  :  32];
           state_new[95  :  64] = x2_reg  + state_reg[95  :  64];
           state_new[127 :  96] = x3_reg  + state_reg[127 :  96];
