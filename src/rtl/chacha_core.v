@@ -237,42 +237,6 @@ module chacha_core(
   reg [31 : 0] b_prim;
   reg [31 : 0] c_prim;
   reg [31 : 0] d_prim;
-
-  // Wires to extract LSB words from state and words
-  // to update the state.
-  reg [31 : 0] state_word0;
-  reg [31 : 0] state_word1;
-  reg [31 : 0] state_word2;
-  reg [31 : 0] state_word3;
-  reg [31 : 0] state_word4;
-  reg [31 : 0] state_word5;
-  reg [31 : 0] state_word6;
-  reg [31 : 0] state_word7;
-  reg [31 : 0] state_word8;
-  reg [31 : 0] state_word9;
-  reg [31 : 0] state_word10;
-  reg [31 : 0] state_word11;
-  reg [31 : 0] state_word12;
-  reg [31 : 0] state_word13;
-  reg [31 : 0] state_word14;
-  reg [31 : 0] state_word15;
-
-  reg [31 : 0] new_state_word0;
-  reg [31 : 0] new_state_word1;
-  reg [31 : 0] new_state_word2;
-  reg [31 : 0] new_state_word3;
-  reg [31 : 0] new_state_word4;
-  reg [31 : 0] new_state_word5;
-  reg [31 : 0] new_state_word6;
-  reg [31 : 0] new_state_word7;
-  reg [31 : 0] new_state_word8;
-  reg [31 : 0] new_state_word9;
-  reg [31 : 0] new_state_word10;
-  reg [31 : 0] new_state_word11;
-  reg [31 : 0] new_state_word12;
-  reg [31 : 0] new_state_word13;
-  reg [31 : 0] new_state_word14;
-  reg [31 : 0] new_state_word15;
   
   // ready flag wire.
   reg ready_wire;
@@ -288,36 +252,6 @@ module chacha_core(
   
   assign ready = ready_wire;
 
-  // Extract 32-bit LSB words from state_reg. 
-  assign state_word0 = {state_reg[7 : 0],   state_reg[15 : 8],
-                        state_reg[23 : 16], state_reg[31 : 24]};
-   
-  assign new_state_word0  = x0_reg  + state_word0;
-  assign new_state_word1  = x1_reg  + state_word1;
-  assign new_state_word2  = x2_reg  + state_word2;
-  assign new_state_word3  = x3_reg  + state_word3;
-  assign new_state_word4  = x4_reg  + state_word4;
-  assign new_state_word5  = x5_reg  + state_word5;
-  assign new_state_word6  = x6_reg  + state_word6;
-  assign new_state_word7  = x7_reg  + state_word7;
-  assign new_state_word8  = x8_reg  + state_word8;
-  assign new_state_word9  = x9_reg  + state_word9; 
-  assign new_state_word10 = x10_reg + state_word10;
-  assign new_state_word11 = x11_reg + state_word11;
-  assign new_state_word12 = x12_reg + state_word12;
-  assign new_state_word13 = x13_reg + state_word13;
-  assign new_state_word14 = x14_reg + state_word14;
-  assign new_state_word15 = x15_reg + state_word15;
-  
-  assign state_new = {new_state_word0, new_state_word1, 
-                      new_state_word2, new_state_word3,
-                      new_state_word4, new_state_word5,
-                      new_state_word6, new_state_word7,
-                      new_state_word8, new_state_word9,
-                      new_state_word10, new_state_word11,
-                      new_state_word12, new_state_word13,
-                      new_state_word14, new_state_word15};
-  
   
   //----------------------------------------------------------------
   // reg_update
@@ -645,22 +579,22 @@ module chacha_core(
       
       if (init_block)
         begin
-          x0_new  = state_reg[0   :  31];
-          x1_new  = state_reg[32  :  63];
-          x2_new  = state_reg[64  :  95];
-          x3_new  = state_reg[96  : 127];
-          x4_new  = state_reg[128 : 159];
-          x5_new  = state_reg[160 : 191];
-          x6_new  = state_reg[192 : 223];
-          x7_new  = state_reg[224 : 255];
-          x8_new  = state_reg[256 : 287];
-          x9_new  = state_reg[288 : 319];
-          x10_new = state_reg[320 : 351];
-          x11_new = state_reg[352 : 383];
-          x12_new = state_reg[284 : 415];
-          x13_new = state_reg[416 : 447];
-          x14_new = state_reg[448 : 479];
-          x15_new = state_reg[480 : 511];
+          x0_new  = state_reg[31  :   0];
+          x1_new  = state_reg[63  :  32];
+          x2_new  = state_reg[95  :  64];
+          x3_new  = state_reg[127 :  96];
+          x4_new  = state_reg[159 : 128];
+          x5_new  = state_reg[191 : 160];
+          x6_new  = state_reg[223 : 192];
+          x7_new  = state_reg[255 : 224];
+          x8_new  = state_reg[287 : 256];
+          x9_new  = state_reg[319 : 288];
+          x10_new = state_reg[351 : 320];
+          x11_new = state_reg[383 : 352];
+          x12_new = state_reg[415 : 284];
+          x13_new = state_reg[447 : 416];
+          x14_new = state_reg[479 : 448];
+          x15_new = state_reg[511 : 480];
           x0_we  = 1;
           x1_we  = 1;
           x2_we  = 1;
@@ -839,43 +773,77 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : next_state
-      // Default assignment
-      state_new[0  :   31] = 32'h00000000;
-      state_new[63  :  32] = 32'h00000000;
-      state_new[95  :  64] = 32'h00000000;
-      state_new[127 :  96] = 32'h00000000;
-      state_new[159 : 128] = 32'h00000000;
-      state_new[191 : 160] = 32'h00000000;
-      state_new[223 : 192] = 32'h00000000;
-      state_new[255 : 224] = 32'h00000000;
-      state_new[287 : 256] = 32'h00000000;
-      state_new[319 : 288] = 32'h00000000;
-      state_new[351 : 320] = 32'h00000000;
-      state_new[383 : 352] = 32'h00000000;
-      state_new[415 : 384] = 32'h00000000;
-      state_new[447 : 416] = 32'h00000000;
-      state_new[479 : 448] = 32'h00000000;
-      state_new[511 : 480] = 32'h00000000;
-      state_we = 0;
+      // Wires to extract LSB words from state and words
+      // to update the state.
+      reg [31 : 0] state_word0;
+      reg [31 : 0] state_word1;
+      reg [31 : 0] state_word2;
+      reg [31 : 0] state_word3;
+      reg [31 : 0] state_word4;
+      reg [31 : 0] state_word5;
+      reg [31 : 0] state_word6;
+      reg [31 : 0] state_word7;
+      reg [31 : 0] state_word8;
+      reg [31 : 0] state_word9;
+      reg [31 : 0] state_word10;
+      reg [31 : 0] state_word11;
+      reg [31 : 0] state_word12;
+      reg [31 : 0] state_word13;
+      reg [31 : 0] state_word14;
+      reg [31 : 0] state_word15;
       
+      reg [31 : 0] new_state_word0;
+      reg [31 : 0] new_state_word1;
+      reg [31 : 0] new_state_word2;
+      reg [31 : 0] new_state_word3;
+      reg [31 : 0] new_state_word4;
+      reg [31 : 0] new_state_word5;
+      reg [31 : 0] new_state_word6;
+      reg [31 : 0] new_state_word7;
+      reg [31 : 0] new_state_word8;
+      reg [31 : 0] new_state_word9;
+      reg [31 : 0] new_state_word10;
+      reg [31 : 0] new_state_word11;
+      reg [31 : 0] new_state_word12;
+      reg [31 : 0] new_state_word13;
+      reg [31 : 0] new_state_word14;
+      reg [31 : 0] new_state_word15;
+      
+      // Default assignment
+      state_we = 0;
+
+      // Extract 32-bit LSB state words from state_reg.
+      state_word0 = {state_reg[487 : 479], state_reg[495 : 488],
+                     state_reg[503 : 496], state_reg[511 : 504]};
+
       if (update_state)
         begin
-          state_new[0  :   31] = x0_reg  + state_reg[0  :   31];
-          state_new[63  :  32] = x1_reg  + state_reg[63  :  32];
-          state_new[95  :  64] = x2_reg  + state_reg[95  :  64];
-          state_new[127 :  96] = x3_reg  + state_reg[127 :  96];
-          state_new[159 : 128] = x4_reg  + state_reg[159 : 128];
-          state_new[191 : 160] = x5_reg  + state_reg[191 : 160];
-          state_new[223 : 192] = x6_reg  + state_reg[223 : 192];
-          state_new[255 : 224] = x7_reg  + state_reg[255 : 224];
-          state_new[287 : 256] = x8_reg  + state_reg[287 : 256];
-          state_new[319 : 288] = x9_reg  + state_reg[319 : 288];
-          state_new[351 : 320] = x10_reg + state_reg[351 : 320];
-          state_new[383 : 352] = x11_reg + state_reg[383 : 352];
-          state_new[415 : 384] = x12_reg + state_reg[415 : 384];
-          state_new[447 : 416] = x13_reg + state_reg[447 : 416];
-          state_new[479 : 448] = x14_reg + state_reg[479 : 448];
-          state_new[511 : 480] = x15_reg + state_reg[511 : 480];
+          new_state_word0  = x0_reg  + state_word0;
+          new_state_word1  = x1_reg  + state_word1;
+          new_state_word2  = x2_reg  + state_word2;
+          new_state_word3  = x3_reg  + state_word3;
+          new_state_word4  = x4_reg  + state_word4;
+          new_state_word5  = x5_reg  + state_word5;
+          new_state_word6  = x6_reg  + state_word6;
+          new_state_word7  = x7_reg  + state_word7;
+          new_state_word8  = x8_reg  + state_word8;
+          new_state_word9  = x9_reg  + state_word9; 
+          new_state_word10 = x10_reg + state_word10;
+          new_state_word11 = x11_reg + state_word11;
+          new_state_word12 = x12_reg + state_word12;
+          new_state_word13 = x13_reg + state_word13;
+          new_state_word14 = x14_reg + state_word14;
+          new_state_word15 = x15_reg + state_word15;
+
+          state_new = {new_state_word0, new_state_word1, 
+                       new_state_word2, new_state_word3,
+                       new_state_word4, new_state_word5,
+                       new_state_word6, new_state_word7,
+                       new_state_word8, new_state_word9,
+                       new_state_word10, new_state_word11,
+                       new_state_word12, new_state_word13,
+                       new_state_word14, new_state_word15};
+          
           state_we = 1;
         end
     end //
