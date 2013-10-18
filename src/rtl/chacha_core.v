@@ -5,6 +5,9 @@
 // Verilog 2001 implementation of the stream cipher ChaCha.
 // This is the internal core with wide interfaces.
 //
+// Note: data_in, state and data_out is treated as a 512 bit
+// representation of a LSB vector of bytes. That is the LSB
+// is stored in bits [511..
 //
 // Copyright (c) 2013 Secworks Sweden AB
 // All rights reserved.
@@ -52,13 +55,13 @@ module chacha_core(
                    input wire [4 : 0]    rounds,
                    
                    // Data input.
-                   input wire [0 : 511]  data_in,
+                   input wire [511 : 0]  data_in,
                    
                    // Status output.
                    output wire           ready,
                     
                    // Data out with valid signal.
-                   output wire [0 : 511] data_out,
+                   output wire [511 : 0] data_out,
                    output wire           data_out_valid
                   );
 
@@ -102,8 +105,8 @@ module chacha_core(
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
   // internal state.
-  reg [0 : 511] state_reg;
-  reg [0 : 511] state_new;
+  reg [511 : 0] state_reg;
+  reg [511 : 0] state_new;
   reg           state_we;
   
   // x0..x15
@@ -173,7 +176,7 @@ module chacha_core(
   reg [31 : 0] x15_new;
   reg          x15_we;
 
-  reg [0 : 511] data_in_reg;
+  reg [511 : 0] data_in_reg;
   reg           data_in_we;
 
   // Note: 4 bits since we count double rounds.
@@ -234,6 +237,42 @@ module chacha_core(
   reg [31 : 0] b_prim;
   reg [31 : 0] c_prim;
   reg [31 : 0] d_prim;
+
+  // Wires to extract LSB words from state and words
+  // to update the state.
+  reg [31 : 0] state_word0;
+  reg [31 : 0] state_word1;
+  reg [31 : 0] state_word2;
+  reg [31 : 0] state_word3;
+  reg [31 : 0] state_word4;
+  reg [31 : 0] state_word5;
+  reg [31 : 0] state_word6;
+  reg [31 : 0] state_word7;
+  reg [31 : 0] state_word8;
+  reg [31 : 0] state_word9;
+  reg [31 : 0] state_word10;
+  reg [31 : 0] state_word11;
+  reg [31 : 0] state_word12;
+  reg [31 : 0] state_word13;
+  reg [31 : 0] state_word14;
+  reg [31 : 0] state_word15;
+
+  reg [31 : 0] new_state_word0;
+  reg [31 : 0] new_state_word1;
+  reg [31 : 0] new_state_word2;
+  reg [31 : 0] new_state_word3;
+  reg [31 : 0] new_state_word4;
+  reg [31 : 0] new_state_word5;
+  reg [31 : 0] new_state_word6;
+  reg [31 : 0] new_state_word7;
+  reg [31 : 0] new_state_word8;
+  reg [31 : 0] new_state_word9;
+  reg [31 : 0] new_state_word10;
+  reg [31 : 0] new_state_word11;
+  reg [31 : 0] new_state_word12;
+  reg [31 : 0] new_state_word13;
+  reg [31 : 0] new_state_word14;
+  reg [31 : 0] new_state_word15;
   
   // ready flag wire.
   reg ready_wire;
@@ -248,6 +287,36 @@ module chacha_core(
   assign data_out_valid = data_out_valid_reg;
   
   assign ready = ready_wire;
+
+  // Extract 32-bit LSB words from state_reg. 
+  assign state_word0 = {state_reg[7 : 0],   state_reg[15 : 8],
+                        state_reg[23 : 16], state_reg[31 : 24]};
+   
+  assign new_state_word0  = x0_reg  + state_word0;
+  assign new_state_word1  = x1_reg  + state_word1;
+  assign new_state_word2  = x2_reg  + state_word2;
+  assign new_state_word3  = x3_reg  + state_word3;
+  assign new_state_word4  = x4_reg  + state_word4;
+  assign new_state_word5  = x5_reg  + state_word5;
+  assign new_state_word6  = x6_reg  + state_word6;
+  assign new_state_word7  = x7_reg  + state_word7;
+  assign new_state_word8  = x8_reg  + state_word8;
+  assign new_state_word9  = x9_reg  + state_word9; 
+  assign new_state_word10 = x10_reg + state_word10;
+  assign new_state_word11 = x11_reg + state_word11;
+  assign new_state_word12 = x12_reg + state_word12;
+  assign new_state_word13 = x13_reg + state_word13;
+  assign new_state_word14 = x14_reg + state_word14;
+  assign new_state_word15 = x15_reg + state_word15;
+  
+  assign state_new = {new_state_word0, new_state_word1, 
+                      new_state_word2, new_state_word3,
+                      new_state_word4, new_state_word5,
+                      new_state_word6, new_state_word7,
+                      new_state_word8, new_state_word9,
+                      new_state_word10, new_state_word11,
+                      new_state_word12, new_state_word13,
+                      new_state_word14, new_state_word15};
   
   
   //----------------------------------------------------------------
@@ -393,11 +462,6 @@ module chacha_core(
           if (data_in_we)
             begin
               data_in_reg <= data_in;
-            end
-
-          if (state_we)
-            begin
-              state_reg <= state_new;
             end
 
           // Note we skip the low bit.
@@ -573,24 +637,7 @@ module chacha_core(
       x15_new = 32'h00000000;
       x15_we  = 0;
       state_we = 0;
-      
-      state_new[0   :  31] = x0_reg + state_reg[0   :  31];
-      state_new[32  :  63] = x0_reg + state_reg[32  :  63];
-      state_new[64  :  95] = x0_reg + state_reg[64  :  95];
-      state_new[96  : 127] = x0_reg + state_reg[96  : 127];
-      state_new[128 : 159] = x0_reg + state_reg[128 : 159];
-      state_new[160 : 191] = x0_reg + state_reg[160 : 191];
-      state_new[192 : 223] = x0_reg + state_reg[192 : 223];
-      state_new[224 : 255] = x0_reg + state_reg[224 : 255];
-      state_new[256 : 287] = x0_reg + state_reg[256 : 287];
-      state_new[288 : 319] = x0_reg + state_reg[288 : 319]; 
-      state_new[320 : 351] = x0_reg + state_reg[320 : 351];
-      state_new[352 : 383] = x0_reg + state_reg[352 : 383];
-      state_new[284 : 415] = x0_reg + state_reg[284 : 415];
-      state_new[416 : 447] = x0_reg + state_reg[416 : 447];
-      state_new[448 : 479] = x0_reg + state_reg[448 : 479];
-      state_new[480 : 511] = x0_reg + state_reg[480 : 511];
-      
+            
       if (finalize_block)
         begin
           state_we = 1;
