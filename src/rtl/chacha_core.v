@@ -777,41 +777,41 @@ module chacha_core(
       
       if (init_cipher)
         begin
-          state_word4_new  = key[31 : 0];
-          state_word5_new  = key[63 : 32];
-          state_word6_new  = key[95 : 64];
-          state_word7_new  = key[127 : 96];
-          state_word12_new = 32'h00000000;
-          state_word13_new = 32'h00000000;
-          state_word14_new = iv[31 : 0];
-          state_word15_new = iv[63 : 0];
+          state_we = 1;
+          new_state_word4  = key[31 : 0];
+          new_state_word5  = key[63 : 32];
+          new_state_word6  = key[95 : 64];
+          new_state_word7  = key[127 : 96];
+          new_state_word12 = 32'h00000000;
+          new_state_word13 = 32'h00000000;
+          new_state_word14 = iv[31 : 0];
+          new_state_word15 = iv[63 : 0];
 
           if (keylen)
             begin
               // 256 bit key.
-              state_word0_new  = SIGMA0;
-              state_word1_new  = SIGMA1;
-              state_word2_new  = SIGMA2;
-              state_word3_new  = SIGMA3;
-              state_word8_new  = key[159 : 128];
-              state_word9_new  = key[191 : 160];
-              state_word10_new = key[223 : 192];
-              state_word11_new = key[255 : 224];
+              new_state_word0 = SIGMA0;
+              new_state_word1 = SIGMA1;
+              new_state_word2 = SIGMA2;
+              new_state_word3 = SIGMA3;
+              new_state_word8 = key[159 : 128];
+              new_state_word9 = key[191 : 160];
+              new_state_word1 = key[223 : 192];
+              new_state_word1 = key[255 : 224];
             end
           else
             begin
               // 128 bit key.
-              state_word0_new  = TAU0;
-              state_word1_new  = TAU1;
-              state_word2_new  = TAU2;
-              state_word3_new  = TAU3;
-              state_word8_new  = key[31 : 0];
-              state_word9_new  = key[63 : 32];
-              state_word10_new = key[95 : 64];
-              state_word11_new = key[127 : 96];
+              new_state_word0  = TAU0;
+              new_state_word1  = TAU1;
+              new_state_word2  = TAU2;
+              new_state_word3  = TAU3;
+              new_state_word8  = key[31 : 0];
+              new_state_word9  = key[63 : 32];
+              new_state_word10 = key[95 : 64];
+              new_state_word11 = key[127 : 96];
             end
         end // if (init_cipher)
-      
       
       if (update_state)
         begin
@@ -833,17 +833,17 @@ module chacha_core(
           new_state_word13 = x13_reg + state_word13;
           new_state_word14 = x14_reg + state_word14;
           new_state_word15 = x15_reg + state_word15;
-
-          state_new = {new_state_word0, new_state_word1, 
-                       new_state_word2, new_state_word3,
-                       new_state_word4, new_state_word5,
-                       new_state_word6, new_state_word7,
-                       new_state_word8, new_state_word9,
-                       new_state_word10, new_state_word11,
-                       new_state_word12, new_state_word13,
-                       new_state_word14, new_state_word15};
-          
         end
+
+      state_new = {new_state_word0, new_state_word1, 
+                   new_state_word2, new_state_word3,
+                   new_state_word4, new_state_word5,
+                   new_state_word6, new_state_word7,
+                   new_state_word8, new_state_word9,
+                   new_state_word10, new_state_word11,
+                   new_state_word12, new_state_word13,
+                   new_state_word14, new_state_word15};
+      
     end // state_update
   
   
