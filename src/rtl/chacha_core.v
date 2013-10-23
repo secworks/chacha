@@ -260,7 +260,7 @@ module chacha_core(
   // active low reset. All registers have write enable.
   //----------------------------------------------------------------
   always @ (posedge clk)
-    begin
+    begin : reg_update
       if (!reset_n)
         begin
           // Reset all registers to defined values.
@@ -774,6 +774,8 @@ module chacha_core(
       // Default assignment
       state_we = 0;
 
+      // Extract state
+      
       
       if (init_cipher)
         begin
@@ -816,6 +818,39 @@ module chacha_core(
       if (update_state)
         begin
           state_we = 1;
+
+          state_word0  = {state_reg[487 : 480], state_reg[495 : 488], 
+                          state_reg[503 : 496], state_reg[511 : 504]};
+          state_word1  = {state_reg[455 : 448], state_reg[463 : 456], 
+                          state_reg[471 : 464], state_reg[479 : 472]};
+          state_word2  = {state_reg[423 : 416], state_reg[431 : 424], 
+                          state_reg[439 : 432], state_reg[447 : 440]};
+          state_word3  = {state_reg[391 : 384], state_reg[399 : 392], 
+                          state_reg[407 : 400], state_reg[415 : 408]};
+          state_word4  = {state_reg[359 : 352], state_reg[367 : 360], 
+                          state_reg[375 : 368], state_reg[383 : 376]};
+          state_word5  = {state_reg[327 : 320], state_reg[335 : 328], 
+                          state_reg[343 : 336], state_reg[351 : 344]};
+          state_word6  = {state_reg[295 : 288], state_reg[303 : 296], 
+                          state_reg[311 : 304], state_reg[319 : 312]};
+          state_word7  = {state_reg[263 : 256], state_reg[271 : 264], 
+                          state_reg[279 : 272], state_reg[287 : 280]};
+          state_word8  = {state_reg[231 : 224], state_reg[239 : 232], 
+                          state_reg[247 : 240], state_reg[255 : 248]};
+          state_word9  = {state_reg[199 : 192], state_reg[207 : 200], 
+                          state_reg[215 : 208], state_reg[223 : 216]};
+          state_word10 = {state_reg[167 : 160], state_reg[175 : 168], 
+                          state_reg[183 : 176], state_reg[191 : 184]};
+          state_word11 = {state_reg[135 : 128], state_reg[143 : 136], 
+                          state_reg[151 : 144], state_reg[159 : 152]};
+          state_word12 = {state_reg[103 :  96], state_reg[111 : 104], 
+                          state_reg[119 : 112], state_reg[127 : 120]};
+          state_word13 = {state_reg[71  :  64], state_reg[79  :  72], 
+                          state_reg[87  :  80], state_reg[95  :  88]};
+          state_word14 = {state_reg[39  :  32], state_reg[47  :  40], 
+                          state_reg[55  :  48], state_reg[63  :  56]};
+          state_word15 = {state_reg[7   :   0], state_reg[15  :   8], 
+                          state_reg[23  :  16], state_reg[31  :  24]};
           
           new_state_word0  = x0_reg  + state_word0;
           new_state_word1  = x1_reg  + state_word1;
