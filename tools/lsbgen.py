@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #=======================================================================
 #
@@ -70,12 +70,12 @@ def main():
 
     # Check that the given size is ok.
     if (vector_bits % word_bits != 0):
-        print "Error: Vector with %d bits can not be evenly divided into %d-bit words." % (vector_bits, word_bits)
+        print("Error: Vector with %d bits can not be evenly divided into %d-bit words." % (vector_bits, word_bits))
         return
     else:
-        print "Creating %d words of size %d" 
+        print("Creating %d words of size %d" )
 
-    for i in range(vector_bits / word_bits):
+    for i in range(int(vector_bits / word_bits)):
         b0max = (vector_bits - 1)  - i * word_bits
         b0min = (vector_bits - 8)  - i * word_bits
         b1max = (vector_bits - 9)  - i * word_bits
@@ -85,9 +85,9 @@ def main():
         b3max = (vector_bits - 25) - i * word_bits
         b3min = (vector_bits - 32) - i * word_bits
         
-        print "x%d_new = {%s[%d:%d], %s[%d:%d], %s[%d:%d], %s[%d:%d]}" %\
+        print("x%d_new = {%s[%d:%d], %s[%d:%d], %s[%d:%d], %s[%d:%d]}" %\
               (i, vector_name, b3max, b3min, vector_name, b2max, b2min,
-               vector_name, b1max, b1min, vector_name, b0max, b0min)
+               vector_name, b1max, b1min, vector_name, b0max, b0min))
                    
 
 #-------------------------------------------------------------------
