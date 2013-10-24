@@ -96,9 +96,10 @@ module chacha_core(
   
   // State names for the control FSM.
   parameter CTRL_IDLE     = 3'h0;
-  parameter CTRL_ROUNDS   = 3'h1;
-  parameter CTRL_FINALIZE = 3'h2;
-  parameter CTRL_DONE     = 3'h3;
+  parameter CTRL_INIT     = 3'h1;
+  parameter CTRL_ROUNDS   = 3'h2;
+  parameter CTRL_FINALIZE = 3'h3;
+  parameter CTRL_DONE     = 3'h4;
 
   
   //----------------------------------------------------------------
@@ -226,7 +227,6 @@ module chacha_core(
   reg init_cipher;
   reg init_round;
   reg init_block;
-  reg finalize_block;
   reg next_block;
   reg update_dp;
   reg update_state;
@@ -570,11 +570,6 @@ module chacha_core(
       x14_we  = 0;
       x15_new = 32'h00000000;
       x15_we  = 0;
-            
-      if (finalize_block)
-        begin
-          state_we = 1;
-        end
       
       if (init_block)
         begin
@@ -774,8 +769,6 @@ module chacha_core(
       // Default assignment
       state_we = 0;
 
-      // Extract state
-      
       
       if (init_cipher)
         begin
@@ -978,7 +971,6 @@ module chacha_core(
       update_dp          = 0;
       init_block         = 0;
       next_block         = 0;
-      finalize_block     = 0;
                          
       qr_ctr_inc         = 0;
       qr_ctr_rst         = 0;
@@ -1019,11 +1011,20 @@ module chacha_core(
                 data_in_we      = 1;
                 rounds_we       = 1;
                 init_block      = 1;
-                chacha_ctrl_new = CTRL_ROUNDS;
+                chacha_ctrl_new = CTRL_INIT;
                 chacha_ctrl_we  = 1;
               end
           end
 
+        
+        // Copy from state register to X registers
+        // including converstion to LSB words.
+        CTRL_INIT:
+          begin
+            init_block      = 1;
+            chacha_ctrl_new = CTRL_ROUNDS;
+            chacha_ctrl_we  = 1;
+          end
         
         // We perform 8 quarterrounds for each
         // double round and repeat until we have
@@ -1045,12 +1046,11 @@ module chacha_core(
           end
 
 
-        // We finalize the round processing by
-        // adding the round registers to the
-        // state.
+        // Add final state of X to state to create the final
+        // block state.
         CTRL_FINALIZE:
           begin
-            finalize_block     = 1;
+            update_state       = 1;
             data_out_valid_new = 1;
             data_out_valid_we  = 1;
             chacha_ctrl_new    = CTRL_DONE;
@@ -1076,7 +1076,7 @@ module chacha_core(
                 block_ctr_rst      = 1;
                 data_in_we         = 1;
                 rounds_we          = 1;
-                chacha_ctrl_new    = CTRL_ROUNDS;
+                chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
               end
             else if (next)
@@ -1090,7 +1090,7 @@ module chacha_core(
                 block_ctr_rst      = 1;
                 data_in_we         = 1;
                 rounds_we          = 1;
-                chacha_ctrl_new    = CTRL_ROUNDS;
+                chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
               end
           end
