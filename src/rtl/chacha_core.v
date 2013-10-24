@@ -536,7 +536,7 @@ module chacha_core(
   // round processing.
   //----------------------------------------------------------------
   always @*
-    begin : state_update
+    begin : x_update
       // Default assignments
       x0_new = 32'h00000000;
       x0_we  = 0;
