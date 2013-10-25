@@ -122,7 +122,15 @@ module tb_chacha_core();
       $display("");
 
       $display("chacha_ctrl_reg = %01x", dut.chacha_ctrl_reg);
+
+
       $display("qr_ctr_reg = %01x, dr_ctr_reg = %01x", dut.qr_ctr_reg, dut.dr_ctr_reg);
+
+      $display("Internal state:");
+      $display("0x%064x", dut.state_reg);
+      $display("");
+      
+      $display("Round state X:");
       $display("x0_reg   = %08x, x0_new   = %08x, x0_we  = %01x", dut.x0_reg, dut.x0_new, dut.x0_we);
       $display("x1_reg   = %08x, x1_new   = %08x, x1_we  = %01x", dut.x1_reg, dut.x1_new, dut.x1_we);
       $display("x2_reg   = %08x, x2_new   = %08x, x2_we  = %01x", dut.x2_reg, dut.x2_new, dut.x2_we);
@@ -157,6 +165,10 @@ module tb_chacha_core();
       $display("");
       $display("Internal state:");
       $display("---------------");
+      $display("0x%064x", dut.state_reg);
+      $display("");
+      
+      $display("Round state X::");
       $display("x0_reg  = %08x, x1_reg  = %08x", dut.x0_reg, dut.x1_reg);
       $display("x2_reg  = %08x, x3_reg  = %08x", dut.x2_reg, dut.x3_reg);
       $display("x4_reg  = %08x, x5_reg  = %08x", dut.x4_reg, dut.x5_reg);
@@ -166,16 +178,20 @@ module tb_chacha_core();
       $display("x12_reg = %08x, x13_reg = %08x", dut.x12_reg, dut.x13_reg);
       $display("x14_reg = %08x, x15_reg = %08x", dut.x14_reg, dut.x15_reg);
       $display("");
+      
       $display("rounds_reg = %01x", dut.rounds_reg);
       $display("qr_ctr_reg = %01x, dr_ctr_reg  = %01x", dut.qr_ctr_reg, dut.dr_ctr_reg);
       $display("block0_ctr_reg = %08x, block1_ctr_reg = %08x", dut.block0_ctr_reg, dut.block1_ctr_reg);
 
       $display("");
+
       $display("chacha_ctrl_reg = %02x", dut.chacha_ctrl_reg);
       $display("");
+
       $display("data_in_reg = %064x", dut.data_in_reg);
       $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
       $display("");
+
       $display("a_prim = %08x, b_prim = %08x", dut.a_prim, dut.b_prim);
       $display("c_prim = %08x, d_prim = %08x", dut.c_prim, dut.d_prim);
       $display("");
@@ -192,7 +208,6 @@ module tb_chacha_core();
       $display("");
       $display("State for input and output ports:");
       $display("---------------------------------");
-
 
       $display("init       = %01x", dut.init);
       $display("next       = %01x", dut.next);
@@ -288,16 +303,29 @@ module tb_chacha_core();
       // dump_inout();
 
       // Try and init the cipher.
-      #(4 * CLK_HALF_PERIOD);
-      $display("");
-      $display("*** Initializing cipher to process first block ***");
+      // #(4 * CLK_HALF_PERIOD);
+      // $display("");
+      // $display("*** Initializing cipher to process first block ***");
+      // tb_core_init = 1;
+      // // dump_inout();
+      // #(4 * CLK_HALF_PERIOD);
+      // tb_core_init = 0;
+      // // dump_inout();
+      
+      // // Wait a while and observe what happens.
+      // #(100 * CLK_HALF_PERIOD);
+      // dump_state();
+      // dump_inout();
+
+      // TC2: Single bit in key set.
+      $display("TC2: Single bit in key.");
+      tb_core_key = 256'h0100000000000000000000000000000000000000000000000000000000000000;
+      tb_core_iv = 64'h0000000000000001;
+      tb_core_keylen    = 1;
       tb_core_init = 1;
       // dump_inout();
       #(4 * CLK_HALF_PERIOD);
       tb_core_init = 0;
-      // dump_inout();
-
-      // Wait a while and observe what happens.
       #(100 * CLK_HALF_PERIOD);
       dump_state();
       dump_inout();
