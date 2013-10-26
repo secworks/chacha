@@ -785,14 +785,14 @@ module chacha_core(
           if (keylen)
             begin
               // 256 bit key.
-              new_state_word0 = SIGMA0;
-              new_state_word1 = SIGMA1;
-              new_state_word2 = SIGMA2;
-              new_state_word3 = SIGMA3;
-              new_state_word8 = key[159 : 128];
-              new_state_word9 = key[191 : 160];
-              new_state_word1 = key[223 : 192];
-              new_state_word1 = key[255 : 224];
+              new_state_word0  = SIGMA0;
+              new_state_word1  = SIGMA1;
+              new_state_word2  = SIGMA2;
+              new_state_word3  = SIGMA3;
+              new_state_word8  = key[159 : 128];
+              new_state_word9  = key[191 : 160];
+              new_state_word10 = key[223 : 192];
+              new_state_word11 = key[255 : 224];
             end
           else
             begin
