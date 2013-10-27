@@ -67,6 +67,7 @@ class ChaCha():
     #---------------------------------------------------------------
     def __init__(self, key, iv, rounds = 8, verbose = False):
         self.state = [0] * 16
+        self.x = [0] * 16
         self.rounds = rounds
         self.verbose = verbose
         self.set_key_iv(key, iv)
@@ -125,6 +126,10 @@ class ChaCha():
         self.state[14] = self._b2w(iv[0:4])
         self.state[15] = self._b2w(iv[4:8])
 
+        if self.verbose:
+            print("State after init:")
+            self._print_state()
+        
 
     #---------------------------------------------------------------
     # next()
@@ -135,15 +140,36 @@ class ChaCha():
     def next(self, data_in):
         # Copy the current internal state to the temporary state x.
         self.x = self.state[:]
+
+        if self.verbose:
+            print("State before round processing.")
+            self._print_state()
+
+        if self.verbose:
+            print("X before round processing:")
+            self._print_x()
         
         # Update the internal state by performing
         # (rounds / 2) double rounds.
         for i in range(int(self.rounds / 2)):
+            if self.verbose:
+                print("Doubleround 0x%02x:" % i)
             self._doubleround()
+            if self.verbose:
+                print("")
+            
+        if self.verbose:
+            print("X after round round processing:")
+            self._print_x()
 
         # Update the internal state by adding the elements
         # of the temporary state to the internal state.
         self.state = [((self.state[i] + self.x[i]) & 0xffffffff) for i in range(16)]
+
+        if self.verbose:
+            print("State after round processing.")
+            self._print_state()
+        
         bytestate = []
         for i in self.state:
             bytestate += self._w2b(i)
@@ -190,7 +216,7 @@ class ChaCha():
             print("X state indices:", ai, bi, ci, di)
             print("a = 0x%08x, b = 0x%08x, c = 0x%08x, d = 0x%08x" %\
                   (a, b, c, d))
-            print
+            print("")
             
         a0 = (a + b) & 0xffffffff
         d0 = d ^ a0
@@ -213,7 +239,7 @@ class ChaCha():
             print("c0 = 0x%08x, c1 = 0x%08x" % (c0, c1))
             print("d0 = 0x%08x, d1 = 0x%08x, d2 = 0x%08x, d3 = 0x%08x" %\
                   (d0, d1, d2, d3))
-            print
+            print("")
         
         a_prim = a1
         b_prim = b3
@@ -224,7 +250,8 @@ class ChaCha():
             print("Outdata from quarterround:")
             print("a_prim = 0x%08x, b_prim = 0x%08x, c_prim = 0x%08x, d_prim = 0x%08x" %\
                   (a_prim, b_prim, c_prim, d_prim))
-        
+            print("")
+            
         # Update the four elemenst in x using the qi tuple.
         self.x[ai], self.x[bi] = a_prim, b_prim
         self.x[ci], self.x[di] = c_prim, d_prim
@@ -263,6 +290,40 @@ class ChaCha():
                 ((word & 0x00ff0000) >> 16), ((word & 0xff000000) >> 24)]
 
 
+    #---------------------------------------------------------------
+    # _print_state()
+    #
+    # Print the internal state.
+    #---------------------------------------------------------------
+    def _print_state(self):
+        print(" 0: 0x%08x,  1: 0x%08x,  2: 0x%08x,  3: 0x%08x" %\
+              (self.state[0], self.state[1], self.state[2], self.state[3]))
+        print(" 4: 0x%08x,  5: 0x%08x,  6: 0x%08x,  7: 0x%08x" %\
+              (self.state[4], self.state[5], self.state[6], self.state[7]))
+        print(" 8: 0x%08x,  9: 0x%08x, 10: 0x%08x, 11: 0x%08x" %\
+              (self.state[9], self.state[10], self.state[11], self.state[12]))
+        print("12: 0x%08x, 13: 0x%08x, 14: 0x%08x, 15: 0x%08x" %\
+              (self.state[12], self.state[13], self.state[14], self.state[15]))
+        print("")
+
+
+    #---------------------------------------------------------------
+    # _print_x()
+    #
+    # Print the temporary state X.
+    #---------------------------------------------------------------
+    def _print_x(self):
+        print(" 0: 0x%08x,  1: 0x%08x,  2: 0x%08x,  3: 0x%08x" %\
+              (self.x[0], self.x[1], self.x[2], self.x[3]))
+        print(" 4: 0x%08x,  5: 0x%08x,  6: 0x%08x,  7: 0x%08x" %\
+              (self.x[4], self.x[5], self.x[6], self.x[7]))
+        print(" 8: 0x%08x,  9: 0x%08x, 10: 0x%08x, 11: 0x%08x" %\
+              (self.x[9], self.x[10], self.x[11], self.x[12]))
+        print("12: 0x%08x, 13: 0x%08x, 14: 0x%08x, 15: 0x%08x" %\
+              (self.x[12], self.x[13], self.x[14], self.x[15]))
+        print("")
+
+
 #-------------------------------------------------------------------
 # print_block()
 #
@@ -292,7 +353,8 @@ def check_block(result, expected, test_case):
         print("")
         print("Result:")
         print_block(result)
-        
+    print("")
+
     
 #-------------------------------------------------------------------
 # main()
@@ -439,7 +501,7 @@ def main():
                  0x5c, 0x97, 0x2a, 0xc4, 0xc9, 0x2a, 0xb9, 0xda,
                  0x37, 0x13, 0xe1, 0x9f, 0x76, 0x1e, 0xaa, 0x14]
     block2 = [0x00] * 64
-    cipher2 = ChaCha(key2, iv2, verbose=False)
+    cipher2 = ChaCha(key2, iv2, verbose=True)
     result2 = cipher2.next(block2)
     check_block(result2, expected2, "TC2-128-8")
     print
