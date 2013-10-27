@@ -65,7 +65,7 @@ class ChaCha():
     # are used. Accepts a list of either 16 or 32 bytes as key.
     # Accepts a list of 8 bytes as IV.
     #---------------------------------------------------------------
-    def __init__(self, key, iv, rounds = 8, verbose = False):
+    def __init__(self, key, iv, rounds = 8, verbose = 0):
         self.state = [0] * 16
         self.x = [0] * 16
         self.rounds = rounds
@@ -152,14 +152,14 @@ class ChaCha():
         # Update the internal state by performing
         # (rounds / 2) double rounds.
         for i in range(int(self.rounds / 2)):
-            if self.verbose:
+            if (self.verbose > 1):
                 print("Doubleround 0x%02x:" % i)
             self._doubleround()
-            if self.verbose:
+            if (self.verbose > 1):
                 print("")
             
         if self.verbose:
-            print("X after round round processing:")
+            print("X after round processing:")
             self._print_x()
 
         # Update the internal state by adding the elements
@@ -211,7 +211,7 @@ class ChaCha():
         # Extract four elemenst from x using the qi tuple.
         a, b, c, d = self.x[ai], self.x[bi], self.x[ci], self.x[di]
 
-        if self.verbose:
+        if (self.verbose > 1):
             print("Indata to quarterround:")
             print("X state indices:", ai, bi, ci, di)
             print("a = 0x%08x, b = 0x%08x, c = 0x%08x, d = 0x%08x" %\
@@ -231,7 +231,7 @@ class ChaCha():
         b2 = b1 ^ c1
         b3 = ((b2 << 7) + (b2 >> 25)) & 0xffffffff 
 
-        if self.verbose:
+        if (self.verbose > 2):
             print("Intermediate values:")
             print("a0 = 0x%08x, a1 = 0x%08x" % (a0, a1))
             print("b0 = 0x%08x, b1 = 0x%08x, b2 = 0x%08x, b3 = 0x%08x" %\
@@ -246,7 +246,7 @@ class ChaCha():
         c_prim = c1
         d_prim = d3
 
-        if self.verbose:
+        if (self.verbose > 1):
             print("Outdata from quarterround:")
             print("a_prim = 0x%08x, b_prim = 0x%08x, c_prim = 0x%08x, d_prim = 0x%08x" %\
                   (a_prim, b_prim, c_prim, d_prim))
@@ -380,7 +380,7 @@ def main():
                  0x18, 0x24, 0xbe, 0xeb, 0x08, 0x81, 0x4a, 0x42,
                  0x8a, 0xab, 0x1f, 0xa2, 0xc8, 0x16, 0x08, 0x1b]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, verbose=False)
+    cipher1 = ChaCha(key1, iv1, verbose=0)
     result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-128-8")
     print
@@ -400,7 +400,7 @@ def main():
                  0x27, 0x4f, 0xbe, 0xff, 0x97, 0xbc, 0x84, 0x91,
                  0xfc, 0xef, 0x37, 0xf8, 0x59, 0x70, 0xb4, 0x50]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, rounds = 12, verbose=False)
+    cipher1 = ChaCha(key1, iv1, rounds = 12, verbose=0)
     result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-128-12")
     print
@@ -420,7 +420,7 @@ def main():
                  0x0f, 0xdd, 0xfb, 0xc1, 0x21, 0x23, 0xd4, 0xb9,
                  0xe4, 0x4f, 0x34, 0xdc, 0xa0, 0x5a, 0x10, 0x3f]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, rounds = 20, verbose=False)
+    cipher1 = ChaCha(key1, iv1, rounds = 20, verbose=0)
     result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-128-20")
     print
@@ -440,7 +440,7 @@ def main():
                  0x31, 0x4a, 0x42, 0xa3, 0xda, 0x86, 0xb0, 0x01,
                  0x38, 0x7b, 0xfd, 0xb8, 0x0e, 0x0c, 0xfe, 0x42]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, verbose=False)
+    cipher1 = ChaCha(key1, iv1, verbose=0)
     result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-256-8")
     print
@@ -460,7 +460,7 @@ def main():
                  0x3a, 0x62, 0x9f, 0x2c, 0xa0, 0xde, 0x69, 0x19,
                  0x61, 0x0b, 0xe8, 0x2f, 0x41, 0x13, 0x26, 0xbe]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, rounds = 12, verbose=False)
+    cipher1 = ChaCha(key1, iv1, rounds = 12, verbose=0)
     result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-256-12")
     print
@@ -480,7 +480,7 @@ def main():
                  0x6a, 0x43, 0xb8, 0xf4, 0x15, 0x18, 0xa1, 0x1c,
                  0xc3, 0x87, 0xb6, 0x69, 0xb2, 0xee, 0x65, 0x86]
     block1 = [0x00] * 64
-    cipher1 = ChaCha(key1, iv1, rounds = 20, verbose=False)
+    cipher1 = ChaCha(key1, iv1, rounds = 20, verbose=0)
     result1 = cipher1.next(block1)
     check_block(result1, expected1, "TC1-256-20")
     print
@@ -501,7 +501,7 @@ def main():
                  0x5c, 0x97, 0x2a, 0xc4, 0xc9, 0x2a, 0xb9, 0xda,
                  0x37, 0x13, 0xe1, 0x9f, 0x76, 0x1e, 0xaa, 0x14]
     block2 = [0x00] * 64
-    cipher2 = ChaCha(key2, iv2, verbose=True)
+    cipher2 = ChaCha(key2, iv2, verbose=0)
     result2 = cipher2.next(block2)
     check_block(result2, expected2, "TC2-128-8")
     print
@@ -524,7 +524,7 @@ def main():
                  0x8c, 0xd8, 0x46, 0x4d, 0x37, 0x63, 0xdd, 0xbb,
                  0x92, 0x22, 0xee, 0x3b, 0xd8, 0xfa, 0xe3, 0xc8]
     block2 = [0x00] * 64
-    cipher2 = ChaCha(key2, iv2, verbose=False)
+    cipher2 = ChaCha(key2, iv2, verbose=1)
     result2 = cipher2.next(block2)
     check_block(result2, expected2, "TC2-256-8")
     print
@@ -546,7 +546,7 @@ def main():
                  0x25, 0xcd, 0x1c, 0x48, 0x69, 0x66, 0x93, 0x0d,
                  0x02, 0x04, 0xc4, 0xee, 0x88, 0xa6, 0xab, 0x35]
     block3 = [0x00] * 64
-    cipher3 = ChaCha(key3, iv3, verbose=False)
+    cipher3 = ChaCha(key3, iv3, verbose=0)
     result3 = cipher3.next(block3)
     check_block(result3, expected3, "TC3-128-8")
     print
@@ -567,7 +567,7 @@ def main():
                  0xd1, 0x3f, 0x0e, 0x31, 0xc8, 0x22, 0x44, 0xd3,
                  0x3a, 0xbb, 0xc1, 0xb1, 0x1e, 0x8b, 0xf1, 0x2d]
     block4 = [0x00] * 64
-    cipher4 = ChaCha(key4, iv4, verbose=False)
+    cipher4 = ChaCha(key4, iv4, verbose=0)
     result4 = cipher4.next(block4)
     check_block(result4, expected4, "TC4-128-8")
     print
@@ -586,7 +586,7 @@ def main():
                  0x86, 0xe0, 0x66, 0xe1, 0x7c, 0x71, 0xa4, 0x17,
                  0x6a, 0xc6, 0x84, 0xaf, 0x1c, 0x93, 0x19, 0x96]
     block5 = [0x00] * 64
-    cipher5 = ChaCha(key5, iv5, verbose=False)
+    cipher5 = ChaCha(key5, iv5, verbose=0)
     result5 = cipher5.next(block5)
     check_block(result5, expected5, "TC5-128-8")
     print
@@ -605,7 +605,7 @@ def main():
                  0x48, 0x13, 0x6e, 0xba, 0xb7, 0x32, 0x99, 0x50,
                  0x68, 0x55, 0xc0, 0xf5, 0x43, 0x7a, 0x36, 0xc6]
     block6 = [0x00] * 64
-    cipher6 = ChaCha(key6, iv6, verbose=False)
+    cipher6 = ChaCha(key6, iv6, verbose=0)
     result6 = cipher6.next(block6)
     check_block(result6, expected6, "TC6-128-8")
     print
@@ -625,7 +625,7 @@ def main():
                  0x15, 0x5e, 0x86, 0x7f, 0x93, 0x73, 0x1b, 0xfb,
                  0xe2, 0x4f, 0xab, 0x49, 0x55, 0x90, 0xb2, 0x31]
     block7 = [0x00] * 64
-    cipher7 = ChaCha(key7, iv7, verbose=False)
+    cipher7 = ChaCha(key7, iv7, verbose=0)
     result7 = cipher7.next(block7)
     check_block(result7, expected7, "TC7-128-8")
     print
@@ -645,7 +645,7 @@ def main():
                  0xaa, 0x1c, 0x7c, 0xe1, 0x1b, 0x7d, 0x78, 0xf2,
                  0xd5, 0x0b, 0xd3, 0x60, 0x2b, 0xbd, 0x25, 0x94]
     block8 = [0x00] * 64
-    cipher8 = ChaCha(key8, iv8, verbose=False)
+    cipher8 = ChaCha(key8, iv8, verbose=0)
     result8 = cipher8.next(block8)
     check_block(result8, expected8, "TC8-128-8")
     print
