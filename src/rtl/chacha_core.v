@@ -1010,7 +1010,6 @@ module chacha_core(
                 block_ctr_rst   = 1;
                 data_in_we      = 1;
                 rounds_we       = 1;
-                init_block      = 1;
                 chacha_ctrl_new = CTRL_INIT;
                 chacha_ctrl_we  = 1;
               end
@@ -1022,7 +1021,8 @@ module chacha_core(
         CTRL_INIT:
           begin
             init_block      = 1;
-            chacha_ctrl_new = CTRL_ROUNDS;
+//            chacha_ctrl_new = CTRL_ROUNDS;
+            chacha_ctrl_new = CTRL_INIT;
             chacha_ctrl_we  = 1;
           end
         
