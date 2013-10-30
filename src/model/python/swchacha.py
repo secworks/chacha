@@ -108,14 +108,14 @@ class ChaCha():
             self.state[1]  = SIGMA[1]
             self.state[2]  = SIGMA[2]
             self.state[3]  = SIGMA[3]
-            self.state[4]  = keyword0
-            self.state[5]  = keyword1
-            self.state[6]  = keyword2
-            self.state[7]  = keyword3
-            self.state[8]  = keyword4
-            self.state[9]  = keyword5
-            self.state[10] = keyword6
-            self.state[11] = keyword7
+            self.state[4]  = keyword7
+            self.state[5]  = keyword6
+            self.state[6]  = keyword5
+            self.state[7]  = keyword4
+            self.state[8]  = keyword3
+            self.state[9]  = keyword2
+            self.state[10] = keyword1
+            self.state[11] = keyword0
         else:
             print("Key length of %d bits, is not supported." % (len(key) * 8))
 
@@ -612,7 +612,7 @@ def main():
 
     
     # Testing with TC7-128-8
-    print("TC7-128-8: Odd bits set. 128 bit key, 8 rounds.")
+    print("TC7-128-8: Key and IV are increasing, decreasing patterns. 128 bit key, 8 rounds.")
     key7 = [0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
             0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff]
     iv7  = [0x0f, 0x1e, 0x2d, 0x3c, 0x4b, 0x59, 0x68, 0x77]
@@ -625,7 +625,7 @@ def main():
                  0x15, 0x5e, 0x86, 0x7f, 0x93, 0x73, 0x1b, 0xfb,
                  0xe2, 0x4f, 0xab, 0x49, 0x55, 0x90, 0xb2, 0x31]
     block7 = [0x00] * 64
-    cipher7 = ChaCha(key7, iv7, verbose=0)
+    cipher7 = ChaCha(key7, iv7, verbose=1)
     result7 = cipher7.next(block7)
     check_block(result7, expected7, "TC7-128-8")
     print
