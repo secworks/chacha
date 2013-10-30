@@ -318,14 +318,63 @@ module tb_chacha_core();
       // dump_inout();
 
       // TC2: Single bit in key set.
-      $display("TC2: Single bit in key.");
-      tb_core_key = 256'h0100000000000000000000000000000000000000000000000000000000000000;
-      tb_core_iv = 64'h0000000000000001;
-      tb_core_keylen    = 1;
-      tb_core_init = 1;
+      // 256 bit key.
+      $display("TC2: Single bit in key. 256 bit key.");
+      tb_core_key    = 256'h0100000000000000000000000000000000000000000000000000000000000000;
+      tb_core_iv     = 64'h0000000000000000;
+      tb_core_keylen = 1;
+      tb_core_init   = 1;
       // dump_inout();
       #(4 * CLK_HALF_PERIOD);
       tb_core_init = 0;
+      dump_state();
+      dump_inout();
+      #(100 * CLK_HALF_PERIOD);
+      dump_state();
+      dump_inout();
+
+      // Cycle reset.
+      #(4 * CLK_HALF_PERIOD);
+      tb_reset_n = 0;
+      #(4 * CLK_HALF_PERIOD);
+      @(negedge tb_clk)
+      tb_reset_n = 1;
+
+      // TC7-1: Increasing, decreasing sequences in key and IV.
+      // 128 bit key.
+      $display("TC7-1: Key and IV are increasing, decreasing patterns. 128 bit key.");
+      tb_core_key    = 256'h00112233445566778899aabbccddeeff00000000000000000000000000000000;
+      tb_core_iv     = 64'h0f1e2d3c4b596877;
+      tb_core_keylen = 0;
+      tb_core_init   = 1;
+      // dump_inout();
+      #(4 * CLK_HALF_PERIOD);
+      tb_core_init = 0;
+      dump_state();
+      dump_inout();
+      #(100 * CLK_HALF_PERIOD);
+      dump_state();
+      dump_inout();
+
+      // Cycle reset.
+      #(4 * CLK_HALF_PERIOD);
+      tb_reset_n = 0;
+      #(4 * CLK_HALF_PERIOD);
+      @(negedge tb_clk)
+      tb_reset_n = 1;
+      
+      // TC7-2: Increasing, decreasing sequences in key and IV.
+      // 256 bit key.
+      $display("TC7-2: Key and IV are increasing, decreasing patterns. 256 bit key.");
+      tb_core_key    = 256'h00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff;
+      tb_core_iv     = 64'h0f1e2d3c4b596877;
+      tb_core_keylen = 1;
+      tb_core_init   = 1;
+      // dump_inout();
+      #(4 * CLK_HALF_PERIOD);
+      tb_core_init = 0;
+      dump_state();
+      dump_inout();
       #(100 * CLK_HALF_PERIOD);
       dump_state();
       dump_inout();
