@@ -773,10 +773,14 @@ module chacha_core(
       if (init_cipher)
         begin
           state_we = 1;
-          new_state_word4  = key[31 : 0];
-          new_state_word5  = key[63 : 32];
-          new_state_word6  = key[95 : 64];
-          new_state_word7  = key[127 : 96];
+          new_state_word4  = {key[231 : 224], key[239 : 232], 
+                              key[247 : 240], key[255 : 248]};
+          new_state_word5  = {key[199 : 192], key[207 : 200], 
+                              key[215 : 208], key[223 : 216]};
+          new_state_word6  = {key[167 : 160], key[175 : 168], 
+                              key[183 : 176], key[191 : 184]};
+          new_state_word7  = {key[135 : 128], key[143 : 136], 
+                              key[151 : 144], key[159 : 152]};
           new_state_word12 = 32'h00000000;
           new_state_word13 = 32'h00000000;
           new_state_word14 = iv[31 : 0];
@@ -789,10 +793,10 @@ module chacha_core(
               new_state_word1  = SIGMA1;
               new_state_word2  = SIGMA2;
               new_state_word3  = SIGMA3;
-              new_state_word8  = key[159 : 128];
-              new_state_word9  = key[191 : 160];
-              new_state_word10 = key[223 : 192];
-              new_state_word11 = key[255 : 224];
+              new_state_word8  = new_state_word4;
+              new_state_word9  = new_state_word5;
+              new_state_word10 = new_state_word6;
+              new_state_word11 = new_state_word7;
             end
           else
             begin
@@ -801,10 +805,14 @@ module chacha_core(
               new_state_word1  = TAU1;
               new_state_word2  = TAU2;
               new_state_word3  = TAU3;
-              new_state_word8  = key[31 : 0];
-              new_state_word9  = key[63 : 32];
-              new_state_word10 = key[95 : 64];
-              new_state_word11 = key[127 : 96];
+              new_state_word8  = {key[103 :  96], key[111 : 104],
+                                  key[119 : 112], key[127 : 120]};
+              new_state_word9  = {key[71  :  64], key[79  :  72],
+                                  key[87  :  80], key[95  :  88]};
+              new_state_word10 = {key[39  :  32], key[47  :  40],
+                                  key[55  :  48], key[63  :  56]};
+              new_state_word11 = {key[7   :   0], key[15  :   8],
+                                  key[23  :  16], key[31  :  24]};
             end
         end // if (init_cipher)
       
