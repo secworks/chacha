@@ -334,6 +334,7 @@ module tb_chacha_core();
       dump_inout();
 
       // Cycle reset.
+      $display("Cycling reset.");
       #(4 * CLK_HALF_PERIOD);
       tb_reset_n = 0;
       #(4 * CLK_HALF_PERIOD);
@@ -347,6 +348,7 @@ module tb_chacha_core();
       tb_core_iv     = 64'h0f1e2d3c4b596877;
       tb_core_keylen = 0;
       tb_core_init   = 1;
+      dump_inout();
       // dump_inout();
       #(4 * CLK_HALF_PERIOD);
       tb_core_init = 0;
@@ -357,6 +359,7 @@ module tb_chacha_core();
       dump_inout();
 
       // Cycle reset.
+      $display("Cycling reset.");
       #(4 * CLK_HALF_PERIOD);
       tb_reset_n = 0;
       #(4 * CLK_HALF_PERIOD);
