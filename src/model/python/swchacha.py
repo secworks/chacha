@@ -301,7 +301,7 @@ class ChaCha():
         print(" 4: 0x%08x,  5: 0x%08x,  6: 0x%08x,  7: 0x%08x" %\
               (self.state[4], self.state[5], self.state[6], self.state[7]))
         print(" 8: 0x%08x,  9: 0x%08x, 10: 0x%08x, 11: 0x%08x" %\
-              (self.state[9], self.state[10], self.state[11], self.state[12]))
+              (self.state[8], self.state[9], self.state[10], self.state[11]))
         print("12: 0x%08x, 13: 0x%08x, 14: 0x%08x, 15: 0x%08x" %\
               (self.state[12], self.state[13], self.state[14], self.state[15]))
         print("")
@@ -524,7 +524,7 @@ def main():
                  0x8c, 0xd8, 0x46, 0x4d, 0x37, 0x63, 0xdd, 0xbb,
                  0x92, 0x22, 0xee, 0x3b, 0xd8, 0xfa, 0xe3, 0xc8]
     block2 = [0x00] * 64
-    cipher2 = ChaCha(key2, iv2, verbose=1)
+    cipher2 = ChaCha(key2, iv2, verbose=0)
     result2 = cipher2.next(block2)
     check_block(result2, expected2, "TC2-256-8")
     print
