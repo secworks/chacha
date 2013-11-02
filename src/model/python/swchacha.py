@@ -108,14 +108,14 @@ class ChaCha():
             self.state[1]  = SIGMA[1]
             self.state[2]  = SIGMA[2]
             self.state[3]  = SIGMA[3]
-            self.state[4]  = keyword7
-            self.state[5]  = keyword6
-            self.state[6]  = keyword5
-            self.state[7]  = keyword4
-            self.state[8]  = keyword3
-            self.state[9]  = keyword2
-            self.state[10] = keyword1
-            self.state[11] = keyword0
+            self.state[4]  = keyword0
+            self.state[5]  = keyword1
+            self.state[6]  = keyword2
+            self.state[7]  = keyword3
+            self.state[8]  = keyword4
+            self.state[9]  = keyword5
+            self.state[10] = keyword6
+            self.state[11] = keyword7
         else:
             print("Key length of %d bits, is not supported." % (len(key) * 8))
 
@@ -501,7 +501,7 @@ def main():
                  0x5c, 0x97, 0x2a, 0xc4, 0xc9, 0x2a, 0xb9, 0xda,
                  0x37, 0x13, 0xe1, 0x9f, 0x76, 0x1e, 0xaa, 0x14]
     block2 = [0x00] * 64
-    cipher2 = ChaCha(key2, iv2, verbose=0)
+    cipher2 = ChaCha(key2, iv2, verbose=1)
     result2 = cipher2.next(block2)
     check_block(result2, expected2, "TC2-128-8")
     print
@@ -524,7 +524,7 @@ def main():
                  0x8c, 0xd8, 0x46, 0x4d, 0x37, 0x63, 0xdd, 0xbb,
                  0x92, 0x22, 0xee, 0x3b, 0xd8, 0xfa, 0xe3, 0xc8]
     block2 = [0x00] * 64
-    cipher2 = ChaCha(key2, iv2, verbose=0)
+    cipher2 = ChaCha(key2, iv2, verbose=1)
     result2 = cipher2.next(block2)
     check_block(result2, expected2, "TC2-256-8")
     print
