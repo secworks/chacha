@@ -190,15 +190,45 @@ class ChaCha():
     # double round.
     #---------------------------------------------------------------
     def _doubleround(self):
+        if (self.verbose > 0):
+            print("Start of double round processing.")
+        
         self._quarterround(0, 4,  8, 12)
+        if (self.verbose > 1):
+            print("X after QR 0")
+            self._print_x()
         self._quarterround(1, 5,  9, 13)
+        if (self.verbose > 1):
+            print("X after QR 1")
+            self._print_x()
         self._quarterround(2, 6, 10, 14)
+        if (self.verbose > 1):
+            print("X after QR 2")
+            self._print_x()
         self._quarterround(3, 7, 11, 15)
+        if (self.verbose > 1):
+            print("X after QR 3")
+            self._print_x()
         
         self._quarterround(0, 5, 10, 15)
+        if (self.verbose > 1):
+            print("X after QR 4")
+            self._print_x()
         self._quarterround(1, 6, 11, 12)
+        if (self.verbose > 1):
+            print("X after QR 5")
+            self._print_x()
         self._quarterround(2, 7,  8, 13)
+        if (self.verbose > 1):
+            print("X after QR 6")
+            self._print_x()
         self._quarterround(3, 4,  9, 14)
+        if (self.verbose > 1):
+            print("X after QR 7")
+            self._print_x()
+            
+        if (self.verbose > 0):
+            print("End of double round processing.")
 
             
     #---------------------------------------------------------------
@@ -501,7 +531,7 @@ def main():
                  0x5c, 0x97, 0x2a, 0xc4, 0xc9, 0x2a, 0xb9, 0xda,
                  0x37, 0x13, 0xe1, 0x9f, 0x76, 0x1e, 0xaa, 0x14]
     block2 = [0x00] * 64
-    cipher2 = ChaCha(key2, iv2, verbose=1)
+    cipher2 = ChaCha(key2, iv2, verbose=0)
     result2 = cipher2.next(block2)
     check_block(result2, expected2, "TC2-128-8")
     print
@@ -524,7 +554,7 @@ def main():
                  0x8c, 0xd8, 0x46, 0x4d, 0x37, 0x63, 0xdd, 0xbb,
                  0x92, 0x22, 0xee, 0x3b, 0xd8, 0xfa, 0xe3, 0xc8]
     block2 = [0x00] * 64
-    cipher2 = ChaCha(key2, iv2, verbose=1)
+    cipher2 = ChaCha(key2, iv2, verbose=0)
     result2 = cipher2.next(block2)
     check_block(result2, expected2, "TC2-256-8")
     print
@@ -625,7 +655,7 @@ def main():
                  0x15, 0x5e, 0x86, 0x7f, 0x93, 0x73, 0x1b, 0xfb,
                  0xe2, 0x4f, 0xab, 0x49, 0x55, 0x90, 0xb2, 0x31]
     block7 = [0x00] * 64
-    cipher7 = ChaCha(key7, iv7, verbose=1)
+    cipher7 = ChaCha(key7, iv7, verbose=2)
     result7 = cipher7.next(block7)
     check_block(result7, expected7, "TC7-128-8")
     print
