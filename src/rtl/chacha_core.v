@@ -1021,8 +1021,7 @@ module chacha_core(
         CTRL_INIT:
           begin
             init_block      = 1;
-//            chacha_ctrl_new = CTRL_ROUNDS;
-            chacha_ctrl_new = CTRL_INIT;
+            chacha_ctrl_new = CTRL_ROUNDS;
             chacha_ctrl_we  = 1;
           end
         
