@@ -68,7 +68,11 @@ module tb_chacha_core();
   wire           tb_core_ready;
   reg [0 : 511]  tb_core_data_in;
   wire [0 : 511] tb_core_data_out;
-  
+
+  reg            display_qround;
+  reg            display_state;
+  reg            display_x_state;
+
   
   //----------------------------------------------------------------
   // chacha_core device under test.
@@ -119,39 +123,44 @@ module tb_chacha_core();
     begin : dut_monitor
       cycle_ctr = cycle_ctr + 1;
       $display("cycle = %08x:", cycle_ctr);
-      $display("");
-
       $display("chacha_ctrl_reg = %01x", dut.chacha_ctrl_reg);
-
-
       $display("qr_ctr_reg = %01x, dr_ctr_reg = %01x", dut.qr_ctr_reg, dut.dr_ctr_reg);
 
-      $display("Internal state:");
-      $display("0x%064x", dut.state_reg);
-      $display("");
-      
-      $display("Round state X:");
-      $display("x0_reg   = %08x, x0_new   = %08x, x0_we  = %01x", dut.x0_reg, dut.x0_new, dut.x0_we);
-      $display("x1_reg   = %08x, x1_new   = %08x, x1_we  = %01x", dut.x1_reg, dut.x1_new, dut.x1_we);
-      $display("x2_reg   = %08x, x2_new   = %08x, x2_we  = %01x", dut.x2_reg, dut.x2_new, dut.x2_we);
-      $display("x3_reg   = %08x, x3_new   = %08x, x3_we  = %01x", dut.x3_reg, dut.x3_new, dut.x3_we);
-      $display("x4_reg   = %08x, x4_new   = %08x, x4_we  = %01x", dut.x4_reg, dut.x4_new, dut.x4_we);
-      $display("x5_reg   = %08x, x5_new   = %08x, x5_we  = %01x", dut.x5_reg, dut.x5_new, dut.x5_we);
-      $display("x6_reg   = %08x, x6_new   = %08x, x6_we  = %01x", dut.x6_reg, dut.x6_new, dut.x6_we);
-      $display("x7_reg   = %08x, x7_new   = %08x, x7_we  = %01x", dut.x7_reg, dut.x7_new, dut.x7_we);
-      $display("x8_reg   = %08x, x8_new   = %08x, x8_we  = %01x", dut.x8_reg, dut.x8_new, dut.x8_we);
-      $display("x9_reg   = %08x, x9_new   = %08x, x9_we  = %01x", dut.x9_reg, dut.x9_new, dut.x9_we);
-      $display("x10_reg  = %08x, x10_new  = %08x, x10_we = %01x", dut.x10_reg, dut.x10_new, dut.x10_we);
-      $display("x11_reg  = %08x, x11_new  = %08x, x11_we = %01x", dut.x11_reg, dut.x11_new, dut.x11_we);
-      $display("x12_reg  = %08x, x12_new  = %08x, x12_we = %01x", dut.x12_reg, dut.x12_new, dut.x12_we);
-      $display("x13_reg  = %08x, x13_new  = %08x, x13_we = %01x", dut.x13_reg, dut.x13_new, dut.x13_we);
-      $display("x14_reg  = %08x, x14_new  = %08x, x14_we = %01x", dut.x14_reg, dut.x14_new, dut.x14_we);
-      $display("x15_reg  = %08x, x15_new  = %08x, x15_we = %01x", dut.x15_reg, dut.x15_new, dut.x15_we);
-      $display("");
+      if (display_state)
+        begin
+          $display("Internal state:");
+          $display("0x%064x", dut.state_reg);
+          $display("");
+        end
+          
+      if (display_x_state)
+        begin
+          $display("Round state X:");
+          $display("x0_reg   = %08x, x0_new   = %08x, x0_we  = %01x", dut.x0_reg, dut.x0_new, dut.x0_we);
+          $display("x1_reg   = %08x, x1_new   = %08x, x1_we  = %01x", dut.x1_reg, dut.x1_new, dut.x1_we);
+          $display("x2_reg   = %08x, x2_new   = %08x, x2_we  = %01x", dut.x2_reg, dut.x2_new, dut.x2_we);
+          $display("x3_reg   = %08x, x3_new   = %08x, x3_we  = %01x", dut.x3_reg, dut.x3_new, dut.x3_we);
+          $display("x4_reg   = %08x, x4_new   = %08x, x4_we  = %01x", dut.x4_reg, dut.x4_new, dut.x4_we);
+          $display("x5_reg   = %08x, x5_new   = %08x, x5_we  = %01x", dut.x5_reg, dut.x5_new, dut.x5_we);
+          $display("x6_reg   = %08x, x6_new   = %08x, x6_we  = %01x", dut.x6_reg, dut.x6_new, dut.x6_we);
+          $display("x7_reg   = %08x, x7_new   = %08x, x7_we  = %01x", dut.x7_reg, dut.x7_new, dut.x7_we);
+          $display("x8_reg   = %08x, x8_new   = %08x, x8_we  = %01x", dut.x8_reg, dut.x8_new, dut.x8_we);
+          $display("x9_reg   = %08x, x9_new   = %08x, x9_we  = %01x", dut.x9_reg, dut.x9_new, dut.x9_we);
+          $display("x10_reg  = %08x, x10_new  = %08x, x10_we = %01x", dut.x10_reg, dut.x10_new, dut.x10_we);
+          $display("x11_reg  = %08x, x11_new  = %08x, x11_we = %01x", dut.x11_reg, dut.x11_new, dut.x11_we);
+          $display("x12_reg  = %08x, x12_new  = %08x, x12_we = %01x", dut.x12_reg, dut.x12_new, dut.x12_we);
+          $display("x13_reg  = %08x, x13_new  = %08x, x13_we = %01x", dut.x13_reg, dut.x13_new, dut.x13_we);
+          $display("x14_reg  = %08x, x14_new  = %08x, x14_we = %01x", dut.x14_reg, dut.x14_new, dut.x14_we);
+          $display("x15_reg  = %08x, x15_new  = %08x, x15_we = %01x", dut.x15_reg, dut.x15_new, dut.x15_we);
+          $display("");
+        end
 
-      $display("a      = %08x, b      = %08x, c      = %08x, d      = %08x", dut.quarterround.a, dut.quarterround.b, dut.quarterround.c, dut.quarterround.d);
-      $display("a_prim = %08x, b_prim = %08x, c_prim = %08x, d_prim = %08x", dut.a_prim, dut.b_prim, dut.c_prim, dut.d_prim);
-      $display("");
+      if (display_qround)
+        begin
+          $display("a      = %08x, b      = %08x, c      = %08x, d      = %08x", dut.quarterround.a, dut.quarterround.b, dut.quarterround.c, dut.quarterround.d);
+          $display("a_prim = %08x, b_prim = %08x, c_prim = %08x, d_prim = %08x", dut.a_prim, dut.b_prim, dut.c_prim, dut.d_prim);
+          $display("");
+        end
       
     end // dut_monitor
 
@@ -285,7 +294,11 @@ module tb_chacha_core();
       tb_core_init      = 0;
       tb_core_next      = 0;
       tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-      
+
+      // Turn of all monitor display functions.
+      display_state   = 0;
+      display_x_state = 0;
+      display_qround  = 0;
       
       $display("");
       $display("*** State at init ***");
@@ -352,6 +365,7 @@ module tb_chacha_core();
       // dump_inout();
       #(4 * CLK_HALF_PERIOD);
       tb_core_init = 0;
+      display_qround = 1;
       dump_state();
       dump_inout();
       #(100 * CLK_HALF_PERIOD);
@@ -373,6 +387,8 @@ module tb_chacha_core();
       tb_core_iv     = 64'h0f1e2d3c4b596877;
       tb_core_keylen = 1;
       tb_core_init   = 1;
+      display_x_state = 1;
+      display_qround  = 1;
       // dump_inout();
       #(4 * CLK_HALF_PERIOD);
       tb_core_init = 0;
