@@ -71,13 +71,13 @@ module chacha_core(
   //----------------------------------------------------------------
   // Datapath quartterround states names.
   parameter QR0 = 3'h0;
-  parameter QR1 = 3'h0;
-  parameter QR2 = 3'h0;
-  parameter QR3 = 3'h0;
-  parameter QR4 = 3'h0;
-  parameter QR5 = 3'h0;
-  parameter QR6 = 3'h0;
-  parameter QR7 = 3'h0;
+  parameter QR1 = 3'h1;
+  parameter QR2 = 3'h2;
+  parameter QR3 = 3'h3;
+  parameter QR4 = 3'h4;
+  parameter QR5 = 3'h5;
+  parameter QR6 = 3'h6;
+  parameter QR7 = 3'h7;
 
   // NUM_ROUNDS
   // Default number of rounds
