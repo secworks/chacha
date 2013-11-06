@@ -396,6 +396,8 @@ module tb_chacha_core();
       dump_state();
       dump_inout();
       #(100 * CLK_HALF_PERIOD);
+      display_x_state = 0;
+      display_qround  = 0;
       dump_state();
       dump_inout();
       
