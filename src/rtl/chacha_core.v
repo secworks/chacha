@@ -1036,7 +1036,7 @@ module chacha_core(
             if (qr_ctr_reg == QR7)
               begin
                 dr_ctr_inc = 1;
-                if (dr_ctr_reg == rounds_reg)
+                if (dr_ctr_reg == (rounds_reg - 1))
                   begin
                     chacha_ctrl_new = CTRL_FINALIZE;
                     chacha_ctrl_we  = 1;
