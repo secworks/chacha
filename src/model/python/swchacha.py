@@ -348,7 +348,7 @@ class ChaCha():
         print(" 4: 0x%08x,  5: 0x%08x,  6: 0x%08x,  7: 0x%08x" %\
               (self.x[4], self.x[5], self.x[6], self.x[7]))
         print(" 8: 0x%08x,  9: 0x%08x, 10: 0x%08x, 11: 0x%08x" %\
-              (self.x[9], self.x[10], self.x[11], self.x[12]))
+              (self.x[8], self.x[9], self.x[10], self.x[11]))
         print("12: 0x%08x, 13: 0x%08x, 14: 0x%08x, 15: 0x%08x" %\
               (self.x[12], self.x[13], self.x[14], self.x[15]))
         print("")
