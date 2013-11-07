@@ -69,6 +69,8 @@ module tb_chacha_core();
   reg [0 : 511]  tb_core_data_in;
   wire [0 : 511] tb_core_data_out;
 
+  reg            display_cycle_ctr;
+  reg            display_ctrl_and_ctrs;
   reg            display_qround;
   reg            display_state;
   reg            display_x_state;
@@ -116,16 +118,31 @@ module tb_chacha_core();
   
   //--------------------------------------------------------------------
   // dut_monitor
-  // Monitor displaying information every cycle.
-  // Includes the cycle counter.
+  // Monitor that displays different types of information
+  // every cycle depending on what flags test cases enable.
+  //
+  // The monitor includes a cycle counter for the testbench.
   //--------------------------------------------------------------------
   always @ (posedge tb_clk)
     begin : dut_monitor
       cycle_ctr = cycle_ctr + 1;
-      $display("cycle = %08x:", cycle_ctr);
-      $display("chacha_ctrl_reg = %01x", dut.chacha_ctrl_reg);
-      $display("qr_ctr_reg = %01x, dr_ctr_reg = %01x", dut.qr_ctr_reg, dut.dr_ctr_reg);
 
+      // Display cycle counter.
+      if (display_cycle_ctr)
+        begin
+          $display("cycle = %08x:", cycle_ctr);
+          $display("");
+        end
+
+      // Display FSM control state and QR, DR counters.
+      if (display_ctrl_and_ctrs)
+        begin
+          $display("chacha_ctrl_reg = %01x", dut.chacha_ctrl_reg);
+          $display("qr_ctr_reg = %01x, dr_ctr_reg = %01x", dut.qr_ctr_reg, dut.dr_ctr_reg);
+          $display("");
+        end
+      
+      // Display the internal state register.
       if (display_state)
         begin
           $display("Internal state:");
@@ -133,6 +150,7 @@ module tb_chacha_core();
           $display("");
         end
           
+      // Display the round processing state register X.
       if (display_x_state)
         begin
           $display("Round state X:");
@@ -155,6 +173,7 @@ module tb_chacha_core();
           $display("");
         end
 
+      // Display the qround input and outputs.
       if (display_qround)
         begin
           $display("a      = %08x, b      = %08x, c      = %08x, d      = %08x", dut.quarterround.a, dut.quarterround.b, dut.quarterround.c, dut.quarterround.d);
@@ -278,6 +297,11 @@ module tb_chacha_core();
   initial
     begin : chacha_core_test
       $display("   -- Testbench for chacha_core started --");
+      $display("");
+      
+      
+      $display("*** Test of Quarterround:");
+      $display("");
       test_quarterround(32'h11223344, 32'h11223344, 32'h11223344, 32'h11223344);
       test_quarterround(32'h55555555, 32'h55555555, 32'h55555555, 32'h55555555);
       
@@ -296,43 +320,29 @@ module tb_chacha_core();
       tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
       // Turn of all monitor display functions.
-      display_state   = 0;
-      display_x_state = 0;
-      display_qround  = 0;
+      display_cycle_ctr     = 1;
+      display_ctrl_and_ctrs = 0;
+      display_state         = 0;
+      display_x_state       = 0;
+      display_qround        = 0;
       
+      // Test of reset functionality.
+      // Note: No self test.
+      $display("*** State at init:");
       $display("");
-      $display("*** State at init ***");
       dump_state();
       
-      // Wait ten clock cycles and release reset.
       #(4 * CLK_HALF_PERIOD);
       @(negedge tb_clk)
       tb_reset_n = 1;
-      
       #(2 * CLK_HALF_PERIOD);
+      $display("*** State after release of reset:");
       $display("");
-      $display("*** State after release of reset ***");
-      //dump_state();
-      // dump_inout();
+      dump_state();
 
-      // Try and init the cipher.
-      // #(4 * CLK_HALF_PERIOD);
-      // $display("");
-      // $display("*** Initializing cipher to process first block ***");
-      // tb_core_init = 1;
-      // // dump_inout();
-      // #(4 * CLK_HALF_PERIOD);
-      // tb_core_init = 0;
-      // // dump_inout();
-      
-      // // Wait a while and observe what happens.
-      // #(100 * CLK_HALF_PERIOD);
-      // dump_state();
-      // dump_inout();
-
-      // TC2: Single bit in key set.
-      // 256 bit key.
-      $display("TC2: Single bit in key. 256 bit key.");
+      // TC2. Single bit key set. 256 bit key.
+      $display("");
+      $display("*** TC2: Single bit in key. 256 bit key.");
       tb_core_key    = 256'h0100000000000000000000000000000000000000000000000000000000000000;
       tb_core_iv     = 64'h0000000000000000;
       tb_core_keylen = 1;
@@ -356,7 +366,8 @@ module tb_chacha_core();
 
       // TC7-1: Increasing, decreasing sequences in key and IV.
       // 128 bit key.
-      $display("TC7-1: Key and IV are increasing, decreasing patterns. 128 bit key.");
+      $display("");
+      $display("*** TC7-1: Key and IV are increasing, decreasing patterns. 128 bit key.");
       tb_core_key    = 256'h00112233445566778899aabbccddeeff00000000000000000000000000000000;
       tb_core_iv     = 64'h0f1e2d3c4b596877;
       tb_core_keylen = 0;
@@ -365,8 +376,23 @@ module tb_chacha_core();
       // dump_inout();
       #(4 * CLK_HALF_PERIOD);
       tb_core_init    = 0;
-      display_qround  = 1;
-      display_x_state = 1;
+      display_qround  = 0;
+      display_x_state = 0;
+      display_state   = 0;
+      @(posedge tb_core_data_out_valid);
+      $display("");
+      $display("*** TC7-1: Done.");
+      if (tb_core_data_out == 512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055)
+        begin
+          $display("TC7-1: Success.");
+        end 
+      else
+        begin
+          $display("TC7-1: Error!");
+          $display("Expected: 0x%064x", 512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
+          $display("Got:      0x%064x", tb_core_data_out);
+        end
+      
       dump_state();
       dump_inout();
       #(100 * CLK_HALF_PERIOD);
@@ -395,7 +421,7 @@ module tb_chacha_core();
       tb_core_init = 0;
       dump_state();
       dump_inout();
-      #(100 * CLK_HALF_PERIOD);
+      @(posedge tb_core_data_out_valid);
       display_x_state = 0;
       display_qround  = 0;
       dump_state();
