@@ -47,6 +47,34 @@ module tb_chacha_core();
   //----------------------------------------------------------------
   parameter CLK_HALF_PERIOD = 2;
 
+  parameter EIGHT_ROUNDS  = 8;
+  parameter TWELWE_ROUNDS = 12;
+  parameter TWENTY_ROUNDS = 20;
+  
+  parameter TC1  = 1;
+  parameter TC2  = 2;
+  parameter TC3  = 3;
+  parameter TC4  = 4;
+  parameter TC5  = 5;
+  parameter TC6  = 6;
+  parameter TC7  = 7;
+  parameter TC8  = 8;
+  parameter TC9  = 9;
+  parameter TC10 = 10;
+  
+  parameter ONE   = 1;
+  parameter TWO   = 1;
+  parameter THREE = 1;
+  parameter FOUR  = 1;
+  parameter FIVE  = 1;
+  parameter SIX   = 1;
+  
+  parameter KEY_128_BITS = 0;
+  parameter KEY_256_BITS = 1;
+  
+  parameter DISABLE = 0;
+  parameter ENABLE  = 1;
+                        
   
   //----------------------------------------------------------------
   // Register and Wire declarations.
