@@ -289,38 +289,83 @@ module tb_chacha_core();
     end
   endtask // test_quarterround
 
-
+  
   //----------------------------------------------------------------
-  // test_vectors
-  //
-  // Test the DUT using known test vectors. Accepts key, keylenght,
-  // IV and expected value. Cycles reset and then run the core
-  // and reports if expected value was received or not.
   //----------------------------------------------------------------
-  task test_vectors(input [7 : 0]   major, 
-                    input [7 : 0]   minor, 
-                    input [256 : 0] key, 
-                    input           key_length, 
-                    input [64 : 0]  iv,
-                    input [512 : 0] expected);
+  task set_core_init(input value);
     begin
-      $display("*** TC %0d-%0d started.", major, minor);
-      $display("");
+      tb_core_init = value;
+    end
+  endtask // set_core_init
+  
+  
+  //----------------------------------------------------------------
+  //----------------------------------------------------------------
+  task set_core_next(input value);
+    begin
+      tb_core_next = value;
+    end
+  endtask // set_core_next
 
-      // Cycle reset.
+  
+  //----------------------------------------------------------------
+  // set_core_key_iv_rounds()
+  //
+  // Sets the core key, iv and rounds indata ports 
+  // to the given values.
+  //----------------------------------------------------------------
+  task set_core_key_iv_rounds(input [256 : 0] key, 
+                              input           key_length, 
+                              input [64 : 0]  iv,
+                              input [4 : 0]   rounds);
+    begin
+      tb_core_key    = key;
+      tb_core_keylen = key_length;
+      tb_core_iv     = iv;
+    end
+  endtask // set_core_key_iv
+
+  
+  //----------------------------------------------------------------
+  // cycle_reset()
+  //
+  // Cycles the reset signal on the dut.
+  //----------------------------------------------------------------
+  task cycle_reset();
+    begin
       tb_reset_n = 0;
       #(2 * CLK_HALF_PERIOD);
       @(negedge tb_clk)
       tb_reset_n = 1;
       #(2 * CLK_HALF_PERIOD);
+    end
+  endtask // cycle_reset
+  
 
-      // Init the core with given parameters.
-      tb_core_key    = key;
-      tb_core_keylen = key_length;
-      tb_core_iv     = iv;
-      tb_core_init   = 1;
+  //----------------------------------------------------------------
+  // run_test_case
+  //
+  // Runs a test case based on the given key, keylenght, IV and 
+  // expected data out from the DUT.
+  //----------------------------------------------------------------
+  task run_test_case(input [7 : 0]   major, 
+                    input [7 : 0]   minor, 
+                    input [256 : 0] key, 
+                    input           key_length, 
+                    input [64 : 0]  iv,
+                    input [4 : 0]   rounds,
+                    input [512 : 0] expected);
+    begin
+      $display("*** TC %0d-%0d started.", major, minor);
+      $display("");
+
+      cycle_reset();
+      
+      set_core_key_iv_rounds(key, key_length, iv, rounds);
+      
+      set_core_init(1);
       #(2 * CLK_HALF_PERIOD);
-      tb_core_init   = 0;
+      set_core_init(0);
 
       // Wait for valid flag and check results.
       @(posedge tb_core_data_out_valid);
@@ -339,7 +384,6 @@ module tb_chacha_core();
     end
   endtask // test_vectors
 
-
   
   //----------------------------------------------------------------
   // chacha_core_test
@@ -355,17 +399,18 @@ module tb_chacha_core();
       $display("");
       test_quarterround(32'h11223344, 32'h11223344, 32'h11223344, 32'h11223344);
       test_quarterround(32'h55555555, 32'h55555555, 32'h55555555, 32'h55555555);
-      
+        
       // Set clock, reset and DUT input signals to 
       // defined values at simulation start.
       cycle_ctr         = 0;
       tb_clk            = 0;
       tb_reset_n        = 0;
 
-      tb_core_key       = 256'h0000000000000001000000000000000100000000000000010000000000000001;
-      tb_core_keylen    = 1;
-      tb_core_rounds    = 5'b01000;
-      tb_core_iv        = 64'h0000000000000001;
+      set_core_key_iv_rounds(256'h0000000000000001000000000000000100000000000000010000000000000001,
+                        1'b0,
+                        64'h0000000000000001,
+                        5'b01000);
+      
       tb_core_init      = 0;
       tb_core_next      = 0;
       tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
@@ -393,23 +438,25 @@ module tb_chacha_core();
 
       // TC7-1: Increasing, decreasing sequences in key and IV.
       // 128 bit key.
-      test_vectors(8'h07, 
-                   8'h01, 
-                   256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
-                   1'b0,
-                   64'h0f1e2d3c4b596877,
-                   512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
+      run_test_case(8'h07, 
+                    8'h01, 
+                    256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
+                    1'b0,
+                    64'h0f1e2d3c4b596877,
+                    5'b01000,
+                    512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
 
       
       // TC7-2: Increasing, decreasing sequences in key and IV.
       // 256 bit key.
       $display("TC7-2: Key and IV are increasing, decreasing patterns. 256 bit key.");
-      test_vectors(8'h07, 
-                   8'h02, 
-                   256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
-                   1'b1,
-                   64'h0f1e2d3c4b596877,
-                   512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
+      run_test_case(8'h07, 
+                    8'h02, 
+                    256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
+                    1'b1,
+                    64'h0f1e2d3c4b596877,
+                    5'b01000,
+                    512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
       
       // Finish in style.
       $display("*** chacha_core simulation done ***");
