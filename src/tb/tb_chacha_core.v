@@ -46,10 +46,6 @@ module tb_chacha_core();
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   parameter CLK_HALF_PERIOD = 2;
-
-  parameter EIGHT_ROUNDS  = 8;
-  parameter TWELWE_ROUNDS = 12;
-  parameter TWENTY_ROUNDS = 20;
   
   parameter TC1  = 1;
   parameter TC2  = 2;
@@ -63,14 +59,20 @@ module tb_chacha_core();
   parameter TC10 = 10;
   
   parameter ONE   = 1;
-  parameter TWO   = 1;
-  parameter THREE = 1;
-  parameter FOUR  = 1;
-  parameter FIVE  = 1;
-  parameter SIX   = 1;
+  parameter TWO   = 2;
+  parameter THREE = 3;
+  parameter FOUR  = 4;
+  parameter FIVE  = 5;
+  parameter SIX   = 6;
+  parameter SEVEN = 7;
+  parameter EIGHT = 8;
   
   parameter KEY_128_BITS = 0;
   parameter KEY_256_BITS = 1;
+
+  parameter EIGHT_ROUNDS  = 8;
+  parameter TWELWE_ROUNDS = 12;
+  parameter TWENTY_ROUNDS = 20;
   
   parameter DISABLE = 0;
   parameter ENABLE  = 1;
@@ -466,24 +468,22 @@ module tb_chacha_core();
 
       // TC7-1: Increasing, decreasing sequences in key and IV.
       // 128 bit key.
-      run_test_case(8'h07, 
-                    8'h01, 
+      run_test_case(TC1, ONE, 
                     256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
-                    1'b0,
+                    KEY_128_BITS,
                     64'h0f1e2d3c4b596877,
-                    5'b01000,
+                    EIGHT_ROUNDS,
                     512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
 
       
       // TC7-2: Increasing, decreasing sequences in key and IV.
       // 256 bit key.
       $display("TC7-2: Key and IV are increasing, decreasing patterns. 256 bit key.");
-      run_test_case(8'h07, 
-                    8'h02, 
+      run_test_case(TC7, TWO,
                     256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
-                    1'b1,
+                    KEY_256_BITS,
                     64'h0f1e2d3c4b596877,
-                    5'b01000,
+                    EIGHT_ROUNDS,
                     512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
       
       // Finish in style.
