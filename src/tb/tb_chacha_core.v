@@ -365,7 +365,8 @@ module tb_chacha_core();
     begin
       tb_reset_n = 0;
       #(2 * CLK_HALF_PERIOD);
-      @(negedge tb_clk)
+
+//      @(negedge tb_clk)
       tb_reset_n = 1;
       #(2 * CLK_HALF_PERIOD);
     end
@@ -398,7 +399,7 @@ module tb_chacha_core();
       set_core_init(0);
 
       // Wait for valid flag and check results.
-      @(posedge tb_core_data_out_valid);
+//      @(dut.data_out_valid);
       if (tb_core_data_out == expected)
         begin
           $display("*** TC %0d-%0d successful", major, minor);
