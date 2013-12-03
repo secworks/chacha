@@ -445,9 +445,9 @@ module tb_chacha_core();
       tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
       // Turn of all monitor display functions.
-      display_cycle_ctr     = 1;
-      display_ctrl_and_ctrs = 1;
-      display_state         = 1;
+      display_cycle_ctr     = 0;
+      display_ctrl_and_ctrs = 0;
+      display_state         = 0;
       display_x_state       = 0;
       display_qround        = 0;
      
@@ -467,7 +467,8 @@ module tb_chacha_core();
       
       // TC7-1: Increasing, decreasing sequences in key and IV.
       // 128 bit key.
-      run_test_case(TC1, ONE, 
+     $display("TC7-1: Key and IV are increasing, decreasing patterns. 128 bit key.");
+      run_test_case(TC7, ONE, 
                     256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
                     KEY_128_BITS,
                     64'h0f1e2d3c4b596877,
@@ -477,14 +478,14 @@ module tb_chacha_core();
       
       // TC7-2: Increasing, decreasing sequences in key and IV.
       // 256 bit key.
-//      $display("TC7-2: Key and IV are increasing, decreasing patterns. 256 bit key.");
-//      run_test_case(TC7, TWO,
-//                    256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
-//                    KEY_256_BITS,
-//                    64'h0f1e2d3c4b596877,
-//                    EIGHT_ROUNDS,
-//                    512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
-//
+     $display("TC7-2: Key and IV are increasing, decreasing patterns. 256 bit key.");
+     run_test_case(TC7, TWO,
+                   256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
+                   KEY_256_BITS,
+                   64'h0f1e2d3c4b596877,
+                   EIGHT_ROUNDS,
+                   512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
+
 
       // Finish in style.
       $display("*** chacha_core simulation done ***");
