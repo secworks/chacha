@@ -493,7 +493,7 @@ module tb_chacha_core();
 
       
       $display("TC1-4: All zero inputs. 256 bit key, 8 rounds.");
-      run_test_case(TC1, ONE, 
+      run_test_case(TC1, FOUR, 
                     256'h0000000000000000000000000000000000000000000000000000000000000000,
                     KEY_256_BITS,
                     64'h0000000000000000,
@@ -502,7 +502,7 @@ module tb_chacha_core();
       
       
       $display("TC1-5: All zero inputs. 256 bit key, 12 rounds.");
-      run_test_case(TC1, TWO, 
+      run_test_case(TC1, FIVE, 
                     256'h0000000000000000000000000000000000000000000000000000000000000000,
                     KEY_256_BITS,
                     64'h0000000000000000,
@@ -511,13 +511,13 @@ module tb_chacha_core();
       
       
       $display("TC1-6: All zero inputs. 256 bit key, 20 rounds.");
-      run_test_case(TC1, THREE, 
+      run_test_case(TC1, SIX, 
                     256'h0000000000000000000000000000000000000000000000000000000000000000,
                     KEY_256_BITS,
                     64'h0000000000000000,
                     TWENTY_ROUNDS,
                     512'h76b8e0ada0f13d90405d6ae55386bd28bdd219b8a08ded1aa836efcc8b770dc7da41597c5157488d7724e03fb8d84a376a43b8f41518a11cc387b669b2ee6586);
-      
+
       
       $display("TC7-1: Increasing, decreasing sequences in key and IV. 128 bit key, 8 rounds");
       run_test_case(TC7, ONE, 
