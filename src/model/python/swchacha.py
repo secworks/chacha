@@ -583,7 +583,7 @@ def main():
 
     
     # Testing with TC4-128-8.
-    # All bits in key IV are set.. 128 bit key, 8 rounds.
+    # All bits in key IV are set. 128 bit key, 8 rounds.
     print("TC4-128-8: All bits in key IV are set. 128 bit key, 8 rounds.")
     key4 = [0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
             0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]
