@@ -465,7 +465,6 @@ module tb_chacha_core();
       $display("");
       dump_state();
       
-      // TC1-1: Increasing, decreasing sequences in key and IV. 128 bit key and 8 rounds.
       $display("TC1-1: All zero inputs. 128 bit key, 8 rounds.");
       run_test_case(TC1, ONE, 
                     256'h0000000000000000000000000000000000000000000000000000000000000000,
@@ -475,7 +474,6 @@ module tb_chacha_core();
                     512'he28a5fa4a67f8c5defed3e6fb7303486aa8427d31419a729572d777953491120b64ab8e72b8deb85cd6aea7cb6089a101824beeb08814a428aab1fa2c816081b);
 
       
-      // TC1-2: Increasing, decreasing sequences in key and IV. 128 bit key and 12 rounds.
      $display("TC1-2: All zero inputs. 128 bit key, 12 rounds.");
       run_test_case(TC1, TWO, 
                     256'h0000000000000000000000000000000000000000000000000000000000000000,
@@ -483,10 +481,18 @@ module tb_chacha_core();
                     64'h0000000000000000,
                     TWELWE_ROUNDS,
                     512'he1047ba9476bf8ff312c01b4345a7d8ca5792b0ad467313f1dc412b5fdce32410dea8b68bd774c36a920f092a04d3f95274fbeff97bc8491fcef37f85970b450);
+
       
+     $display("TC1-3: All zero inputs. 128 bit key, 20 rounds.");
+      run_test_case(TC1, THREE, 
+                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    KEY_128_BITS,
+                    64'h0000000000000000,
+                    TWENTY_ROUNDS,
+                    512'h89670952608364fd00b2f90936f031c8e756e15dba04b8493d00429259b20f46cc04f111246b6c2ce066be3bfb32d9aa0fddfbc12123d4b9e44f34dca05a103f);
+
       
-      // TC7-1: Increasing, decreasing sequences in key and IV. 128 bit key and 8 rounds.
-     $display("TC7-1: Key and IV are increasing, decreasing patterns. 128 bit key, 8 rounds");
+      $display("TC7-1: Increasing, decreasing sequences in key and IV. 128 bit key, 8 rounds");
       run_test_case(TC7, ONE, 
                     256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
                     KEY_128_BITS,
@@ -495,8 +501,7 @@ module tb_chacha_core();
                     512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
 
       
-      // TC7-2: Increasing, decreasing sequences in key and IV. 256 bit key and 8 rounds.
-     $display("TC7-2: Key and IV are increasing, decreasing patterns. 256 bit key, 8 rounds.");
+      $display("TC7-2: Increasing, decreasing sequences in key and IV. 256 bit key, 8 rounds.");
       run_test_case(TC7, TWO,
                     256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
                     KEY_256_BITS,
@@ -505,7 +510,6 @@ module tb_chacha_core();
                     512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
 
       
-      // TC8-1: Random inputs. 128 bit key, 8 rounds.
       $display("TC8-128-8: Random inputs. 128 bit key, 8 rounds.");
       run_test_case(TC8, ONE,
                     256'hc46ec1b18ce8a878725a37e780dfb73500000000000000000000000000000000,
