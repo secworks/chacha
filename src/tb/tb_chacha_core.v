@@ -464,6 +464,7 @@ module tb_chacha_core();
       $display("*** State after release of reset:");
       $display("");
       dump_state();
+
       
       // TC7-1: Increasing, decreasing sequences in key and IV.
       // 128 bit key.
@@ -479,14 +480,24 @@ module tb_chacha_core();
       // TC7-2: Increasing, decreasing sequences in key and IV.
       // 256 bit key.
      $display("TC7-2: Key and IV are increasing, decreasing patterns. 256 bit key.");
-     run_test_case(TC7, TWO,
-                   256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
-                   KEY_256_BITS,
-                   64'h0f1e2d3c4b596877,
-                   EIGHT_ROUNDS,
-                   512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
+      run_test_case(TC7, TWO,
+                    256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
+                    KEY_256_BITS,
+                    64'h0f1e2d3c4b596877,
+                    EIGHT_ROUNDS,
+                    512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
 
-
+      
+      // TC8-1: Random inputs. 128 bit key, 8 rounds.
+      $display("TC8-128-8: Random inputs. 128 bit key, 8 rounds.");
+      run_test_case(TC8, ONE,
+                    256'hc46ec1b18ce8a878725a37e780dfb73500000000000000000000000000000000,
+                    KEY_128_BITS,
+                    64'h1ada31d5cf688221,
+                    EIGHT_ROUNDS,
+                    512'h6a870108859f679118f3e205e2a56a6826ef5a60a4102ac8d4770059fcb7c7bae02f5ce004a6bfbbea53014dd82107c0aa1c7ce11b7d78f2d50bd3602bbd2594);
+      
+        
       // Finish in style.
       $display("*** chacha_core simulation done ***");
       $finish;
