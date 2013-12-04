@@ -387,7 +387,7 @@ module tb_chacha_core();
                     input           key_length, 
                     input [64 : 0]  iv,
                     input [4 : 0]   rounds,
-                    input [512 : 0] expected);
+                    input [511 : 0] expected);
     begin
       $display("*** TC %0d-%0d started.", major, minor);
       $display("");
