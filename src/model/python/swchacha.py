@@ -477,7 +477,7 @@ def main():
 
 
     # Testing with TC1-256-12.
-    # All zero inputs. IV all zero. 256 bit key, 8 rounds.
+    # All zero inputs. IV all zero. 256 bit key, 12 rounds.
     print("TC1-256-12: All zero inputs. 256 bit key, 12 rounds.")
     key1 = [0x00] * 32
     iv1  = [0x00] * 8
@@ -497,7 +497,7 @@ def main():
 
 
     # Testing with TC1-256-20.
-    # All zero inputs. IV all zero. 256 bit key, 8 rounds.
+    # All zero inputs. IV all zero. 256 bit key, 20 rounds.
     print("TC1-256-20: All zero inputs. 256 bit key, 20 rounds.")
     key1 = [0x00] * 32
     iv1  = [0x00] * 8
