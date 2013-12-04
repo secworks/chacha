@@ -546,6 +546,24 @@ module tb_chacha_core();
                     512'h25f5bec6683916ff44bccd12d102e692176663f4cac53e719509ca74b6b2eec85da4236fb29902012adc8f0d86c8187d25cd1c486966930d0204c4ee88a6ab35);
       
       
+      $display("TC4-1: All bits in key and IV are set. 128 bit key, 8 rounds.");
+      run_test_case(TC4, ONE, 
+                    256'hffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff,
+                    KEY_128_BITS,
+                    64'hffffffffffffffff,
+                    EIGHT_ROUNDS,
+                    512'h2204d5b81ce662193e00966034f91302f14a3fb047f58b6e6ef0d721132304163e0fb640d76ff9c3b9cd99996e6e38fad13f0e31c82244d33abbc1b11e8bf12d);
+      
+      
+      $display("TC5-1: Even bits in key, IV are set. 128 bit key, 8 rounds.");
+      run_test_case(TC5, ONE, 
+                    256'h5555555555555555555555555555555555555555555555555555555555555555,
+                    KEY_128_BITS,
+                    64'h5555555555555555,
+                    EIGHT_ROUNDS,
+                    512'hf0a23bc36270e18ed0691dc384374b9b2c5cb60110a03f56fa48a9fbbad961aa6bab4d892e96261b6f1a0919514ae56f86e066e17c71a4176ac684af1c931996);
+      
+      
       $display("TC7-1: Increasing, decreasing sequences in key and IV. 128 bit key, 8 rounds");
       run_test_case(TC7, ONE, 
                     256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
