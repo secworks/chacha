@@ -84,6 +84,9 @@ module tb_chacha_core();
   // Cycle counter.
   reg [31 : 0] cycle_ctr;
 
+  // Error counter.
+  reg [31 : 0] error_ctr;
+
   // Clock and reset.
   reg tb_clk;
   reg tb_reset_n;
@@ -409,10 +412,31 @@ module tb_chacha_core();
           $display("Expected: 0x%064x", expected);
           $display("Got:      0x%064x", tb_core_data_out);
           $display("");
+
+          error_ctr = error_ctr + 1;
         end
     end
   endtask // test_vectors
 
+  
+  //----------------------------------------------------------------
+  // display_test_result()
+  //
+  // Display the accumulated test results.
+  //----------------------------------------------------------------
+  task display_test_result();
+    begin
+      if (error_ctr == 0)
+        begin
+          $display("*** All %d test cases completed successfully", error_ctr);
+        end
+      else
+        begin
+          $display("*** %02d test cases did not complete successfully.", error_ctr);
+        end
+    end
+  endtask // cycle_reset
+  
   
   //----------------------------------------------------------------
   // chacha_core_test
@@ -434,7 +458,8 @@ module tb_chacha_core();
       cycle_ctr         = 0;
       tb_clk            = 0;
       tb_reset_n        = 0;
-
+      error_ctr         = 0;
+      
       set_core_key_iv_rounds(256'h0000000000000001000000000000000100000000000000010000000000000001,
                         1'b0,
                         64'h0000000000000001,
@@ -602,6 +627,7 @@ module tb_chacha_core();
         
       // Finish in style.
       $display("*** chacha_core simulation done ***");
+      display_test_result();
       $finish;
     end // chacha_core_test
   
