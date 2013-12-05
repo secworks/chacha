@@ -240,18 +240,19 @@ module chacha_core(
   
   // ready flag wire.
   reg ready_wire;
-  
+
+  reg [511 : 0] tmp_data_out;
   
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
-  // Data out assignment. Note that this adds one layer of XOR
-  assign data_out = data_in_reg ^ state_reg;
-
+  assign data_out = tmp_data_out;
+  
   assign data_out_valid = data_out_valid_reg;
   
   assign ready = ready_wire;
 
+  
   
   //----------------------------------------------------------------
   // reg_update
@@ -411,7 +412,62 @@ module chacha_core(
         end
     end // reg_update
 
+  
+  //----------------------------------------------------------------
+  // data_out_logic
+  // Final output logic that combines the result from procceing
+  // with the input word. This adds a final layer of XOR gates.
+  // 
+  // Note that we also remap all the words into LSB format.
+  //----------------------------------------------------------------
+  always @*
+    begin : data_out_logic
+      // Internal data words needed for remapping.
+      reg [31 : 0]  lsb_out0;
+      reg [31 : 0]  lsb_out1;
+      reg [31 : 0]  lsb_out2;
+      reg [31 : 0]  lsb_out3;
+      reg [31 : 0]  lsb_out4;
+      reg [31 : 0]  lsb_out5;
+      reg [31 : 0]  lsb_out6;
+      reg [31 : 0]  lsb_out7;
+      reg [31 : 0]  lsb_out8;
+      reg [31 : 0]  lsb_out9;
+      reg [31 : 0]  lsb_out10;
+      reg [31 : 0]  lsb_out11;
+      reg [31 : 0]  lsb_out12;
+      reg [31 : 0]  lsb_out13;
+      reg [31 : 0]  lsb_out14;
+      reg [31 : 0]  lsb_out15;
+      reg [511 : 0] msb_data_out;
+      
+      msb_data_out = data_in_reg ^ state_reg;
 
+      lsb_out0  = msb_data_out[511 : 480];
+      lsb_out1  = msb_data_out[479 : 448];
+      lsb_out2  = msb_data_out[447 : 416];
+      lsb_out3  = msb_data_out[415 : 384];
+      lsb_out4  = msb_data_out[384 : 352];
+      lsb_out5  = msb_data_out[351 : 320];
+      lsb_out6  = msb_data_out[319 : 288];
+      lsb_out7  = msb_data_out[287 : 256];
+      lsb_out8  = msb_data_out[255 : 224];
+      lsb_out9  = msb_data_out[223 : 192];
+      lsb_out10 = msb_data_out[191 : 160];
+      lsb_out11 = msb_data_out[159 : 128];
+      lsb_out12 = msb_data_out[127 :  96];
+      lsb_out13 = msb_data_out[95  :  64];
+      lsb_out14 = msb_data_out[63  :  32];
+      lsb_out15 = msb_data_out[31  :   0];
+
+      tmp_data_out = {lsb_out0,  lsb_out1,  lsb_out2,  lsb_out3,
+                      lsb_out4,  lsb_out5,  lsb_out6,  lsb_out7,
+                      lsb_out8,  lsb_out9,  lsb_out10, lsb_out11,
+                      lsb_out12, lsb_out13, lsb_out14, lsb_out15};
+
+    end // data_out_logic
+
+  
   //----------------------------------------------------------------
   // Quarterround logic including MUX to select state registers
   // as inputs to the quarterround.
