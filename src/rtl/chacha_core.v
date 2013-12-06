@@ -443,7 +443,8 @@ module chacha_core(
       
       msb_data_out = data_in_reg ^ state_reg;
 
-      lsb_out0  = msb_data_out[511 : 480];
+      lsb_out0  = {msb_data_out[487 : 480], msb_data_out[495 : 488],
+                   msb_data_out[503 : 496], msb_data_out[511 : 504]};
       lsb_out1  = msb_data_out[479 : 448];
       lsb_out2  = msb_data_out[447 : 416];
       lsb_out3  = msb_data_out[415 : 384];
