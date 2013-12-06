@@ -459,7 +459,15 @@ module chacha_core(
       lsb_out12 = msb_data_out[127 :  96];
       lsb_out13 = msb_data_out[95  :  64];
       lsb_out14 = msb_data_out[63  :  32];
-      lsb_out15 = msb_data_out[31  :   0];
+      
+      lsb_out13  = {msb_data_out[71 : 64], msb_data_out[79 : 72],
+                    msb_data_out[87 : 80], msb_data_out[95 : 88]};
+      
+      lsb_out14  = {msb_data_out[39 : 32], msb_data_out[47 : 40],
+                    msb_data_out[55 : 48], msb_data_out[63 : 56]};
+      
+      lsb_out15 = {msb_data_out[7  :  0], msb_data_out[15 :  8],
+                   msb_data_out[23 : 16], msb_data_out[31 : 24]};
 
       tmp_data_out = {lsb_out0,  lsb_out1,  lsb_out2,  lsb_out3,
                       lsb_out4,  lsb_out5,  lsb_out6,  lsb_out7,
