@@ -445,26 +445,48 @@ module chacha_core(
 
       lsb_out0  = {msb_data_out[487 : 480], msb_data_out[495 : 488],
                    msb_data_out[503 : 496], msb_data_out[511 : 504]};
-      lsb_out1  = msb_data_out[479 : 448];
-      lsb_out2  = msb_data_out[447 : 416];
-      lsb_out3  = msb_data_out[415 : 384];
-      lsb_out4  = msb_data_out[384 : 352];
-      lsb_out5  = msb_data_out[351 : 320];
-      lsb_out6  = msb_data_out[319 : 288];
-      lsb_out7  = msb_data_out[287 : 256];
-      lsb_out8  = msb_data_out[255 : 224];
-      lsb_out9  = msb_data_out[223 : 192];
-      lsb_out10 = msb_data_out[191 : 160];
-      lsb_out11 = msb_data_out[159 : 128];
-      lsb_out12 = msb_data_out[127 :  96];
-      lsb_out13 = msb_data_out[95  :  64];
-      lsb_out14 = msb_data_out[63  :  32];
       
-      lsb_out13  = {msb_data_out[71 : 64], msb_data_out[79 : 72],
+      lsb_out1 = {msb_data_out[455 : 448], msb_data_out[463 : 456], 
+                  msb_data_out[471 : 464], msb_data_out[479 : 472]};
+      
+      lsb_out2 = {msb_data_out[423 : 416], msb_data_out[431 : 424], 
+                  msb_data_out[439 : 432], msb_data_out[447 : 440]};
+      
+      lsb_out3 = {msb_data_out[391 : 384], msb_data_out[399 : 392], 
+                  msb_data_out[407 : 400], msb_data_out[415 : 408]};
+      
+      lsb_out4 = {msb_data_out[359 : 352], msb_data_out[367 : 360], 
+                  msb_data_out[375 : 368], msb_data_out[383 : 376]};
+      
+      lsb_out5 = {msb_data_out[327 : 320], msb_data_out[335 : 328], 
+                  msb_data_out[343 : 336], msb_data_out[351 : 344]};
+      
+      lsb_out6 = {msb_data_out[295 : 288], msb_data_out[303 : 296], 
+                  msb_data_out[311 : 304], msb_data_out[319 : 312]};
+      
+      lsb_out7 = {msb_data_out[263 : 256], msb_data_out[271 : 264], 
+                  msb_data_out[279 : 272], msb_data_out[287 : 280]};
+      
+      lsb_out8 = {msb_data_out[231 : 224], msb_data_out[239 : 232], 
+                  msb_data_out[247 : 240], msb_data_out[255 : 248]};
+      
+      lsb_out9 = {msb_data_out[199 : 192], msb_data_out[207 : 200], 
+                  msb_data_out[215 : 208], msb_data_out[223 : 216]};
+      
+      lsb_out10 = {msb_data_out[167 : 160], msb_data_out[175 : 168], 
+                   msb_data_out[183 : 176], msb_data_out[191 : 184]};
+      
+      lsb_out11 = {msb_data_out[135 : 128], msb_data_out[143 : 136], 
+                   msb_data_out[151 : 144], msb_data_out[159 : 152]};
+
+      lsb_out12 = {msb_data_out[103 :  96], msb_data_out[111 : 104],
+                   msb_data_out[119 : 112], msb_data_out[127 : 120]};
+      
+      lsb_out13 = {msb_data_out[71 : 64], msb_data_out[79 : 72],
                     msb_data_out[87 : 80], msb_data_out[95 : 88]};
       
-      lsb_out14  = {msb_data_out[39 : 32], msb_data_out[47 : 40],
-                    msb_data_out[55 : 48], msb_data_out[63 : 56]};
+      lsb_out14 = {msb_data_out[39 : 32], msb_data_out[47 : 40],
+                   msb_data_out[55 : 48], msb_data_out[63 : 56]};
       
       lsb_out15 = {msb_data_out[7  :  0], msb_data_out[15 :  8],
                    msb_data_out[23 : 16], msb_data_out[31 : 24]};
