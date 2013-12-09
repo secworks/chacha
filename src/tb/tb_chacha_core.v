@@ -81,17 +81,13 @@ module tb_chacha_core();
   //----------------------------------------------------------------
   // Register and Wire declarations.
   //----------------------------------------------------------------
-  // Cycle counter.
   reg [31 : 0] cycle_ctr;
 
-  // Error counter.
   reg [31 : 0] error_ctr;
 
-  // Clock and reset.
   reg tb_clk;
   reg tb_reset_n;
 
-  // Wires needded to connect the core.
   reg            tb_core_init;
   reg            tb_core_next;
   reg [255 : 0]  tb_core_key;
@@ -385,12 +381,12 @@ module tb_chacha_core();
   // expected data out from the DUT.
   //----------------------------------------------------------------
   task run_test_case(input [7 : 0]   major, 
-                    input [7 : 0]   minor, 
-                    input [256 : 0] key, 
-                    input           key_length, 
-                    input [64 : 0]  iv,
-                    input [4 : 0]   rounds,
-                    input [511 : 0] expected);
+                     input [7 : 0]   minor, 
+                     input [256 : 0] key, 
+                     input           key_length, 
+                     input [64 : 0]  iv,
+                     input [4 : 0]   rounds,
+                     input [511 : 0] expected);
     begin
       $display("*** TC %0d-%0d started.", major, minor);
       $display("");
@@ -453,8 +449,6 @@ module tb_chacha_core();
       test_quarterround(32'h11223344, 32'h11223344, 32'h11223344, 32'h11223344);
       test_quarterround(32'h55555555, 32'h55555555, 32'h55555555, 32'h55555555);
         
-      // Set clock, reset and DUT input signals to 
-      // defined values at simulation start.
       cycle_ctr         = 0;
       tb_clk            = 0;
       tb_reset_n        = 0;
@@ -469,15 +463,12 @@ module tb_chacha_core();
       tb_core_next      = 0;
       tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
-      // Turn of all monitor display functions.
       display_cycle_ctr     = 0;
       display_ctrl_and_ctrs = 0;
       display_state         = 0;
       display_x_state       = 0;
       display_qround        = 0;
      
-      // Test of reset functionality.
-      // Note: No self test.
       $display("*** State at init:");
       $display("");
       dump_state();
