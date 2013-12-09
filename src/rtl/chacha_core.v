@@ -422,7 +422,6 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : data_out_logic
-      // Internal data words needed for remapping.
       reg [31 : 0]  lsb_out0;
       reg [31 : 0]  lsb_out1;
       reg [31 : 0]  lsb_out2;
