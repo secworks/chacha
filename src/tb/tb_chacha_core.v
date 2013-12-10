@@ -603,12 +603,12 @@ module tb_chacha_core();
       
       $display("TC7-2: Increasing, decreasing sequences in key and IV. 256 bit key, 8 rounds.");
       run_test_case(TC7, TWO,
-                    256'h00112233445566778899aabbccddeeff00000000000000000000000000000000,
+                    256'h00112233445566778899aabbccddeeffffeeddccbbaa99887766554433221100,                    
                     KEY_256_BITS,
                     64'h0f1e2d3c4b596877,
                     EIGHT_ROUNDS,
-                    512'h1bc8a6a76e10acd8a1463a8f02c78ebcc7185de95124f4e054fbea9aa2831d47618888bfd2736b5882afea285a5a66f97f865e15fb1b739349ab4fe231b29055);
-
+                    512'h60fdedbd1a280cb741d0593b6ea0309010acf18e1471f68968f4c9e311dca149b8e027b47c81e0353db013891aa5f68ea3b13dd2f3b8dd0873bf3746e7d6c567);
+      
       
       $display("TC8-128-8: Random inputs. 128 bit key, 8 rounds.");
       run_test_case(TC8, ONE,
