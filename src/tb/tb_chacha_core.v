@@ -490,7 +490,7 @@ module tb_chacha_core();
                     KEY_128_BITS,
                     64'h0000000000000000,
                     EIGHT_ROUNDS,
-                    512'ha45f8ae25d8c7fa66f3eedef863430b7d32784aa29a7191479772d5720114953e7b84ab685eb8d2b7cea6acd109a08b6ebbe2418424a8108a21fab8a1b0816c8);
+                    512'he28a5fa4a67f8c5defed3e6fb7303486aa8427d31419a729572d777953491120b64ab8e72b8deb85cd6aea7cb6089a101824beeb08814a428aab1fa2c816081b);
       
       
      $display("TC1-2: All zero inputs. 128 bit key, 12 rounds.");
