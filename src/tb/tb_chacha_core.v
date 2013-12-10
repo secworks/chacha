@@ -394,6 +394,9 @@ module tb_chacha_core();
       cycle_reset();
       set_core_key_iv_rounds(key, key_length, iv, rounds);
       set_core_init(1);
+
+      #(2 * CLK_HALF_PERIOD);
+      set_core_init(0);
       
       // Wait for valid flag and check results.
       @(posedge dut.data_out_valid);
