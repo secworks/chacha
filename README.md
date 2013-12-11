@@ -26,7 +26,13 @@ quarterounds version will achieve 1 cycle/round.
 
 
 ## Status ##
-(2012-11-03)
+(2013-12-10)
+- Core is now functionally correct. Still need to be pushed through
+backend and be cleaned up.
+- Top is not functionally verified.
+
+
+(2013-11-03)
 - The core round processing is (seems to be) functionally correct.
 - The Python model has been cleaned up. A few minor display bugs has
 been fixed.

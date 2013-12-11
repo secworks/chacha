@@ -117,7 +117,19 @@ module tb_chacha();
         end
     end // dut_monitor
 
+  
+  //----------------------------------------------------------------
+  // reset_dut
+  //----------------------------------------------------------------
+  task reset_dut();
+    begin
+      tb_reset_n = 0;
+      #(4 * CLK_HALF_PERIOD);
+      tb_reset_n = 1;
+    end
+  endtask // reset_dut
 
+  
   //----------------------------------------------------------------
   // read_reg
   // Function that reads and display the value of 
@@ -189,7 +201,7 @@ module tb_chacha();
       $display("");
     end
   endtask // dump_state
-
+      
   
   //----------------------------------------------------------------
   // chacha_test
@@ -204,7 +216,6 @@ module tb_chacha();
       cycle_ctr     = 0;
       tb_clk        = 0;
       tb_reset_n    = 0;
-
       tb_cs         = 0;
       tb_write_read = 0;
       tb_address    = 8'h00;
@@ -215,11 +226,9 @@ module tb_chacha();
       dump_state();
       
       // Wait ten clock cycles and release reset.
-      #(4 * CLK_HALF_PERIOD);
-      @(negedge tb_clk)
-      tb_reset_n = 1;
+      reset_dut();
       dump_state();
-
+      
       // Try to write a few registers.
       write_reg(8'h10, 32'h55555555);
       write_reg(8'h11, 32'haaaaaaaa);
