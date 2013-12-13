@@ -137,6 +137,7 @@ module tb_chacha_core();
 
   //----------------------------------------------------------------
   // clk_gen
+  //
   // Clock generator process. 
   //----------------------------------------------------------------
   always 
@@ -147,6 +148,7 @@ module tb_chacha_core();
   
   //--------------------------------------------------------------------
   // dut_monitor
+  //
   // Monitor that displays different types of information
   // every cycle depending on what flags test cases enable.
   //
@@ -214,7 +216,7 @@ module tb_chacha_core();
 
 
   //----------------------------------------------------------------
-  // dump_state
+  // dump_state()
   // Dump the internal CHACHA state to std out.
   //----------------------------------------------------------------
   task dump_state();
@@ -257,7 +259,7 @@ module tb_chacha_core();
 
 
   //----------------------------------------------------------------
-  // dump_inout
+  // dump_inout()
   // Dump the status for input and output ports.
   //----------------------------------------------------------------
   task dump_inout();
@@ -285,7 +287,7 @@ module tb_chacha_core();
 
 
   //----------------------------------------------------------------
-  // test_quarterround
+  // test_quarterround()
   //
   // Test the quarterround by forcing the inputs of the logic 
   // to known given values and observing the result.
@@ -317,9 +319,28 @@ module tb_chacha_core();
       $display("");
     end
   endtask // test_quarterround
+  
+
+  //----------------------------------------------------------------
+  // qr_tests()
+  //
+  // Run some simple test on the qr logic.
+  // Note: Not self testing. No expected value used.
+  //----------------------------------------------------------------
+  task qr_tests();
+    begin
+      $display("*** Test of Quarterround:");
+      $display("");
+      test_quarterround(32'h11223344, 32'h11223344, 32'h11223344, 32'h11223344);
+      test_quarterround(32'h55555555, 32'h55555555, 32'h55555555, 32'h55555555);
+    end
+  endtask // qr_tests
 
   
   //----------------------------------------------------------------
+  // set_core_init()
+  //
+  // Set core init flag to given value.
   //----------------------------------------------------------------
   task set_core_init(input value);
     begin
@@ -329,6 +350,9 @@ module tb_chacha_core();
   
   
   //----------------------------------------------------------------
+  // set_core_next()
+  //
+  // Set code next flag to given value.
   //----------------------------------------------------------------
   task set_core_next(input value);
     begin
@@ -481,24 +505,10 @@ module tb_chacha_core();
     end
   endtask // set_display_prefs
   
-
-  //----------------------------------------------------------------
-  // qr_tests()
-  //
-  // Run some simple test on the qr logic.
-  //----------------------------------------------------------------
-  task qr_tests();
-    begin
-      $display("*** Test of Quarterround:");
-      $display("");
-      test_quarterround(32'h11223344, 32'h11223344, 32'h11223344, 32'h11223344);
-      test_quarterround(32'h55555555, 32'h55555555, 32'h55555555, 32'h55555555);
-    end
-  endtask // qr_tests
-  
      
   //----------------------------------------------------------------
   // chacha_core_test
+  //
   // The main test functionality. 
   //----------------------------------------------------------------
   initial
@@ -506,7 +516,7 @@ module tb_chacha_core();
       $display("   -- Testbench for chacha_core started --");
       $display("");
         
-      set_display_prefs(1, 1, 1, 0, 0);     
+      set_display_prefs(0, 0, 0, 0, 0);     
       qr_tests();
       init_dut();
       $display("*** State at init:");
