@@ -201,16 +201,15 @@ module tb_chacha();
       $display("");
     end
   endtask // dump_state
-      
-  
+
+
   //----------------------------------------------------------------
-  // chacha_test
-  // The main test functionality. 
+  // init_dut()
+  //
+  // Set the input to the DUT to defined values.
   //----------------------------------------------------------------
-  initial
-    begin : chacha_test
-      $display("   -- Testbench for chacha started --");
-      
+  task init_dut();
+    begin
       // Set clock, reset and DUT input signals to 
       // defined values at simulation start.
       cycle_ctr     = 0;
@@ -220,18 +219,24 @@ module tb_chacha();
       tb_write_read = 0;
       tb_address    = 8'h00;
       tb_data_in    = 32'h00000000;
-      
-      $display("");
-      $display("*** State at init.");
-      dump_state();
-      
-      // Wait ten clock cycles and release reset.
-      reset_dut();
-      dump_state();
-      
-      // Try to write a few registers.
+    end
+  endtask // init_dut
+
+  
+  //----------------------------------------------------------------
+  // read_write_test()
+  //
+  // Simple test case that tries to read and write to the
+  // registers in the dut.
+  //
+  // Note: Currently not self testing. No expected values.
+  //----------------------------------------------------------------
+  task read_write_test();
+    begin
       write_reg(8'h10, 32'h55555555);
+      read_reg(8'h10);
       write_reg(8'h11, 32'haaaaaaaa);
+      read_reg(8'h11);
       dump_state();
       read_reg(8'h00);
       read_reg(8'h01);
@@ -246,10 +251,28 @@ module tb_chacha();
       read_reg(8'h15);
       read_reg(8'h16);
       read_reg(8'h17);
+    end
+  endtask // read_write_test
+    
+    
+  //----------------------------------------------------------------
+  // chacha_test
+  // The main test functionality. 
+  //----------------------------------------------------------------
+  initial
+    begin : chacha_test
+      $display("   -- Testbench for chacha started --");
+      init_dut();
       
-      // Wait a while and observe what happens.
-      #(10 * CLK_HALF_PERIOD);
+      $display("");
+      $display("*** State at init.");
       dump_state();
+      
+      // Wait ten clock cycles and release reset.
+      reset_dut();
+      dump_state();
+
+      read_write_test();
       
       // Finish in style.
       $display("*** chacha simulation done.");
