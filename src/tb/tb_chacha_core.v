@@ -435,28 +435,19 @@ module tb_chacha_core();
         end
     end
   endtask // cycle_reset
-  
-  
+
+
   //----------------------------------------------------------------
-  // chacha_core_test
-  // The main test functionality. 
+  // init_dut()
+  //
+  // Set the input to the DUT to defined values.
   //----------------------------------------------------------------
-  initial
-    begin : chacha_core_test
-      $display("   -- Testbench for chacha_core started --");
-      $display("");
-      
-      
-      $display("*** Test of Quarterround:");
-      $display("");
-      test_quarterround(32'h11223344, 32'h11223344, 32'h11223344, 32'h11223344);
-      test_quarterround(32'h55555555, 32'h55555555, 32'h55555555, 32'h55555555);
-        
+  task init_dut();
+    begin
       cycle_ctr         = 0;
       tb_clk            = 0;
       tb_reset_n        = 0;
       error_ctr         = 0;
-      
       set_core_key_iv_rounds(256'h0000000000000001000000000000000100000000000000010000000000000001,
                         1'b0,
                         64'h0000000000000001,
@@ -465,13 +456,59 @@ module tb_chacha_core();
       tb_core_init      = 0;
       tb_core_next      = 0;
       tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+    end
+  endtask // init_dut
+  
+   
+  //----------------------------------------------------------------
+  // set_display_prefs()
+  //
+  // Set the different monitor displays we want to see during
+  // simulation.
+  //----------------------------------------------------------------
+  task set_display_prefs(
+                         input cycles, 
+                         input ctrl_ctr, 
+                         input state, 
+                         input x_state, 
+                         input qround);
+    begin
+      display_cycle_ctr     = cycles;
+      display_ctrl_and_ctrs = ctrl_ctr;
+      display_state         = state;
+      display_x_state       = x_state;
+      display_qround        = qround;
+    end
+  endtask // set_display_prefs
+  
 
-      display_cycle_ctr     = 0;
-      display_ctrl_and_ctrs = 0;
-      display_state         = 0;
-      display_x_state       = 0;
-      display_qround        = 0;
+  //----------------------------------------------------------------
+  // qr_tests()
+  //
+  // Run some simple test on the qr logic.
+  //----------------------------------------------------------------
+  task qr_tests();
+    begin
+      $display("*** Test of Quarterround:");
+      $display("");
+      test_quarterround(32'h11223344, 32'h11223344, 32'h11223344, 32'h11223344);
+      test_quarterround(32'h55555555, 32'h55555555, 32'h55555555, 32'h55555555);
+    end
+  endtask // qr_tests
+  
      
+  //----------------------------------------------------------------
+  // chacha_core_test
+  // The main test functionality. 
+  //----------------------------------------------------------------
+  initial
+    begin : chacha_core_test
+      $display("   -- Testbench for chacha_core started --");
+      $display("");
+        
+      set_display_prefs(1, 1, 1, 0, 0);     
+      qr_tests();
+      init_dut();
       $display("*** State at init:");
       $display("");
       dump_state();
