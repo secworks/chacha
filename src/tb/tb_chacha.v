@@ -46,19 +46,47 @@ module tb_chacha();
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   parameter CLK_HALF_PERIOD = 2;
+  
+  parameter TC1  = 1;
+  parameter TC2  = 2;
+  parameter TC3  = 3;
+  parameter TC4  = 4;
+  parameter TC5  = 5;
+  parameter TC6  = 6;
+  parameter TC7  = 7;
+  parameter TC8  = 8;
+  parameter TC9  = 9;
+  parameter TC10 = 10;
+  
+  parameter ONE   = 1;
+  parameter TWO   = 2;
+  parameter THREE = 3;
+  parameter FOUR  = 4;
+  parameter FIVE  = 5;
+  parameter SIX   = 6;
+  parameter SEVEN = 7;
+  parameter EIGHT = 8;
+  
+  parameter KEY_128_BITS = 0;
+  parameter KEY_256_BITS = 1;
+
+  parameter EIGHT_ROUNDS  = 8;
+  parameter TWELWE_ROUNDS = 12;
+  parameter TWENTY_ROUNDS = 20;
+  
+  parameter DISABLE = 0;
+  parameter ENABLE  = 1;
 
   
   //----------------------------------------------------------------
   // Register and Wire declarations.
   //----------------------------------------------------------------
-  // Cycle counter.
   reg [63 : 0] cycle_ctr;
+  reg [31 : 0] error_ctr;
 
-  // Clock and reset.
   reg tb_clk;
   reg tb_reset_n;
 
-  // Wires needded to connect the core.
   reg           tb_cs;
   reg           tb_write_read;
   reg  [7 : 0]  tb_address;
@@ -253,6 +281,24 @@ module tb_chacha();
       read_reg(8'h17);
     end
   endtask // read_write_test
+  
+
+  //----------------------------------------------------------------
+  // run_test_vectors
+  //
+  // Runs a test case based on the given test vector.
+  //----------------------------------------------------------------
+  task run_test_vectors(input [7 : 0]   major, 
+                        input [7 : 0]   minor, 
+                        input [256 : 0] key, 
+                        input           key_length, 
+                        input [64 : 0]  iv,
+                        input [4 : 0]   rounds,
+                        input [511 : 0] expected);
+    begin
+      error_ctr = error_ctr + 1;
+    end
+  endtask // run_test_vectors
     
     
   //----------------------------------------------------------------
@@ -273,6 +319,14 @@ module tb_chacha();
       dump_state();
 
       read_write_test();
+      
+      $display("TC1-1: All zero inputs. 128 bit key, 8 rounds.");
+      run_test_case(TC1, ONE, 
+                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    KEY_128_BITS,
+                    64'h0000000000000000,
+                    EIGHT_ROUNDS,
+                    512'he28a5fa4a67f8c5defed3e6fb7303486aa8427d31419a729572d777953491120b64ab8e72b8deb85cd6aea7cb6089a101824beeb08814a428aab1fa2c816081b);
       
       // Finish in style.
       $display("*** chacha simulation done.");

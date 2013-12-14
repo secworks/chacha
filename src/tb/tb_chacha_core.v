@@ -82,7 +82,6 @@ module tb_chacha_core();
   // Register and Wire declarations.
   //----------------------------------------------------------------
   reg [31 : 0] cycle_ctr;
-
   reg [31 : 0] error_ctr;
 
   reg tb_clk;
@@ -439,7 +438,7 @@ module tb_chacha_core();
           error_ctr = error_ctr + 1;
         end
     end
-  endtask // test_vectors
+  endtask // run_test_case
 
   
   //----------------------------------------------------------------
