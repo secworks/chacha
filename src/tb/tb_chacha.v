@@ -321,7 +321,7 @@ module tb_chacha();
       read_write_test();
       
       $display("TC1-1: All zero inputs. 128 bit key, 8 rounds.");
-      run_test_case(TC1, ONE, 
+      run_test_vectors(TC1, ONE, 
                     256'h0000000000000000000000000000000000000000000000000000000000000000,
                     KEY_128_BITS,
                     64'h0000000000000000,
