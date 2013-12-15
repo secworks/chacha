@@ -374,8 +374,6 @@ module tb_chacha();
       write_reg(ADDR_CTRL, 32'h00000001);
       #(10 * CLK_HALF_PERIOD);
 
-      read_reg(ADDR_ROUNDS);
-      
       read_reg(ADDR_STATUS);
       while(status == 0)
         begin
