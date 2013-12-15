@@ -77,13 +77,74 @@ module tb_chacha();
   parameter DISABLE = 0;
   parameter ENABLE  = 1;
 
+  parameter ADDR_CTRL        = 8'h00;
+  parameter CTRL_INIT_BIT    = 0;
+  parameter CTRL_NEXT_BIT    = 1;
+
+  parameter ADDR_STATUS      = 8'h01;
+  parameter STATUS_READY_BIT = 0;
+  
+  parameter ADDR_KEYLEN      = 8'h08;
+  parameter KEYLEN_BIT       = 0;
+  parameter ADDR_ROUNDS      = 8'h09;
+  parameter ROUNDS_HIGH_BIT  = 4;
+  parameter ROUNDS_LOW_BIT   = 0;
+                             
+  parameter ADDR_KEY0        = 8'h10;
+  parameter ADDR_KEY1        = 8'h11;
+  parameter ADDR_KEY2        = 8'h12;
+  parameter ADDR_KEY3        = 8'h13;
+  parameter ADDR_KEY4        = 8'h14;
+  parameter ADDR_KEY5        = 8'h15;
+  parameter ADDR_KEY6        = 8'h16;
+  parameter ADDR_KEY7        = 8'h17;
+                             
+  parameter ADDR_IV0         = 8'h20;
+  parameter ADDR_IV1         = 8'h21;
+                             
+  parameter ADDR_DATA_IN0    = 8'h40;
+  parameter ADDR_DATA_IN1    = 8'h41;
+  parameter ADDR_DATA_IN2    = 8'h42;
+  parameter ADDR_DATA_IN3    = 8'h43;
+  parameter ADDR_DATA_IN4    = 8'h44;
+  parameter ADDR_DATA_IN5    = 8'h45;
+  parameter ADDR_DATA_IN6    = 8'h46;
+  parameter ADDR_DATA_IN7    = 8'h47;
+  parameter ADDR_DATA_IN8    = 8'h48;
+  parameter ADDR_DATA_IN9    = 8'h49;
+  parameter ADDR_DATA_IN10   = 8'h4a;
+  parameter ADDR_DATA_IN11   = 8'h4b;
+  parameter ADDR_DATA_IN12   = 8'h4c;
+  parameter ADDR_DATA_IN13   = 8'h4d;
+  parameter ADDR_DATA_IN14   = 8'h4e;
+  parameter ADDR_DATA_IN15   = 8'h4f;
+                             
+  parameter ADDR_DATA_OUT0   = 8'h80;
+  parameter ADDR_DATA_OUT1   = 8'h81;
+  parameter ADDR_DATA_OUT2   = 8'h82;
+  parameter ADDR_DATA_OUT3   = 8'h83;
+  parameter ADDR_DATA_OUT4   = 8'h84;
+  parameter ADDR_DATA_OUT5   = 8'h85;
+  parameter ADDR_DATA_OUT6   = 8'h86;
+  parameter ADDR_DATA_OUT7   = 8'h87;
+  parameter ADDR_DATA_OUT8   = 8'h88;
+  parameter ADDR_DATA_OUT9   = 8'h89;
+  parameter ADDR_DATA_OUT10  = 8'h8a;
+  parameter ADDR_DATA_OUT11  = 8'h8b;
+  parameter ADDR_DATA_OUT12  = 8'h8c;
+  parameter ADDR_DATA_OUT13  = 8'h8d;
+  parameter ADDR_DATA_OUT14  = 8'h8e;
+  parameter ADDR_DATA_OUT15  = 8'h8f;
+  
   
   //----------------------------------------------------------------
   // Register and Wire declarations.
   //----------------------------------------------------------------
   reg [63 : 0] cycle_ctr;
   reg [31 : 0] error_ctr;
-
+  reg          error_found;
+  reg          status;
+              
   reg tb_clk;
   reg tb_reset_n;
 
@@ -169,6 +230,8 @@ module tb_chacha();
       tb_write_read = 0;
       tb_address    = addr;
       #(2 * CLK_HALF_PERIOD);
+      status        = tb_data_out;
+
       tb_cs         = 0;
       tb_write_read = 0;
       tb_address    = 8'h00;
@@ -261,24 +324,24 @@ module tb_chacha();
   //----------------------------------------------------------------
   task read_write_test();
     begin
-      write_reg(8'h10, 32'h55555555);
-      read_reg(8'h10);
-      write_reg(8'h11, 32'haaaaaaaa);
-      read_reg(8'h11);
+      write_reg(ADDR_KEY0, 32'h55555555);
+      read_reg(ADDR_KEY0);
+      write_reg(ADDR_KEY1, 32'haaaaaaaa);
+      read_reg(ADDR_KEY1);
       dump_state();
-      read_reg(8'h00);
-      read_reg(8'h01);
-      read_reg(8'h08);
-      read_reg(8'h09);
+      read_reg(ADDR_CTRL);
+      read_reg(ADDR_STATUS);
+      read_reg(ADDR_KEYLEN);
+      read_reg(ADDR_ROUNDS);
 
-      read_reg(8'h10);
-      read_reg(8'h11);
-      read_reg(8'h12);
-      read_reg(8'h13);
-      read_reg(8'h14);
-      read_reg(8'h15);
-      read_reg(8'h16);
-      read_reg(8'h17);
+      read_reg(ADDR_KEY0);
+      read_reg(ADDR_KEY1);
+      read_reg(ADDR_KEY2);
+      read_reg(ADDR_KEY3);
+      read_reg(ADDR_KEY4);
+      read_reg(ADDR_KEY5);
+      read_reg(ADDR_KEY6);
+      read_reg(ADDR_KEY7);
     end
   endtask // read_write_test
   
@@ -296,7 +359,36 @@ module tb_chacha();
                         input [4 : 0]   rounds,
                         input [511 : 0] expected);
     begin
-      error_ctr = error_ctr + 1;
+      write_reg(ADDR_KEY0, key[255 : 224]);
+      write_reg(ADDR_KEY1, key[223 : 192]);
+      write_reg(ADDR_KEY2, key[191 : 160]);
+      write_reg(ADDR_KEY3, key[159 : 128]);
+      write_reg(ADDR_KEY4, key[127 :  96]);
+      write_reg(ADDR_KEY5, key[95  :  64]);
+      write_reg(ADDR_KEY6, key[63  :  32]);
+      write_reg(ADDR_KEY7, key[31 :    0]);
+      write_reg(ADDR_IV0, iv[63 : 32]);
+      write_reg(ADDR_IV1, iv[31 : 0]);
+      write_reg(ADDR_KEYLEN, {{31'b0000000000000000000000000000000}, key_length});
+      write_reg(ADDR_ROUNDS, {{27'b000000000000000000000000000}, rounds});
+      write_reg(ADDR_CTRL, 32'h00000001);
+      #(10 * CLK_HALF_PERIOD);
+
+      read_reg(ADDR_ROUNDS);
+      
+      read_reg(ADDR_STATUS);
+      while(status == 0)
+        begin
+          #(2 * CLK_HALF_PERIOD);
+          read_reg(ADDR_STATUS);
+        end
+        
+      error_found = 0;
+      
+      if (error_found)
+        begin
+          error_ctr = error_ctr + 1;
+        end
     end
   endtask // run_test_vectors
     
