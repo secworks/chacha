@@ -457,7 +457,7 @@ module tb_chacha_core();
           $display("*** %02d test cases did not complete successfully.", error_ctr);
         end
     end
-  endtask // cycle_reset
+  endtask // display_test_result
 
 
   //----------------------------------------------------------------
