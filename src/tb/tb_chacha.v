@@ -140,19 +140,23 @@ module tb_chacha();
   //----------------------------------------------------------------
   // Register and Wire declarations.
   //----------------------------------------------------------------
-  reg [63 : 0] cycle_ctr;
-  reg [31 : 0] error_ctr;
-  reg          error_found;
-  reg          status;
-              
   reg tb_clk;
   reg tb_reset_n;
 
   reg           tb_cs;
   reg           tb_write_read;
+
   reg  [7 : 0]  tb_address;
   reg  [31 : 0] tb_data_in;
   wire [31 : 0] tb_data_out;
+
+  reg [63 : 0] cycle_ctr;
+  reg [31 : 0] error_ctr;
+  reg          error_found;
+  reg          status;
+  
+  reg display_cycle_ctr;
+  reg display_read_write;
   
   
   //----------------------------------------------------------------
@@ -176,6 +180,7 @@ module tb_chacha();
 
   //----------------------------------------------------------------
   // clk_gen
+  //
   // Clock generator process. 
   //----------------------------------------------------------------
   always 
@@ -186,25 +191,52 @@ module tb_chacha();
   
   //--------------------------------------------------------------------
   // dut_monitor
+  //
   // Monitor displaying information every cycle.
   // Includes the cycle counter.
   //--------------------------------------------------------------------
   always @ (posedge tb_clk)
     begin : dut_monitor
       cycle_ctr = cycle_ctr + 1;
-      $display("cycle = %016x:", cycle_ctr);
-      if (dut.cs)
+
+      if (display_cycle_ctr)
         begin
-          if (dut.write_read)
+          $display("cycle = %016x:", cycle_ctr);
+        end
+
+      if (display_read_write)
+        begin
+          
+          if (dut.cs)
             begin
-              $display("*** Write acess: addr 0x%02x = 0x%08x", dut.address, dut.data_in);
-            end
-          else
-            begin
-              $display("*** Read acess: addr 0x%02x = 0x%08x", dut.address, dut.data_out_reg);
+              if (dut.write_read)
+                begin
+                  $display("*** Write acess: addr 0x%02x = 0x%08x", dut.address, dut.data_in);
+                end
+              else
+                begin
+                  $display("*** Read acess: addr 0x%02x = 0x%08x", dut.address, dut.data_out_reg);
+                end
             end
         end
+      
     end // dut_monitor
+
+  
+  //----------------------------------------------------------------
+  // set_display_prefs()
+  //
+  // Set the different monitor displays we want to see during
+  // simulation.
+  //----------------------------------------------------------------
+  task set_display_prefs(
+                         input cycles, 
+                         input read_write);
+    begin
+      display_cycle_ctr  = cycles;
+      display_read_write = read_write;
+    end
+  endtask // set_display_prefs
 
   
   //----------------------------------------------------------------
@@ -399,6 +431,7 @@ module tb_chacha();
     begin : chacha_test
       $display("   -- Testbench for chacha started --");
       init_dut();
+      set_display_prefs(0, 1);
       
       $display("");
       $display("*** State at init.");
