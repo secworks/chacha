@@ -292,14 +292,15 @@ module tb_chacha();
     
   
   //----------------------------------------------------------------
-  // dump_state
-  // Dump the internal CHACHA state to std out.
+  // dump_top_state
+  //
+  // Dump the internal state of the top to std out.
   //----------------------------------------------------------------
-  task dump_state();
+  task dump_top_state();
     begin
       $display("");
-      $display("Internal state:");
-      $display("---------------");
+      $display("Top internal state");
+      $display("------------------");
       $display("init_reg   = %01x", dut.init_reg);
       $display("next_reg   = %01x", dut.next_reg);
       $display("ready_reg  = %01x", dut.ready_reg);
@@ -323,9 +324,73 @@ module tb_chacha();
       $display("data_out12_reg = %08x, data_out13_reg  = %08x, data_out14_reg = %08x, data_out15_reg  = %08x", dut.data_out12_reg, dut.data_out13_reg, dut.data_out14_reg, dut.data_out15_reg);
       $display("");
     end
-  endtask // dump_state
+  endtask // dump_top_state
 
 
+  //----------------------------------------------------------------
+  // dump_core_state
+  //
+  // Dump the internal state of the core to std out.
+  //----------------------------------------------------------------
+  task dump_core_state();
+    begin
+      $display("");
+      $display("Core internal state");
+      $display("-------------------");
+      $display("Internal data state vector:");
+      $display("0x%064x", dut.core.state_reg);
+      $display("");
+      
+      $display("Round state X:");
+      $display("x0_reg  = %08x, x1_reg  = %08x", dut.core.x0_reg, dut.core.x1_reg);
+      $display("x2_reg  = %08x, x3_reg  = %08x", dut.core.x2_reg, dut.core.x3_reg);
+      $display("x4_reg  = %08x, x5_reg  = %08x", dut.core.x4_reg, dut.core.x5_reg);
+      $display("x6_reg  = %08x, x7_reg  = %08x", dut.core.x6_reg, dut.core.x7_reg);
+      $display("x8_reg  = %08x, x9_reg  = %08x", dut.core.x8_reg, dut.core.x9_reg);
+      $display("x10_reg = %08x, x11_reg = %08x", dut.core.x10_reg, dut.core.x11_reg);
+      $display("x12_reg = %08x, x13_reg = %08x", dut.core.x12_reg, dut.core.x13_reg);
+      $display("x14_reg = %08x, x15_reg = %08x", dut.core.x14_reg, dut.core.x15_reg);
+      $display("");
+      
+      $display("rounds_reg = %01x", dut.core.rounds_reg);
+      $display("qr_ctr_reg = %01x, dr_ctr_reg  = %01x", dut.core.qr_ctr_reg, dut.core.dr_ctr_reg);
+      $display("block0_ctr_reg = %08x, block1_ctr_reg = %08x", dut.core.block0_ctr_reg, dut.core.block1_ctr_reg);
+
+      $display("");
+
+      $display("chacha_ctrl_reg = %02x", dut.core.chacha_ctrl_reg);
+      $display("");
+
+      $display("data_in_reg = %064x", dut.core.data_in_reg);
+      $display("data_out_valid_reg = %01x", dut.core.data_out_valid_reg);
+      $display("");
+
+      $display("a_prim = %08x, b_prim = %08x", dut.core.a_prim, dut.core.b_prim);
+      $display("c_prim = %08x, d_prim = %08x", dut.core.c_prim, dut.core.d_prim);
+      $display("");
+    end
+  endtask // dump_core_state
+
+  
+  //----------------------------------------------------------------
+  // display_test_result()
+  //
+  // Display the accumulated test results.
+  //----------------------------------------------------------------
+  task display_test_result();
+    begin
+      if (error_ctr == 0)
+        begin
+          $display("*** All %d test cases completed successfully", error_ctr);
+        end
+      else
+        begin
+          $display("*** %02d test cases did not complete successfully.", error_ctr);
+        end
+    end
+  endtask // display_test_result
+  
+    
   //----------------------------------------------------------------
   // init_dut()
   //
@@ -336,6 +401,7 @@ module tb_chacha();
       // Set clock, reset and DUT input signals to 
       // defined values at simulation start.
       cycle_ctr     = 0;
+      error_ctr     = 0;
       tb_clk        = 0;
       tb_reset_n    = 0;
       tb_cs         = 0;
@@ -360,7 +426,7 @@ module tb_chacha();
       read_reg(ADDR_KEY0);
       write_reg(ADDR_KEY1, 32'haaaaaaaa);
       read_reg(ADDR_KEY1);
-      dump_state();
+      dump_top_state();
       read_reg(ADDR_CTRL);
       read_reg(ADDR_STATUS);
       read_reg(ADDR_KEYLEN);
@@ -390,7 +456,13 @@ module tb_chacha();
                         input [64 : 0]  iv,
                         input [4 : 0]   rounds,
                         input [511 : 0] expected);
+    reg [511 : 0] result;
     begin
+      result = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+      
+      $display("***TC%2d-%2d", major, minor);
+      $display("***---------");
+
       write_reg(ADDR_KEY0, key[255 : 224]);
       write_reg(ADDR_KEY1, key[223 : 192]);
       write_reg(ADDR_KEY2, key[191 : 160]);
@@ -404,21 +476,36 @@ module tb_chacha();
       write_reg(ADDR_KEYLEN, {{31'b0000000000000000000000000000000}, key_length});
       write_reg(ADDR_ROUNDS, {{27'b000000000000000000000000000}, rounds});
       write_reg(ADDR_CTRL, 32'h00000001);
-      #(10 * CLK_HALF_PERIOD);
 
-      read_reg(ADDR_STATUS);
-      while(status == 0)
-        begin
-          #(2 * CLK_HALF_PERIOD);
-          read_reg(ADDR_STATUS);
-        end
-        
-      error_found = 0;
+      dump_top_state();
+      #(1000 * CLK_HALF_PERIOD);
+      dump_core_state();
+      #(1000 * CLK_HALF_PERIOD);
+      dump_core_state();
       
-      if (error_found)
+      // read_reg(ADDR_STATUS);
+      // while(status == 0)
+      //   begin
+      //     #(2 * CLK_HALF_PERIOD);
+      //     read_reg(ADDR_STATUS);
+      //   end
+      
+      if (result != expected)
         begin
           error_ctr = error_ctr + 1;
+          $display("***TC%2d-%2d - ERROR", major, minor);
+          $display("***-----------------");
+          $display("Expected:");
+          $display("0x%064x", expected);
+          $display("Got:");
+          $display("0x%064x", result);
         end
+      else
+        begin
+          $display("***TC%2d-%2d - SUCCESS", major, minor);
+          $display("***-------------------");
+        end
+      $display("");
     end
   endtask // run_test_vectors
     
@@ -435,11 +522,11 @@ module tb_chacha();
       
       $display("");
       $display("*** State at init.");
-      dump_state();
+      dump_top_state();
       
       // Wait ten clock cycles and release reset.
       reset_dut();
-      dump_state();
+      dump_top_state();
 
       read_write_test();
       
@@ -450,8 +537,8 @@ module tb_chacha();
                     64'h0000000000000000,
                     EIGHT_ROUNDS,
                     512'he28a5fa4a67f8c5defed3e6fb7303486aa8427d31419a729572d777953491120b64ab8e72b8deb85cd6aea7cb6089a101824beeb08814a428aab1fa2c816081b);
-      
-      // Finish in style.
+
+      display_test_result();
       $display("*** chacha simulation done.");
       $finish;
     end // chacha_test
