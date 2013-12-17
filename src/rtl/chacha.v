@@ -116,7 +116,6 @@ module chacha(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
-  // Control registers.
   reg init_reg;
   reg init_new;
   reg init_we;
@@ -137,7 +136,6 @@ module chacha(
 
   reg data_out_valid_reg;
   
-  // Key registers.
   reg [31 : 0] key0_reg;
   reg [31 : 0] key0_new;
   reg          key0_we;
@@ -163,7 +161,6 @@ module chacha(
   reg [31 : 0] key7_new;
   reg          key7_we;
 
-  // IV registers.
   reg [31 : 0] iv0_reg;
   reg [31 : 0] iv0_new;
   reg          iv0_we;
@@ -171,7 +168,6 @@ module chacha(
   reg [31 : 0] iv1_new;
   reg          iv1_we;
 
-  // Data in registers.
   reg [31 : 0] data_in0_reg;
   reg [31 : 0] data_in0_new;
   reg          data_in0_we;
@@ -260,7 +256,6 @@ module chacha(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  // Wires needded to connect the core.
   wire           core_init;
   wire           core_next;
   wire [255 : 0] core_key;
@@ -272,7 +267,6 @@ module chacha(
   wire [511 : 0] core_data_out;
   wire           core_data_out_valid;
 
-  // Wires needed to connect the interface.
   reg [31 : 0]   data_out_reg;
   
   
@@ -292,7 +286,6 @@ module chacha(
                          data_in7_reg, data_in6_reg, data_in5_reg, data_in4_reg,
                          data_in3_reg, data_in2_reg, data_in1_reg, data_in0_reg};
 
-  // Connect the output data port.
   assign data_out = data_out_reg;
 
              
@@ -300,27 +293,21 @@ module chacha(
   // core instantiation.
   //----------------------------------------------------------------
   chacha_core core (
-                    // Clock and reset.
                     .clk(clk),
                     .reset_n(reset_n),
                     
-                    // Control.
                     .init(core_init),
                     .next(core_next),
                     
-                    // Parameters.
                     .key(core_key),
                     .keylen(core_keylen),
                     .iv(core_iv),
                     .rounds(core_rounds),
                     
-                    // Data input.
                     .data_in(core_data_in),
                     
-                    // Status output.
                     .ready(core_ready),
                     
-                    // Hash word output.
                     .data_out(core_data_out),
                     .data_out_valid(core_data_out_valid)
                    );
@@ -336,8 +323,6 @@ module chacha(
     begin
       if (!reset_n)
         begin
-          // Reset all registers to defined values.
-
           init_reg           <= 0;
           next_reg           <= 0;
           ready_reg          <= 0;
@@ -393,8 +378,6 @@ module chacha(
         end
       else
         begin
-          // We sample the valid and ready signals
-          // continiously.
           ready_reg          <= core_ready;
           data_out_valid_reg <= core_data_out_valid;
 
@@ -548,8 +531,6 @@ module chacha(
               data_in15_reg <= data_in15_new;
             end
           
-          // We sample data out whenever the valid flag
-          // is set.
           if (core_data_out_valid)
             begin
               data_out0_reg  <= core_data_out[31 : 0];
@@ -578,7 +559,6 @@ module chacha(
   //----------------------------------------------------------------
   always @*
     begin : addr_decoder
-      // Default assignments.
       init_new      = 0;
       init_we       = 0;
       next_new      = 0;
@@ -651,7 +631,6 @@ module chacha(
         begin
           if (write_read)
             begin
-              // Perform write operations.
               case (address)
                 ADDR_CTRL:
                   begin
@@ -833,7 +812,6 @@ module chacha(
 
           else
             begin
-              // Perform read operations.
               case (address)
                 ADDR_CTRL:
                   begin
@@ -988,7 +966,6 @@ module chacha(
             end
         end
     end // addr_decoder
-  
 endmodule // chacha
 
 //======================================================================
