@@ -366,9 +366,9 @@ module tb_chacha_core();
   // Sets the core key, iv and rounds indata ports 
   // to the given values.
   //----------------------------------------------------------------
-  task set_core_key_iv_rounds(input [256 : 0] key, 
+  task set_core_key_iv_rounds(input [255 : 0] key, 
                               input           key_length, 
-                              input [64 : 0]  iv,
+                              input [63 : 0]  iv,
                               input [4 : 0]   rounds);
     begin
       tb_core_key    = key;
@@ -405,9 +405,9 @@ module tb_chacha_core();
   //----------------------------------------------------------------
   task run_test_case(input [7 : 0]   major, 
                      input [7 : 0]   minor, 
-                     input [256 : 0] key, 
+                     input [255 : 0] key, 
                      input           key_length, 
-                     input [64 : 0]  iv,
+                     input [63 : 0]  iv,
                      input [4 : 0]   rounds,
                      input [511 : 0] expected);
     begin
@@ -515,7 +515,7 @@ module tb_chacha_core();
       $display("   -- Testbench for chacha_core started --");
       $display("");
         
-      set_display_prefs(0, 0, 0, 0, 0);     
+      set_display_prefs(0, 0, 1, 1, 0);     
       qr_tests();
       init_dut();
       $display("*** State at init:");

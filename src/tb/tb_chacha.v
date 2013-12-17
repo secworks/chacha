@@ -152,8 +152,10 @@ module tb_chacha();
 
   reg [63 : 0] cycle_ctr;
   reg [31 : 0] error_ctr;
+  reg [31 : 0] tc_ctr;
+  
   reg          error_found;
-  reg          status;
+  reg [31 : 0] read_data;
   
   reg display_cycle_ctr;
   reg display_read_write;
@@ -253,7 +255,8 @@ module tb_chacha();
   
   //----------------------------------------------------------------
   // read_reg
-  // Function that reads and display the value of 
+  //
+  // Task that reads and display the value of 
   // a register in the dut.
   //----------------------------------------------------------------
   task read_reg(input [7 : 0] addr);
@@ -262,8 +265,6 @@ module tb_chacha();
       tb_write_read = 0;
       tb_address    = addr;
       #(2 * CLK_HALF_PERIOD);
-      status        = tb_data_out;
-
       tb_cs         = 0;
       tb_write_read = 0;
       tb_address    = 8'h00;
@@ -274,7 +275,8 @@ module tb_chacha();
 
   //----------------------------------------------------------------
   // write_reg
-  // Function that writes to a register in the dut.
+  //
+  // Task that writes to a register in the dut.
   //----------------------------------------------------------------
   task write_reg(input [7 : 0] addr, input [31 : 0] data);
     begin
@@ -385,7 +387,7 @@ module tb_chacha();
     begin
       if (error_ctr == 0)
         begin
-          $display("*** All %d test cases completed successfully", error_ctr);
+          $display("*** All %02d test cases completed successfully", tc_ctr);
         end
       else
         begin
@@ -406,6 +408,7 @@ module tb_chacha();
       // defined values at simulation start.
       cycle_ctr     = 0;
       error_ctr     = 0;
+      tc_ctr        = 0;
       tb_clk        = 0;
       tb_reset_n    = 0;
       tb_cs         = 0;
@@ -463,6 +466,8 @@ module tb_chacha();
     reg [511 : 0] result;
     begin
       result = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+
+      tc_ctr = tc_ctr + 1;
       
       $display("***TC%2d-%2d", major, minor);
       $display("***---------");
@@ -499,16 +504,51 @@ module tb_chacha();
       dump_top_state();
       write_reg(ADDR_CTRL, 32'h00000000);
 
+      #(2 * CLK_HALF_PERIOD);
+      dump_core_state();
+      #(2 * CLK_HALF_PERIOD);
+      dump_core_state();
+      #(2 * CLK_HALF_PERIOD);
+      dump_core_state();
+      #(2 * CLK_HALF_PERIOD);
+      dump_core_state();
+
       #(100 * CLK_HALF_PERIOD);
       dump_core_state();
       dump_top_state();
       
-      // read_reg(ADDR_STATUS);
-      // while(status == 0)
-      //   begin
-      //     #(2 * CLK_HALF_PERIOD);
-      //     read_reg(ADDR_STATUS);
-      //   end
+      read_reg(ADDR_DATA_OUT0);
+      result[511 : 480] = tb_data_out;
+      read_reg(ADDR_DATA_OUT1);
+      result[479 : 448] = tb_data_out;
+      read_reg(ADDR_DATA_OUT2);
+      result[447 : 416] = tb_data_out;
+      read_reg(ADDR_DATA_OUT3);
+      result[415 : 384] = tb_data_out;
+      read_reg(ADDR_DATA_OUT4);
+      result[383 : 352] = tb_data_out;
+      read_reg(ADDR_DATA_OUT5);
+      result[351 : 320] = tb_data_out;
+      read_reg(ADDR_DATA_OUT6);
+      result[319 : 288] = tb_data_out;
+      read_reg(ADDR_DATA_OUT7);
+      result[287 : 256] = tb_data_out;
+      read_reg(ADDR_DATA_OUT8);
+      result[255 : 224] = tb_data_out;
+      read_reg(ADDR_DATA_OUT9);
+      result[223 : 192] = tb_data_out;
+      read_reg(ADDR_DATA_OUT10);
+      result[191 : 160] = tb_data_out;
+      read_reg(ADDR_DATA_OUT11);
+      result[159 : 128] = tb_data_out;
+      read_reg(ADDR_DATA_OUT12);
+      result[127 :  96] = tb_data_out;
+      read_reg(ADDR_DATA_OUT13);
+      result[95  :  64] = tb_data_out;
+      read_reg(ADDR_DATA_OUT14);
+      result[63  :  32] = tb_data_out;
+      read_reg(ADDR_DATA_OUT15);
+      result[31  :   0] = tb_data_out;
       
       if (result != expected)
         begin
