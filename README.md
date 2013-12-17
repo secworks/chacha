@@ -26,6 +26,10 @@ quarterounds version will achieve 1 cycle/round.
 
 
 ## Status ##
+(2013-12-17)
+- Top is almost completely verified. Top testbench runs self checking
+test cases.
+
 (2013-12-10)
 - Core is now functionally correct. Still need to be pushed through
 backend and be cleaned up.
