@@ -306,17 +306,21 @@ module tb_chacha();
       $display("ready_reg  = %01x", dut.ready_reg);
       $display("keylen_reg = %01x", dut.keylen_reg);
       $display("rounds_reg = %01x", dut.rounds_reg);
+      $display("");
 
       $display("key0_reg = %08x, key1_reg  = %08x, key2_reg = %08x, key3_reg  = %08x", dut.key0_reg, dut.key1_reg, dut.key2_reg, dut.key3_reg);
       $display("key4_reg = %08x, key5_reg  = %08x, key6_reg = %08x, key7_reg  = %08x", dut.key4_reg, dut.key5_reg, dut.key6_reg, dut.key7_reg);
       $display("");
+
       $display("iv0_reg = %08x, iv1_reg = %08x", dut.iv0_reg, dut.iv1_reg);
       $display("");
+
       $display("data_in0_reg  = %08x, data_in1_reg   = %08x, data_in2_reg  = %08x, data_in3_reg   = %08x", dut.data_in0_reg, dut.data_in1_reg, dut.data_in2_reg, dut.data_in3_reg);
       $display("data_in4_reg  = %08x, data_in5_reg   = %08x, data_in6_reg  = %08x, data_in7_reg   = %08x", dut.data_in4_reg, dut.data_in5_reg, dut.data_in6_reg, dut.data_in7_reg);
       $display("data_in8_reg  = %08x, data_in9_reg   = %08x, data_in10_reg = %08x, data_in11_reg  = %08x", dut.data_in8_reg, dut.data_in9_reg, dut.data_in10_reg, dut.data_in11_reg);
       $display("data_in12_reg = %08x, data_in13_reg  = %08x, data_in14_reg = %08x, data_in15_reg  = %08x", dut.data_in12_reg, dut.data_in13_reg, dut.data_in14_reg, dut.data_in15_reg);
       $display("");
+
       $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
       $display("data_out0_reg  = %08x, data_out1_reg   = %08x, data_out2_reg  = %08x, data_out3_reg   = %08x", dut.data_out0_reg, dut.data_out1_reg, dut.data_out2_reg, dut.data_out3_reg);
       $display("data_out4_reg  = %08x, data_out5_reg   = %08x, data_out6_reg  = %08x, data_out7_reg   = %08x", dut.data_out4_reg, dut.data_out5_reg, dut.data_out6_reg, dut.data_out7_reg);
@@ -476,16 +480,28 @@ module tb_chacha();
       write_reg(ADDR_KEYLEN, {{31'b0000000000000000000000000000000}, key_length});
       write_reg(ADDR_ROUNDS, {{27'b000000000000000000000000000}, rounds});
 
-      // Check state of core before and after init.
-      $display("*** Core state before init");
-      dump_core_state();
-      write_reg(ADDR_CTRL, 32'h00000001);
-      $display("*** Core state after init");
-      dump_core_state();
+      $display("Num rounds received: %d", rounds);
+      
+      
+      $display("*** Top state before init.");
+      dump_top_state();
 
-      // Wait a lot of cycles and see if the core is done.
-      #(10000 * CLK_HALF_PERIOD);
+      $display("*** Core state before init.");
       dump_core_state();
+      
+      write_reg(ADDR_CTRL, 32'h00000001);
+      $display("*** Top state after init.");
+      dump_top_state();
+
+      $display("*** Core state after init.");
+      #(4 * CLK_HALF_PERIOD);
+      dump_core_state();
+      dump_top_state();
+      write_reg(ADDR_CTRL, 32'h00000000);
+
+      #(100 * CLK_HALF_PERIOD);
+      dump_core_state();
+      dump_top_state();
       
       // read_reg(ADDR_STATUS);
       // while(status == 0)
