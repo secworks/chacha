@@ -649,7 +649,7 @@ module chacha(
                 ADDR_ROUNDS:
                   begin
                     rounds_new = data_in[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
-                    rounds_we  = 0;
+                    rounds_we  = 1;
                   end
   
                 ADDR_KEY0:
