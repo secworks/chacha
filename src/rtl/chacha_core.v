@@ -1118,9 +1118,9 @@ module chacha_core(
             ready_wire = 1;
             if (init)
               begin
-                update_state       = 1;
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
+                block_ctr_rst      = 1;
                 init_cipher        = 1;
                 qr_ctr_rst         = 1;
                 dr_ctr_rst         = 1;
