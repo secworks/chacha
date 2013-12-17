@@ -273,18 +273,23 @@ module chacha(
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
-  // Connect wires for the core to the registers.
   assign core_init    = init_reg;
+
   assign core_next    = next_reg;
+
   assign core_keylen  = keylen_reg;
+
   assign core_rounds  = rounds_reg;
+
   assign core_key     = {key7_reg, key6_reg, key5_reg, key4_reg,
                          key3_reg, key2_reg, key1_reg, key0_reg};
+
   assign core_iv      = {iv1_reg, iv0_reg};
-  assign core_data_in = {data_in15_reg, data_in14_reg, data_in13_reg, data_in12_reg,
-                         data_in11_reg, data_in10_reg, data_in9_reg, data_in8_reg,
-                         data_in7_reg, data_in6_reg, data_in5_reg, data_in4_reg,
-                         data_in3_reg, data_in2_reg, data_in1_reg, data_in0_reg};
+
+  assign core_data_in = {data_in0_reg, data_in1_reg, data_in2_reg, data_in3_reg,
+                         data_in4_reg, data_in5_reg, data_in6_reg, data_in7_reg,
+                         data_in8_reg, data_in9_reg, data_in10_reg, data_in11_reg,
+                         data_in12_reg, data_in13_reg, data_in14_reg, data_in15_reg};
 
   assign data_out = data_out_reg;
 
@@ -533,22 +538,22 @@ module chacha(
           
           if (core_data_out_valid)
             begin
-              data_out0_reg  <= core_data_out[31 : 0];
-              data_out1_reg  <= core_data_out[63 : 32];
-              data_out2_reg  <= core_data_out[95 : 64];
-              data_out3_reg  <= core_data_out[127 : 96];
-              data_out4_reg  <= core_data_out[159 : 128];
-              data_out5_reg  <= core_data_out[191 : 160];
-              data_out6_reg  <= core_data_out[223 : 192];
-              data_out7_reg  <= core_data_out[255 : 224];
-              data_out8_reg  <= core_data_out[287 : 256];
-              data_out9_reg  <= core_data_out[319 : 288];
-              data_out10_reg <= core_data_out[351 : 320];
-              data_out11_reg <= core_data_out[383 : 352];
-              data_out12_reg <= core_data_out[415 : 384];
-              data_out13_reg <= core_data_out[447 : 416];
-              data_out14_reg <= core_data_out[479 : 448];
-              data_out15_reg <= core_data_out[511 : 480];
+              data_out0_reg  <= core_data_out[511 : 480];
+              data_out1_reg  <= core_data_out[479 : 448];
+              data_out2_reg  <= core_data_out[447 : 416];
+              data_out3_reg  <= core_data_out[415 : 384];
+              data_out4_reg  <= core_data_out[383 : 352];
+              data_out5_reg  <= core_data_out[351 : 320];
+              data_out6_reg  <= core_data_out[319 : 288];
+              data_out7_reg  <= core_data_out[287 : 256];
+              data_out8_reg  <= core_data_out[255 : 224];
+              data_out9_reg  <= core_data_out[223 : 192];
+              data_out10_reg <= core_data_out[191 : 160];
+              data_out11_reg <= core_data_out[159 : 128];
+              data_out12_reg <= core_data_out[127 :  96];
+              data_out13_reg <= core_data_out[95  :  64];
+              data_out14_reg <= core_data_out[63  :  32];
+              data_out15_reg <= core_data_out[31  :   0];
             end
         end
     end // reg_update
