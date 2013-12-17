@@ -445,17 +445,17 @@ module tb_chacha();
   
 
   //----------------------------------------------------------------
-  // run_test_vectors
+  // run_test_vector
   //
   // Runs a test case based on the given test vector.
   //----------------------------------------------------------------
-  task run_test_vectors(input [7 : 0]   major, 
-                        input [7 : 0]   minor, 
-                        input [256 : 0] key, 
-                        input           key_length, 
-                        input [64 : 0]  iv,
-                        input [4 : 0]   rounds,
-                        input [511 : 0] expected);
+  task run_test_vector(input [7 : 0]   major, 
+                       input [7 : 0]   minor, 
+                       input [256 : 0] key, 
+                       input           key_length, 
+                       input [64 : 0]  iv,
+                       input [4 : 0]   rounds,
+                       input [511 : 0] expected);
     reg [511 : 0] result;
     begin
       result = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
@@ -475,12 +475,16 @@ module tb_chacha();
       write_reg(ADDR_IV1, iv[31 : 0]);
       write_reg(ADDR_KEYLEN, {{31'b0000000000000000000000000000000}, key_length});
       write_reg(ADDR_ROUNDS, {{27'b000000000000000000000000000}, rounds});
-      write_reg(ADDR_CTRL, 32'h00000001);
 
-      dump_top_state();
-      #(1000 * CLK_HALF_PERIOD);
+      // Check state of core before and after init.
+      $display("*** Core state before init");
       dump_core_state();
-      #(1000 * CLK_HALF_PERIOD);
+      write_reg(ADDR_CTRL, 32'h00000001);
+      $display("*** Core state after init");
+      dump_core_state();
+
+      // Wait a lot of cycles and see if the core is done.
+      #(10000 * CLK_HALF_PERIOD);
       dump_core_state();
       
       // read_reg(ADDR_STATUS);
@@ -507,7 +511,7 @@ module tb_chacha();
         end
       $display("");
     end
-  endtask // run_test_vectors
+  endtask // run_test_vector
     
     
   //----------------------------------------------------------------
@@ -530,14 +534,24 @@ module tb_chacha();
 
       read_write_test();
       
-      $display("TC1-1: All zero inputs. 128 bit key, 8 rounds.");
-      run_test_vectors(TC1, ONE, 
-                    256'h0000000000000000000000000000000000000000000000000000000000000000,
-                    KEY_128_BITS,
-                    64'h0000000000000000,
+//      $display("TC1-1: All zero inputs. 128 bit key, 8 rounds.");
+//      run_test_vector(TC1, ONE, 
+//                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+//                    KEY_128_BITS,
+//                    64'h0000000000000000,
+//                    EIGHT_ROUNDS,
+//                    512'he28a5fa4a67f8c5defed3e6fb7303486aa8427d31419a729572d777953491120b64ab8e72b8deb85cd6aea7cb6089a101824beeb08814a428aab1fa2c816081b);
+//
+      
+      $display("TC7-2: Increasing, decreasing sequences in key and IV. 256 bit key, 8 rounds.");
+      run_test_vector(TC7, TWO,
+                    256'h00112233445566778899aabbccddeeffffeeddccbbaa99887766554433221100,                    
+                    KEY_256_BITS,
+                    64'h0f1e2d3c4b596877,
                     EIGHT_ROUNDS,
-                    512'he28a5fa4a67f8c5defed3e6fb7303486aa8427d31419a729572d777953491120b64ab8e72b8deb85cd6aea7cb6089a101824beeb08814a428aab1fa2c816081b);
+                    512'h60fdedbd1a280cb741d0593b6ea0309010acf18e1471f68968f4c9e311dca149b8e027b47c81e0353db013891aa5f68ea3b13dd2f3b8dd0873bf3746e7d6c567);
 
+      
       display_test_result();
       $display("*** chacha simulation done.");
       $finish;
