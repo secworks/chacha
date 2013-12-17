@@ -429,11 +429,12 @@ module tb_chacha();
   //----------------------------------------------------------------
   task read_write_test();
     begin
+      tc_ctr = tc_ctr + 1;
+      
       write_reg(ADDR_KEY0, 32'h55555555);
       read_reg(ADDR_KEY0);
       write_reg(ADDR_KEY1, 32'haaaaaaaa);
       read_reg(ADDR_KEY1);
-      dump_top_state();
       read_reg(ADDR_CTRL);
       read_reg(ADDR_STATUS);
       read_reg(ADDR_KEYLEN);
@@ -469,8 +470,8 @@ module tb_chacha();
 
       tc_ctr = tc_ctr + 1;
       
-      $display("***TC%2d-%2d", major, minor);
-      $display("***---------");
+      $display("***TC%2d-%2d started", major, minor);
+      $display("***-----------------");
 
       write_reg(ADDR_KEY0, key[255 : 224]);
       write_reg(ADDR_KEY1, key[223 : 192]);
@@ -484,38 +485,15 @@ module tb_chacha();
       write_reg(ADDR_IV1, iv[31 : 0]);
       write_reg(ADDR_KEYLEN, {{31'b0000000000000000000000000000000}, key_length});
       write_reg(ADDR_ROUNDS, {{27'b000000000000000000000000000}, rounds});
-
-      $display("Num rounds received: %d", rounds);
-      
-      
-      $display("*** Top state before init.");
-      dump_top_state();
-
-      $display("*** Core state before init.");
-      dump_core_state();
       
       write_reg(ADDR_CTRL, 32'h00000001);
-      $display("*** Top state after init.");
-      dump_top_state();
-
-      $display("*** Core state after init.");
       #(4 * CLK_HALF_PERIOD);
-      dump_core_state();
-      dump_top_state();
       write_reg(ADDR_CTRL, 32'h00000000);
 
-      #(2 * CLK_HALF_PERIOD);
-      dump_core_state();
-      #(2 * CLK_HALF_PERIOD);
-      dump_core_state();
-      #(2 * CLK_HALF_PERIOD);
-      dump_core_state();
-      #(2 * CLK_HALF_PERIOD);
-      dump_core_state();
-
-      #(100 * CLK_HALF_PERIOD);
-      dump_core_state();
-      dump_top_state();
+      while (!tb_data_out[STATUS_READY_BIT])
+        begin
+          read_reg(ADDR_STATUS);
+        end
       
       read_reg(ADDR_DATA_OUT0);
       result[511 : 480] = tb_data_out;
@@ -578,27 +556,20 @@ module tb_chacha();
     begin : chacha_test
       $display("   -- Testbench for chacha started --");
       init_dut();
-      set_display_prefs(0, 1);
-      
-      $display("");
-      $display("*** State at init.");
-      dump_top_state();
-      
-      // Wait ten clock cycles and release reset.
+      set_display_prefs(0, 0);
       reset_dut();
+
+      $display("State at init after reset:");
       dump_top_state();
 
-      read_write_test();
-      
-//      $display("TC1-1: All zero inputs. 128 bit key, 8 rounds.");
-//      run_test_vector(TC1, ONE, 
-//                    256'h0000000000000000000000000000000000000000000000000000000000000000,
-//                    KEY_128_BITS,
-//                    64'h0000000000000000,
-//                    EIGHT_ROUNDS,
-//                    512'he28a5fa4a67f8c5defed3e6fb7303486aa8427d31419a729572d777953491120b64ab8e72b8deb85cd6aea7cb6089a101824beeb08814a428aab1fa2c816081b);
-//
-      
+      $display("TC1-1: All zero inputs. 128 bit key, 8 rounds.");
+      run_test_vector(TC1, ONE, 
+                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    KEY_128_BITS,
+                    64'h0000000000000000,
+                    EIGHT_ROUNDS,
+                    512'he28a5fa4a67f8c5defed3e6fb7303486aa8427d31419a729572d777953491120b64ab8e72b8deb85cd6aea7cb6089a101824beeb08814a428aab1fa2c816081b);
+
       $display("TC7-2: Increasing, decreasing sequences in key and IV. 256 bit key, 8 rounds.");
       run_test_vector(TC7, TWO,
                     256'h00112233445566778899aabbccddeeffffeeddccbbaa99887766554433221100,                    
@@ -606,13 +577,11 @@ module tb_chacha();
                     64'h0f1e2d3c4b596877,
                     EIGHT_ROUNDS,
                     512'h60fdedbd1a280cb741d0593b6ea0309010acf18e1471f68968f4c9e311dca149b8e027b47c81e0353db013891aa5f68ea3b13dd2f3b8dd0873bf3746e7d6c567);
-
       
       display_test_result();
       $display("*** chacha simulation done.");
       $finish;
     end // chacha_test
-  
 endmodule // tb_chacha
 
 //======================================================================
