@@ -281,10 +281,10 @@ module chacha(
 
   assign core_rounds  = rounds_reg;
 
-  assign core_key     = {key7_reg, key6_reg, key5_reg, key4_reg,
-                         key3_reg, key2_reg, key1_reg, key0_reg};
+  assign core_key     = {key0_reg, key1_reg, key2_reg, key3_reg,
+                         key4_reg, key5_reg, key6_reg, key7_reg};
 
-  assign core_iv      = {iv1_reg, iv0_reg};
+  assign core_iv      = {iv0_reg, iv1_reg};
 
   assign core_data_in = {data_in0_reg, data_in1_reg, data_in2_reg, data_in3_reg,
                          data_in4_reg, data_in5_reg, data_in6_reg, data_in7_reg,
