@@ -425,6 +425,16 @@ module chacha_core(
             begin
               rounds_reg <= rounds[4 : 1];
             end
+
+          if (block0_ctr_we)
+            begin
+              block0_ctr_reg <= block0_ctr_new;
+            end
+
+          if (block1_ctr_we)
+            begin
+              block1_ctr_reg <= block1_ctr_new;
+            end
           
           if (chacha_ctrl_we)
             begin
@@ -975,13 +985,13 @@ module chacha_core(
       
       if (block_ctr_inc)
         begin
-          block0_ctr_new = block0_ctr_new + 1;
+          block0_ctr_new = block0_ctr_reg + 1;
           block0_ctr_we = 1;
 
           // Avoid chaining the 32-bit adders.
           if (block0_ctr_reg == 32'hffffffff)
             begin
-              block1_ctr_new = block1_ctr_new + 1;
+              block1_ctr_new = block1_ctr_reg + 1;
               block1_ctr_we = 1;
             end
         end
@@ -1101,7 +1111,6 @@ module chacha_core(
                 init_cipher        = 1;
                 qr_ctr_rst         = 1;
                 dr_ctr_rst         = 1;
-                block_ctr_rst      = 1;
                 data_in_we         = 1;
                 rounds_we          = 1;
                 chacha_ctrl_new    = CTRL_INIT;
@@ -1112,10 +1121,10 @@ module chacha_core(
                 init_round         = 1;
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
+                block_ctr_inc      = 1;
                 next_block         = 1;
                 qr_ctr_rst         = 1;
                 dr_ctr_rst         = 1;
-                block_ctr_rst      = 1;
                 data_in_we         = 1;
                 rounds_we          = 1;
                 chacha_ctrl_new    = CTRL_INIT;
