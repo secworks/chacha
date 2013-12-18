@@ -233,15 +233,36 @@ module chacha_core(
 
   // Wires to connect the pure combinational quarterround 
   // to the state update logic.
-  reg [31 : 0] a_prim;
-  reg [31 : 0] b_prim;
-  reg [31 : 0] c_prim;
-  reg [31 : 0] d_prim;
+  reg [31 : 0] qr0_a;
+  reg [31 : 0] qr0_b;
+  reg [31 : 0] qr0_c;
+  reg [31 : 0] qr0_d;
+  wire [31 : 0] qr0_a_prim;
+  wire [31 : 0] qr0_b_prim;
+  wire [31 : 0] qr0_c_prim;
+  wire [31 : 0] qr0_d_prim;
   
   // ready flag wire.
   reg ready_wire;
 
   reg [511 : 0] tmp_data_out;
+
+
+  //----------------------------------------------------------------
+  // Instantiation of the qr module.
+  //----------------------------------------------------------------
+  chacha_qr qr0(
+                .a(qr0_a),
+                .b(qr0_b),
+                .c(qr0_c),
+                .d(qr0_d),
+                
+                .a_prim(qr0_a_prim),
+                .b_prim(qr0_b_prim),
+                .c_prim(qr0_c_prim),
+                .d_prim(qr0_d_prim)
+               );
+
   
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
@@ -499,120 +520,76 @@ module chacha_core(
 
   
   //----------------------------------------------------------------
-  // Quarterround logic including MUX to select state registers
-  // as inputs to the quarterround.
+  // Quarterround muxes that selects operands for quarterrounds.
   //----------------------------------------------------------------
   always @*
-    begin : quarterround
-      // Internal wires for the quartterround
-      reg [31 : 0] a;
-      reg [31 : 0] a0;
-      reg [31 : 0] a1;
-
-      reg [31 : 0] b;
-      reg [31 : 0] b0;
-      reg [31 : 0] b1;
-      reg [31 : 0] b2;
-      reg [31 : 0] b3;
-      
-      reg [31 : 0] c;
-      reg [31 : 0] c0;
-      reg [31 : 0] c1;
-      reg [31 : 0] c2;
-      reg [31 : 0] c3;
-      
-      reg [31 : 0] d;
-      reg [31 : 0] d0;
-      reg [31 : 0] d1;
-      reg [31 : 0] d2;
-      reg [31 : 0] d3;
-      
-      // MUX for selecting registers for the quarterround.
+    begin : quarterround_mux
       case (qr_ctr_reg)
           QR0:
             begin
-              a = x0_reg;
-              b = x4_reg;
-              c = x8_reg;
-              d = x12_reg;
+              qr0_a = x0_reg;
+              qr0_b = x4_reg;
+              qr0_c = x8_reg;
+              qr0_d = x12_reg;
             end
         
           QR1:
             begin
-              a = x1_reg;
-              b = x5_reg;
-              c = x9_reg;
-              d = x13_reg;
+              qr0_a = x1_reg;
+              qr0_b = x5_reg;
+              qr0_c = x9_reg;
+              qr0_d = x13_reg;
             end
         
           QR2:
             begin
-              a = x2_reg;
-              b = x6_reg;
-              c = x10_reg;
-              d = x14_reg;
+              qr0_a = x2_reg;
+              qr0_b = x6_reg;
+              qr0_c = x10_reg;
+              qr0_d = x14_reg;
             end
         
           QR3:
             begin
-              a = x3_reg;
-              b = x7_reg;
-              c = x11_reg;
-              d = x15_reg;
+              qr0_a = x3_reg;
+              qr0_b = x7_reg;
+              qr0_c = x11_reg;
+              qr0_d = x15_reg;
             end
         
           QR4:
             begin
-              a = x0_reg;
-              b = x5_reg;
-              c = x10_reg;
-              d = x15_reg;
+              qr0_a = x0_reg;
+              qr0_b = x5_reg;
+              qr0_c = x10_reg;
+              qr0_d = x15_reg;
             end
         
           QR5:
             begin
-              a = x1_reg;
-              b = x6_reg;
-              c = x11_reg;
-              d = x12_reg;
+              qr0_a = x1_reg;
+              qr0_b = x6_reg;
+              qr0_c = x11_reg;
+              qr0_d = x12_reg;
             end
         
           QR6:
             begin
-              a = x2_reg;
-              b = x7_reg;
-              c = x8_reg;
-              d = x13_reg;
+              qr0_a = x2_reg;
+              qr0_b = x7_reg;
+              qr0_c = x8_reg;
+              qr0_d = x13_reg;
             end
         
           QR7:
             begin
-              a = x3_reg;
-              b = x4_reg;
-              c = x9_reg;
-              d = x14_reg;
+              qr0_a = x3_reg;
+              qr0_b = x4_reg;
+              qr0_c = x9_reg;
+              qr0_d = x14_reg;
             end
       endcase // case (quarterround_select)
-        
-      // The actual quarterround logic
-      a0 = a + b;
-      d0 = d ^ a0;
-      d1 = {d0[15 : 0], d0[31 : 16]};
-      c0 = c + d1;
-      b0 = b ^ c0;
-      b1 = {b0[19 : 0], b0[31 : 20]};
-      a1 = a0 + b1;
-      d2 = d1 ^ a1;
-      d3 = {d2[23 : 0], d2[31 : 24]};
-      c1 = c0 + d3;
-      b2 = b1 ^ c1;
-      b3 = {b2[24 : 0], b2[31 : 25]};
-
-      a_prim = a1;
-      b_prim = b3;
-      c_prim = c1;
-      d_prim = d3;
-    end // quarterround
+    end // quarterround_mux
 
 
   //----------------------------------------------------------------
@@ -705,25 +682,25 @@ module chacha_core(
         begin
           // Quarterround update.
           // Write results from the quarterround to the state regs.
-          x0_new  = a_prim;
-          x1_new  = a_prim; 
-          x2_new  = a_prim;
-          x3_new  = a_prim;
+          x0_new  = qr0_a_prim;
+          x1_new  = qr0_a_prim; 
+          x2_new  = qr0_a_prim;
+          x3_new  = qr0_a_prim;
 
-          x4_new  = b_prim;
-          x5_new  = b_prim;
-          x6_new  = b_prim;
-          x7_new  = b_prim;
+          x4_new  = qr0_b_prim;
+          x5_new  = qr0_b_prim;
+          x6_new  = qr0_b_prim;
+          x7_new  = qr0_b_prim;
 
-          x8_new  = c_prim;
-          x9_new  = c_prim;
-          x10_new = c_prim;
-          x11_new = c_prim; 
+          x8_new  = qr0_c_prim;
+          x9_new  = qr0_c_prim;
+          x10_new = qr0_c_prim;
+          x11_new = qr0_c_prim; 
 
-          x12_new = d_prim;
-          x13_new = d_prim;
-          x14_new = d_prim;
-          x15_new = d_prim;
+          x12_new = qr0_d_prim;
+          x13_new = qr0_d_prim;
+          x14_new = qr0_d_prim;
+          x15_new = qr0_d_prim;
           
           case (qr_ctr_reg)
             QR0:

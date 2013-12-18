@@ -44,12 +44,35 @@ module chacha_qr(
                  input wire [31 : 0]  c,
                  input wire [31 : 0]  d,
 
-                 output reg [31 : 0] a_prim,
-                 output reg [31 : 0] a_prim,
-                 output reg [31 : 0] a_prim,
-                 output reg [31 : 0] a_prim
+                 output wire [31 : 0] a_prim,
+                 output wire [31 : 0] b_prim,
+                 output wire [31 : 0] c_prim,
+                 output wire [31 : 0] d_prim
                 );
 
+  //----------------------------------------------------------------
+  // Wires.
+  //----------------------------------------------------------------
+  reg [31 : 0] internal_a_prim;
+  reg [31 : 0] internal_b_prim;
+  reg [31 : 0] internal_c_prim;
+  reg [31 : 0] internal_d_prim;
+
+  
+  //----------------------------------------------------------------
+  // Concurrent connectivity for ports.
+  //----------------------------------------------------------------
+  assign a_prim = internal_a_prim;
+  assign b_prim = internal_b_prim;
+  assign c_prim = internal_c_prim;
+  assign d_prim = internal_d_prim;
+
+  
+  //----------------------------------------------------------------
+  // qr
+  //
+  // The actual quarterround function.
+  //----------------------------------------------------------------
   always @*
     begin : qr
       reg [31 : 0] a0;
@@ -83,10 +106,10 @@ module chacha_qr(
       b2 = b1 ^ c1;
       b3 = {b2[24 : 0], b2[31 : 25]};
 
-      a_prim = a1;
-      b_prim = b3;
-      c_prim = c1;
-      d_prim = d3;
+      internal_a_prim = a1;
+      internal_b_prim = b3;
+      internal_c_prim = c1;
+      internal_d_prim = d3;
     end // qr
 endmodule // chacha_qr
 

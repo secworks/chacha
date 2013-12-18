@@ -206,8 +206,8 @@ module tb_chacha_core();
       // Display the qround input and outputs.
       if (display_qround)
         begin
-          $display("a      = %08x, b      = %08x, c      = %08x, d      = %08x", dut.quarterround.a, dut.quarterround.b, dut.quarterround.c, dut.quarterround.d);
-          $display("a_prim = %08x, b_prim = %08x, c_prim = %08x, d_prim = %08x", dut.a_prim, dut.b_prim, dut.c_prim, dut.d_prim);
+          $display("a      = %08x, b      = %08x, c      = %08x, d      = %08x", dut.qr0_a, dut.qr0_b, dut.qr0_c, dut.qr0_d);
+          $display("qr0_a_prim = %08x, qr0_b_prim = %08x, qr0_c_prim = %08x, qr0_d_prim = %08x", dut.qr0_a_prim, dut.qr0_b_prim, dut.qr0_c_prim, dut.qr0_d_prim);
           $display("");
         end
       
@@ -250,8 +250,8 @@ module tb_chacha_core();
       $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
       $display("");
 
-      $display("a_prim = %08x, b_prim = %08x", dut.a_prim, dut.b_prim);
-      $display("c_prim = %08x, d_prim = %08x", dut.c_prim, dut.d_prim);
+      $display("qr0_a_prim = %08x, qr0_b_prim = %08x", dut.qr0_a_prim, dut.qr0_b_prim);
+      $display("qr0_c_prim = %08x, qr0_d_prim = %08x", dut.qr0_c_prim, dut.qr0_d_prim);
       $display("");
     end
   endtask // dump_state
@@ -299,22 +299,22 @@ module tb_chacha_core();
       $display("c = 0x%08x, d = 0x%08x", c, d);
       $display("");
       
-      dut.quarterround.a = a;
-      dut.quarterround.b = b;
-      dut.quarterround.c = c;
-      dut.quarterround.d = d;
+      dut.qr0_a = a;
+      dut.qr0_b = b;
+      dut.qr0_c = c;
+      dut.qr0_d = d;
       #(2 * CLK_HALF_PERIOD);
       
-      $display("a0 = 0x%08x, a1 = 0x%08x", dut.quarterround.a0, dut.quarterround.a1);
-      $display("b0 = 0x%08x, b1 = 0x%08x", dut.quarterround.b0, dut.quarterround.b1);
-      $display("b2 = 0x%08x, b3 = 0x%08x", dut.quarterround.b2, dut.quarterround.b3);
-      $display("c0 = 0x%08x, c1 = 0x%08x", dut.quarterround.c0, dut.quarterround.c1);
-      $display("d0 = 0x%08x, d1 = 0x%08x", dut.quarterround.d0, dut.quarterround.d1);
-      $display("d2 = 0x%08x, d3 = 0x%08x", dut.quarterround.d2, dut.quarterround.d3);
+      $display("a0 = 0x%08x, a1 = 0x%08x", dut.qr0.qr.a0, dut.qr0.qr.a1);
+      $display("b0 = 0x%08x, b1 = 0x%08x", dut.qr0.qr.b0, dut.qr0.qr.b1);
+      $display("b2 = 0x%08x, b3 = 0x%08x", dut.qr0.qr.b2, dut.qr0.qr.b3);
+      $display("c0 = 0x%08x, c1 = 0x%08x", dut.qr0.qr.c0, dut.qr0.qr.c1);
+      $display("d0 = 0x%08x, d1 = 0x%08x", dut.qr0.qr.d0, dut.qr0.qr.d1);
+      $display("d2 = 0x%08x, d3 = 0x%08x", dut.qr0.qr.d2, dut.qr0.qr.d3);
       $display("");
       
-      $display("a_prim = 0x%08x, b_prim = 0x%08x", dut.a_prim, dut.b_prim);
-      $display("c_prim = 0x%08x, d_prim = 0x%08x", dut.c_prim, dut.d_prim);
+      $display("a_prim = 0x%08x, b_prim = 0x%08x", dut.qr0_a_prim, dut.qr0_b_prim);
+      $display("c_prim = 0x%08x, d_prim = 0x%08x", dut.qr0_c_prim, dut.qr0_d_prim);
       $display("");
     end
   endtask // test_quarterround
