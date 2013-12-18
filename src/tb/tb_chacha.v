@@ -77,6 +77,7 @@ module tb_chacha();
   parameter DISABLE = 0;
   parameter ENABLE  = 1;
 
+  // API for the dut.
   parameter ADDR_CTRL        = 8'h00;
   parameter CTRL_INIT_BIT    = 0;
   parameter CTRL_NEXT_BIT    = 1;
@@ -156,6 +157,8 @@ module tb_chacha();
   
   reg          error_found;
   reg [31 : 0] read_data;
+  
+  reg [511 : 0] extracted_data;
   
   reg display_cycle_ctr;
   reg display_read_write;
@@ -450,29 +453,18 @@ module tb_chacha();
       read_reg(ADDR_KEY7);
     end
   endtask // read_write_test
-  
+
 
   //----------------------------------------------------------------
-  // run_test_vector
+  // write_parameters()
   //
-  // Runs a test case based on the given test vector.
+  // Write key, iv and other parameters to the dut.
   //----------------------------------------------------------------
-  task run_test_vector(input [7 : 0]   major, 
-                       input [7 : 0]   minor, 
-                       input [256 : 0] key, 
-                       input           key_length, 
-                       input [64 : 0]  iv,
-                       input [4 : 0]   rounds,
-                       input [511 : 0] expected);
-    reg [511 : 0] result;
+  task write_parameters(input [256 : 0] key, 
+                            input           key_length, 
+                            input [64 : 0]  iv,
+                            input [4 : 0]   rounds);
     begin
-      result = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-
-      tc_ctr = tc_ctr + 1;
-      
-      $display("***TC%2d-%2d started", major, minor);
-      $display("***-----------------");
-
       write_reg(ADDR_KEY0, key[255 : 224]);
       write_reg(ADDR_KEY1, key[223 : 192]);
       write_reg(ADDR_KEY2, key[191 : 160]);
@@ -485,50 +477,133 @@ module tb_chacha();
       write_reg(ADDR_IV1, iv[31 : 0]);
       write_reg(ADDR_KEYLEN, {{31'b0000000000000000000000000000000}, key_length});
       write_reg(ADDR_ROUNDS, {{27'b000000000000000000000000000}, rounds});
-      
+    end
+  endtask // write_parameters
+
+    
+  //----------------------------------------------------------------
+  // start_init_block()
+  //
+  // Toggle the init signal in the dut to make it start processing
+  // the first block available in the data in registers.
+  //
+  // Note: It is the callers responsibility to call the function
+  // when the dut is ready to react on the init signal.
+  //----------------------------------------------------------------
+  task start_init_block();
+    begin
       write_reg(ADDR_CTRL, 32'h00000001);
       #(4 * CLK_HALF_PERIOD);
       write_reg(ADDR_CTRL, 32'h00000000);
+    end
+  endtask // start_init_block
+  
+    
+  //----------------------------------------------------------------
+  // start_next_block()
+  //
+  // Toggle the next signal in the dut to make it start processing
+  // the next block available in the data in registers.
+  //
+  // Note: It is the callers responsibility to call the function
+  // when the dut is ready to react on the next signal.
+  //----------------------------------------------------------------
+  task start_next_block();
+    begin
+      write_reg(ADDR_CTRL, 32'h00000002);
+      #(4 * CLK_HALF_PERIOD);
+      write_reg(ADDR_CTRL, 32'h00000000);
+    end
+  endtask // start_next_block
+  
 
+  //----------------------------------------------------------------
+  // wait_ready()
+  //
+  // Wait for the ready flag in the dut to be set.
+  //
+  // Note: It is the callers responsibility to call the function
+  // when the dut is actively processing and will in fact at some
+  // point set the flag.
+  //----------------------------------------------------------------
+  task wait_ready();
+    begin
       while (!tb_data_out[STATUS_READY_BIT])
         begin
           read_reg(ADDR_STATUS);
         end
-      
+    end
+  endtask // wait_ready
+
+
+  //----------------------------------------------------------------
+  // extract_data()
+  //
+  // Extracts all 16 data out words and combine them into the
+  // global extracted_data.
+  //----------------------------------------------------------------
+  task extract_data();
+    begin
       read_reg(ADDR_DATA_OUT0);
-      result[511 : 480] = tb_data_out;
+      extracted_data[511 : 480] = tb_data_out;
       read_reg(ADDR_DATA_OUT1);
-      result[479 : 448] = tb_data_out;
+      extracted_data[479 : 448] = tb_data_out;
       read_reg(ADDR_DATA_OUT2);
-      result[447 : 416] = tb_data_out;
+      extracted_data[447 : 416] = tb_data_out;
       read_reg(ADDR_DATA_OUT3);
-      result[415 : 384] = tb_data_out;
+      extracted_data[415 : 384] = tb_data_out;
       read_reg(ADDR_DATA_OUT4);
-      result[383 : 352] = tb_data_out;
+      extracted_data[383 : 352] = tb_data_out;
       read_reg(ADDR_DATA_OUT5);
-      result[351 : 320] = tb_data_out;
+      extracted_data[351 : 320] = tb_data_out;
       read_reg(ADDR_DATA_OUT6);
-      result[319 : 288] = tb_data_out;
+      extracted_data[319 : 288] = tb_data_out;
       read_reg(ADDR_DATA_OUT7);
-      result[287 : 256] = tb_data_out;
+      extracted_data[287 : 256] = tb_data_out;
       read_reg(ADDR_DATA_OUT8);
-      result[255 : 224] = tb_data_out;
+      extracted_data[255 : 224] = tb_data_out;
       read_reg(ADDR_DATA_OUT9);
-      result[223 : 192] = tb_data_out;
+      extracted_data[223 : 192] = tb_data_out;
       read_reg(ADDR_DATA_OUT10);
-      result[191 : 160] = tb_data_out;
+      extracted_data[191 : 160] = tb_data_out;
       read_reg(ADDR_DATA_OUT11);
-      result[159 : 128] = tb_data_out;
+      extracted_data[159 : 128] = tb_data_out;
       read_reg(ADDR_DATA_OUT12);
-      result[127 :  96] = tb_data_out;
+      extracted_data[127 :  96] = tb_data_out;
       read_reg(ADDR_DATA_OUT13);
-      result[95  :  64] = tb_data_out;
+      extracted_data[95  :  64] = tb_data_out;
       read_reg(ADDR_DATA_OUT14);
-      result[63  :  32] = tb_data_out;
+      extracted_data[63  :  32] = tb_data_out;
       read_reg(ADDR_DATA_OUT15);
-      result[31  :   0] = tb_data_out;
+      extracted_data[31  :   0] = tb_data_out;
+    end
+  endtask // extract_data
+  
+    
+  //----------------------------------------------------------------
+  // run_test_vector
+  //
+  // Runs a test case based on the given test vector.
+  //----------------------------------------------------------------
+  task run_test_vector(input [7 : 0]   major, 
+                       input [7 : 0]   minor, 
+                       input [256 : 0] key, 
+                       input           key_length, 
+                       input [64 : 0]  iv,
+                       input [4 : 0]   rounds,
+                       input [511 : 0] expected);
+    begin
+      tc_ctr = tc_ctr + 1;
       
-      if (result != expected)
+      $display("***TC%2d-%2d started", major, minor);
+      $display("***-----------------");
+      write_parameters(key, key_length, iv, rounds);
+
+      start_init_block();
+      wait_ready();
+      extract_data();
+      
+      if (extracted_data != expected)
         begin
           error_ctr = error_ctr + 1;
           $display("***TC%2d-%2d - ERROR", major, minor);
@@ -536,7 +611,7 @@ module tb_chacha();
           $display("Expected:");
           $display("0x%064x", expected);
           $display("Got:");
-          $display("0x%064x", result);
+          $display("0x%064x", extracted_data);
         end
       else
         begin
