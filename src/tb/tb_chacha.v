@@ -45,6 +45,8 @@ module tb_chacha();
   //----------------------------------------------------------------
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
+  parameter DEBUG = 1;
+
   parameter CLK_HALF_PERIOD = 2;
   
   parameter TC1  = 1;
@@ -581,7 +583,61 @@ module tb_chacha();
   
     
   //----------------------------------------------------------------
-  // run_test_vector
+  // run_two_blocks_test_vector()
+  //
+  // Runs a test case with two blocks based on the given 
+  // test vector. Only the final block is compared.
+  //----------------------------------------------------------------
+  task run_two_blocks_test_vector(input [7 : 0]   major, 
+                                  input [7 : 0]   minor, 
+                                  input [256 : 0] key, 
+                                  input           key_length, 
+                                  input [64 : 0]  iv,
+                                  input [4 : 0]   rounds,
+                                  input [511 : 0] expected);
+    begin
+      tc_ctr = tc_ctr + 1;
+      
+      $display("***TC%2d-%2d started", major, minor);
+      $display("***-----------------");
+      write_parameters(key, key_length, iv, rounds);
+
+      start_init_block();
+      wait_ready();
+      extract_data();
+
+      if (DEBUG)
+        begin
+          $display("First block:");
+          $display("0x%064x", extracted_data);
+        end
+      
+      start_next_block();
+      wait_ready();
+      extract_data();
+      
+      if (extracted_data != expected)
+        begin
+          error_ctr = error_ctr + 1;
+          $display("***TC%2d-%2d - ERROR", major, minor);
+          $display("***-----------------");
+          $display("Expected:");
+          $display("0x%064x", expected);
+          $display("Got:");
+          $display("0x%064x", extracted_data);
+        end
+      else
+        begin
+          $display("***TC%2d-%2d - SUCCESS", major, minor);
+          $display("***-------------------");
+        end
+      $display("");
+    end
+  endtask // run_two_blocks_test_vector
+  
+    
+  //----------------------------------------------------------------
+  // run_test_vector()
   //
   // Runs a test case based on the given test vector.
   //----------------------------------------------------------------
@@ -652,6 +708,17 @@ module tb_chacha();
                     64'h0f1e2d3c4b596877,
                     EIGHT_ROUNDS,
                     512'h60fdedbd1a280cb741d0593b6ea0309010acf18e1471f68968f4c9e311dca149b8e027b47c81e0353db013891aa5f68ea3b13dd2f3b8dd0873bf3746e7d6c567);
+
+
+      $display("TC7-3: Increasing, decreasing sequences in key and IV. 256 bit key, 8 rounds.");
+      $display("TC7-3: Testing correct second block.");
+      run_two_blocks_test_vector(TC7, THREE,
+                                 256'h00112233445566778899aabbccddeeffffeeddccbbaa99887766554433221100,                    
+                                 KEY_256_BITS,
+                                 64'h0f1e2d3c4b596877,
+                                 EIGHT_ROUNDS,
+                                 512'hfe882395601ce8aded444867fe62ed8741420002e5d28bb573113a418c1f4008e954c188f38ec4f26bb8555e2b7c92bf4380e2ea9e553187fdd42821794416de);
+      
       
       display_test_result();
       $display("*** chacha simulation done.");
