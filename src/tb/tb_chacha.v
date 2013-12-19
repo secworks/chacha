@@ -376,8 +376,8 @@ module tb_chacha();
       $display("data_out_valid_reg = %01x", dut.core.data_out_valid_reg);
       $display("");
 
-      $display("a_prim = %08x, b_prim = %08x", dut.core.a_prim, dut.core.b_prim);
-      $display("c_prim = %08x, d_prim = %08x", dut.core.c_prim, dut.core.d_prim);
+      $display("qr0_a_prim = %08x, qr0_b_prim = %08x", dut.core.qr0_a_prim, dut.core.qr0_b_prim);
+      $display("qr0_c_prim = %08x, qr0_d_prim = %08x", dut.core.qr0_c_prim, dut.core.qr0_d_prim);
       $display("");
     end
   endtask // dump_core_state
@@ -515,6 +515,14 @@ module tb_chacha();
       write_reg(ADDR_CTRL, 32'h00000002);
       #(4 * CLK_HALF_PERIOD);
       write_reg(ADDR_CTRL, 32'h00000000);
+
+      if (DEBUG)
+        begin
+          $display("Debug of next state.");
+          dump_core_state();
+          #(4 * CLK_HALF_PERIOD);
+          dump_core_state();
+        end
     end
   endtask // start_next_block
   
@@ -608,13 +616,32 @@ module tb_chacha();
 
       if (DEBUG)
         begin
+          $display("State after first block:");
+          dump_core_state();
+          
           $display("First block:");
           $display("0x%064x", extracted_data);
         end
       
       start_next_block();
+
+      if (DEBUG)
+        begin
+          $display("State after init of second block:");
+          dump_core_state();
+        end
+
       wait_ready();
       extract_data();
+
+      if (DEBUG)
+        begin
+          $display("State after init of second block:");
+          dump_core_state();
+          
+          $display("Second block:");
+          $display("0x%064x", extracted_data);
+        end
       
       if (extracted_data != expected)
         begin

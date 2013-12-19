@@ -420,9 +420,12 @@ module tb_chacha_core();
 
       #(2 * CLK_HALF_PERIOD);
       set_core_init(0);
+      dump_state();
       
       // Wait for valid flag and check results.
       @(posedge dut.data_out_valid);
+      dump_state();
+      
       if (tb_core_data_out == expected)
         begin
           $display("*** TC %0d-%0d successful", major, minor);
