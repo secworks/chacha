@@ -332,7 +332,7 @@ module chacha_core(
               key5_reg   <= key[95  :  64];
               key6_reg   <= key[63  :  32];
               key7_reg   <= key[31  :   0];
-              keyle_reg  <= keylen;
+              keylen_reg <= keylen;
               iv0_reg    <= iv[63  :  32];
               iv1_reg    <= iv[31  :   0];
               rounds_reg <= rounds[4 : 1];
@@ -615,14 +615,28 @@ module chacha_core(
 
 
   //----------------------------------------------------------------
-  // x_update
-  //
-  // Logic to update the internal round state X during
-  // round processing.
+  // Update the internal state by adding the new state with the old
+  // state. We do this as 16 separate words.
   //----------------------------------------------------------------
   always @*
-    begin : x_update
-      // Default assignments
+    begin : state_update
+      reg [31 : 0] new_state_word0;
+      reg [31 : 0] new_state_word1;
+      reg [31 : 0] new_state_word2;
+      reg [31 : 0] new_state_word3;
+      reg [31 : 0] new_state_word4;
+      reg [31 : 0] new_state_word5;
+      reg [31 : 0] new_state_word6;
+      reg [31 : 0] new_state_word7;
+      reg [31 : 0] new_state_word8;
+      reg [31 : 0] new_state_word9;
+      reg [31 : 0] new_state_word10;
+      reg [31 : 0] new_state_word11;
+      reg [31 : 0] new_state_word12;
+      reg [31 : 0] new_state_word13;
+      reg [31 : 0] new_state_word14;
+      reg [31 : 0] new_state_word15;
+
       x0_new = 32'h00000000;
       x0_we  = 0;
       x1_new = 32'h00000000;
@@ -656,25 +670,57 @@ module chacha_core(
       x15_new = 32'h00000000;
       x15_we  = 0;
       
-      if (init_block)
+      if (init_state)
         begin
-          // NOTE: THIS IS HIGHLY WRONG. THIS IS WHERE WE SHALL COPY.
-          x0_new  = key0_reg[511 : 480];
-          x1_new  = key0_reg[479 : 448];
-          x2_new  = key0_reg[447 : 416];
-          x3_new  = key0_reg[415 : 384];
-          x4_new  = key0_reg[384 : 352];
-          x5_new  = key0_reg[351 : 320];
-          x6_new  = key0_reg[319 : 288];
-          x7_new  = key0_reg[287 : 256];
-          x8_new  = key0_reg[255 : 224];
-          x9_new  = key0_reg[223 : 192];
-          x10_new = key0_reg[191 : 160];
-          x11_new = key0_reg[159 : 128];
-          x12_new = key0_reg[127 :  96];
-          x13_new = key0_reg[95  :  64];
-          x14_new = key0_reg[63  :  32];
-          x15_new = key0_reg[31  :   0];
+          new_state_word4  = {key[231 : 224], key[239 : 232], 
+                              key[247 : 240], key[255 : 248]};
+          new_state_word5  = {key[199 : 192], key[207 : 200], 
+                              key[215 : 208], key[223 : 216]};
+          new_state_word6  = {key[167 : 160], key[175 : 168], 
+                              key[183 : 176], key[191 : 184]};
+          new_state_word7  = {key[135 : 128], key[143 : 136], 
+                              key[151 : 144], key[159 : 152]};
+
+          new_state_word12 = block0_ctr_reg;
+          new_state_word13 = block1_ctr_reg;
+          
+          new_state_word14 = {iv[39  :  32], iv[47  :  40],
+                              iv[55  :  48], iv[63  :  56]};
+          new_state_word15 = {iv[7   :   0], iv[15  :   8],
+                              iv[23  :  16], iv[31  :  24]};
+
+          if (keylen)
+            begin
+              // 256 bit key.
+              new_state_word0  = SIGMA0;
+              new_state_word1  = SIGMA1;
+              new_state_word2  = SIGMA2;
+              new_state_word3  = SIGMA3;
+              new_state_word8  = {key[103 :  96], key[111 : 104],
+                                  key[119 : 112], key[127 : 120]};
+              new_state_word9  = {key[71  :  64], key[79  :  72],
+                                  key[87  :  80], key[95  :  88]};
+              new_state_word10 = {key[39  :  32], key[47  :  40],
+                                  key[55  :  48], key[63  :  56]};
+              new_state_word11 = {key[7   :   0], key[15  :   8],
+                                  key[23  :  16], key[31  :  24]};
+            end
+          else
+            begin
+              // 128 bit key.
+              new_state_word0  = TAU0;
+              new_state_word1  = TAU1;
+              new_state_word2  = TAU2;
+              new_state_word3  = TAU3;
+              new_state_word8  = {key[231 : 224], key[239 : 232], 
+                                  key[247 : 240], key[255 : 248]};
+              new_state_word9  = {key[199 : 192], key[207 : 200], 
+                                  key[215 : 208], key[223 : 216]};
+              new_state_word10  = {key[167 : 160], key[175 : 168], 
+                                  key[183 : 176], key[191 : 184]};
+              new_state_word11  = {key[135 : 128], key[143 : 136], 
+                                  key[151 : 144], key[159 : 152]};
+            end
           x0_we  = 1;
           x1_we  = 1;
           x2_we  = 1;
@@ -691,15 +737,23 @@ module chacha_core(
           x13_we = 1;
           x14_we = 1;
           x15_we = 1;
-        end
-
-      else if (init_round)
-        begin
-          x12_new = block0_ctr_reg;
-          x12_we  = 1;
-          x13_new = block1_ctr_reg;
-          x13_we  = 1;
-        end
+          x0_new = new_state_word0;
+          x1_new = new_state_word1;
+          x2_new = new_state_word2;
+          x3_new = new_state_word3;
+          x4_new = new_state_word4;
+          x5_new = new_state_word5;
+          x6_new = new_state_word6;
+          x7_new = new_state_word7;
+          x8_new = new_state_word8;
+          x9_new = new_state_word9;
+          x10_new = new_state_word10
+          x11_new = new_state_word11;
+          x12_new = new_state_word12;
+          x13_new = new_state_word13;
+          x14_new = new_state_word14;
+          x15_new = new_state_word15;
+        end // if (init_cipher)
       
       else if (update_dp)
         begin
@@ -791,103 +845,7 @@ module chacha_core(
               end
           endcase // case (quarterround_select)
         end // if (update_dp)
-    end // x_update
 
-
-  //----------------------------------------------------------------
-  // Update the internal state by adding the new state with the old
-  // state. We do this as 16 separate words.
-  //----------------------------------------------------------------
-  always @*
-    begin : state_update
-      // Wires to extract LSB words from state and words
-      // to update the state.
-      reg [31 : 0] state_word0;
-      reg [31 : 0] state_word1;
-      reg [31 : 0] state_word2;
-      reg [31 : 0] state_word3;
-      reg [31 : 0] state_word4;
-      reg [31 : 0] state_word5;
-      reg [31 : 0] state_word6;
-      reg [31 : 0] state_word7;
-      reg [31 : 0] state_word8;
-      reg [31 : 0] state_word9;
-      reg [31 : 0] state_word10;
-      reg [31 : 0] state_word11;
-      reg [31 : 0] state_word12;
-      reg [31 : 0] state_word13;
-      reg [31 : 0] state_word14;
-      reg [31 : 0] state_word15;
-      
-      reg [31 : 0] new_state_word0;
-      reg [31 : 0] new_state_word1;
-      reg [31 : 0] new_state_word2;
-      reg [31 : 0] new_state_word3;
-      reg [31 : 0] new_state_word4;
-      reg [31 : 0] new_state_word5;
-      reg [31 : 0] new_state_word6;
-      reg [31 : 0] new_state_word7;
-      reg [31 : 0] new_state_word8;
-      reg [31 : 0] new_state_word9;
-      reg [31 : 0] new_state_word10;
-      reg [31 : 0] new_state_word11;
-      reg [31 : 0] new_state_word12;
-      reg [31 : 0] new_state_word13;
-      reg [31 : 0] new_state_word14;
-      reg [31 : 0] new_state_word15;
-
-      if (init_cipher)
-        begin
-          new_state_word4  = {key[231 : 224], key[239 : 232], 
-                              key[247 : 240], key[255 : 248]};
-          new_state_word5  = {key[199 : 192], key[207 : 200], 
-                              key[215 : 208], key[223 : 216]};
-          new_state_word6  = {key[167 : 160], key[175 : 168], 
-                              key[183 : 176], key[191 : 184]};
-          new_state_word7  = {key[135 : 128], key[143 : 136], 
-                              key[151 : 144], key[159 : 152]};
-
-          new_state_word12 = 32'h00000000;
-          new_state_word13 = 32'h00000000;
-          
-          new_state_word14 = {iv[39  :  32], iv[47  :  40],
-                              iv[55  :  48], iv[63  :  56]};
-          new_state_word15 = {iv[7   :   0], iv[15  :   8],
-                              iv[23  :  16], iv[31  :  24]};
-
-          if (keylen)
-            begin
-              // 256 bit key.
-              new_state_word0  = SIGMA0;
-              new_state_word1  = SIGMA1;
-              new_state_word2  = SIGMA2;
-              new_state_word3  = SIGMA3;
-              new_state_word8  = {key[103 :  96], key[111 : 104],
-                                  key[119 : 112], key[127 : 120]};
-              new_state_word9  = {key[71  :  64], key[79  :  72],
-                                  key[87  :  80], key[95  :  88]};
-              new_state_word10 = {key[39  :  32], key[47  :  40],
-                                  key[55  :  48], key[63  :  56]};
-              new_state_word11 = {key[7   :   0], key[15  :   8],
-                                  key[23  :  16], key[31  :  24]};
-            end
-          else
-            begin
-              // 128 bit key.
-              new_state_word0  = TAU0;
-              new_state_word1  = TAU1;
-              new_state_word2  = TAU2;
-              new_state_word3  = TAU3;
-              new_state_word8  = {key[231 : 224], key[239 : 232], 
-                                  key[247 : 240], key[255 : 248]};
-              new_state_word9  = {key[199 : 192], key[207 : 200], 
-                                  key[215 : 208], key[223 : 216]};
-              new_state_word10  = {key[167 : 160], key[175 : 168], 
-                                  key[183 : 176], key[191 : 184]};
-              new_state_word11  = {key[135 : 128], key[143 : 136], 
-                                  key[151 : 144], key[159 : 152]};
-            end
-        end // if (init_cipher)
     end // state_update
   
   
