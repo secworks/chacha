@@ -106,50 +106,19 @@ module chacha_core(
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
   reg [31 : 0] key0_reg;
-  reg [31 : 0] key0_new;
-  reg          key0_we;
-  
   reg [31 : 0] key1_reg;
-  reg [31 : 0] key1_new;
-  reg          key1_we;
-  
   reg [31 : 0] key2_reg;
-  reg [31 : 0] key2_new;
-  reg          key2_we;
-  
   reg [31 : 0] key3_reg;
-  reg [31 : 0] key3_new;
-  reg          key3_we;
-  
   reg [31 : 0] key4_reg;
-  reg [31 : 0] key4_new;
-  reg          key4_we;
-  
   reg [31 : 0] key5_reg;
-  reg [31 : 0] key5_new;
-  reg          key5_we;
-  
   reg [31 : 0] key6_reg;
-  reg [31 : 0] key6_new;
-  reg          key6_we;
-  
   reg [31 : 0] key7_reg;
-  reg [31 : 0] key7_new;
-  reg          key7_we;
+
+  reg keylen_reg;
   
   reg [31 : 0] iv0_reg;
-  reg [31 : 0] iv0_new;
-  reg          iv0_we;
-  
   reg [31 : 0] iv1_reg;
-  reg [31 : 0] iv1_new;
-  reg          iv1_we;
 
-  
-  
-  // x0..x15
-  // 16 working state registers including update vectors 
-  // and write enable signals.
   reg [31 : 0] x0_reg;
   reg [31 : 0] x0_new;
   reg          x0_we;
@@ -219,36 +188,28 @@ module chacha_core(
 
   // Note: 4 bits since we count double rounds.
   reg [3 : 0] rounds_reg;
-  reg         rounds_we;
   
   reg  data_out_valid_reg;
   reg  data_out_valid_new;
   reg  data_out_valid_we;
 
-  // Quarterround counter register with
-  // reset and increment control.
   reg [2 : 0] qr_ctr_reg;
   reg [2 : 0] qr_ctr_new;
   reg         qr_ctr_we;
   reg         qr_ctr_inc;
   reg         qr_ctr_rst;
   
-  // Doubleround counter register with
-  // reset and increment control.
   reg [3 : 0] dr_ctr_reg;
   reg [3 : 0] dr_ctr_new;
   reg         dr_ctr_we;
   reg         dr_ctr_inc;
   reg         dr_ctr_rst;
 
-  // 64 bit block counter based on two
-  // 32 bit words with reset and 
-  // increment control.
   reg [31 : 0] block0_ctr_reg;
   reg [31 : 0] block0_ctr_new;
+  reg          block0_ctr_we;
   reg [31 : 0] block1_ctr_reg;
   reg [31 : 0] block1_ctr_new;
-  reg          block0_ctr_we;
   reg          block1_ctr_we;
   reg          block_ctr_inc;
   reg          block_ctr_rst;
@@ -267,7 +228,9 @@ module chacha_core(
   reg next_block;
   reg update_dp;
   reg update_state;
-
+  reg init_state;
+  reg sample_params;
+  
   // Wires to connect the pure combinational quarterround 
   // to the state update logic.
   reg [31 : 0] qr0_a;
@@ -309,7 +272,6 @@ module chacha_core(
   assign data_out_valid = data_out_valid_reg;
   
   assign ready = ready_wire;
-
   
   
   //----------------------------------------------------------------
@@ -360,6 +322,27 @@ module chacha_core(
         end
       else
         begin
+          if (sample_params)
+            begin
+              key0_reg   <= key[255 : 224];
+              key1_reg   <= key[223 : 192];
+              key2_reg   <= key[191 : 160];
+              key3_reg   <= key[159 : 128];
+              key4_reg   <= key[127 :  96];
+              key5_reg   <= key[95  :  64];
+              key6_reg   <= key[63  :  32];
+              key7_reg   <= key[31  :   0];
+              keyle_reg  <= keylen;
+              iv0_reg    <= iv[63  :  32];
+              iv1_reg    <= iv[31  :   0];
+              rounds_reg <= rounds[4 : 1];
+            end
+
+          if (data_in_we)
+            begin
+              data_in_reg <= data_in;
+            end
+          
           if (x0_we)
             begin
               x0_reg <= x0_new;
@@ -453,17 +436,6 @@ module chacha_core(
           if (dr_ctr_we)
             begin
               dr_ctr_reg <= dr_ctr_new;
-            end
-
-          if (data_in_we)
-            begin
-              data_in_reg <= data_in;
-            end
-
-          // Note we skip the low bit.
-          if (rounds_we)
-            begin
-              rounds_reg <= rounds[4 : 1];
             end
 
           if (block0_ctr_we)
@@ -1026,45 +998,39 @@ module chacha_core(
       block_ctr_rst      = 0;
                          
       data_in_we         = 0;
-      rounds_we          = 0;
 
       ready_wire         = 0;
       
       data_out_valid_new = 0;
       data_out_valid_we  = 0;
+
+      init_state         = 0;
+      update_state       = 0;
+      sample_params      = 0;
       
       chacha_ctrl_new    = CTRL_IDLE;
       chacha_ctrl_we     = 0;
-
-      update_state       = 0;
+      
       
       case (chacha_ctrl_reg)
-        // Wait for init signal. When init is given
-        // we initialize the datapath. Note that we
-        // also assume that init implies start of
-        // processing first block.
         CTRL_IDLE:
           begin
             ready_wire = 1;
             if (init)
               begin
-                init_cipher     = 1;
-                qr_ctr_rst      = 1;
-                dr_ctr_rst      = 1;
+                sample_params   = 1;
                 block_ctr_rst   = 1;
-                data_in_we      = 1;
-                rounds_we       = 1;
                 chacha_ctrl_new = CTRL_INIT;
                 chacha_ctrl_we  = 1;
               end
           end
-
         
-        // Copy from state register to X registers
-        // including converstion to LSB words.
         CTRL_INIT:
           begin
-            init_block      = 1;
+            data_in_we      = 1;
+            qr_ctr_rst      = 1;
+            dr_ctr_rst      = 1;
+            init_state      = 1;
             chacha_ctrl_new = CTRL_ROUNDS;
             chacha_ctrl_we  = 1;
           end
@@ -1075,8 +1041,8 @@ module chacha_core(
         // valid and move to CTR_DONE.
         CTRL_ROUNDS:
           begin
-            update_dp  = 1;
-            qr_ctr_inc = 1;
+            update_state = 1;
+            qr_ctr_inc   = 1;
             if (qr_ctr_reg == QR7)
               begin
                 dr_ctr_inc = 1;
@@ -1112,26 +1078,16 @@ module chacha_core(
               begin
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
+                sample_params      = 1;
                 block_ctr_rst      = 1;
-                init_cipher        = 1;
-                qr_ctr_rst         = 1;
-                dr_ctr_rst         = 1;
-                data_in_we         = 1;
-                rounds_we          = 1;
                 chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
               end
             else if (next)
               begin
-                init_round         = 1;
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
                 block_ctr_inc      = 1;
-                next_block         = 1;
-                qr_ctr_rst         = 1;
-                dr_ctr_rst         = 1;
-                data_in_we         = 1;
-                rounds_we          = 1;
                 chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
               end
