@@ -348,8 +348,8 @@ module tb_chacha();
       $display("");
       $display("Core internal state");
       $display("-------------------");
-      $display("Internal data state vector:");
-      $display("0x%064x", dut.core.state_reg);
+//      $display("Internal data state vector:");
+//      $display("0x%064x", dut.core.state_reg);
       $display("");
       
       $display("Round state X:");
@@ -376,8 +376,8 @@ module tb_chacha();
       $display("data_out_valid_reg = %01x", dut.core.data_out_valid_reg);
       $display("");
 
-      $display("a_prim = %08x, b_prim = %08x", dut.core.a_prim, dut.core.b_prim);
-      $display("c_prim = %08x, d_prim = %08x", dut.core.c_prim, dut.core.d_prim);
+      $display("qr0_a_prim = %08x, qr0_b_prim = %08x", dut.core.qr0_a_prim, dut.core.qr0_b_prim);
+      $display("qr0_c_prim = %08x, qr0_d_prim = %08x", dut.core.qr0_c_prim, dut.core.qr0_d_prim);
       $display("");
     end
   endtask // dump_core_state
