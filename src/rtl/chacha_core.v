@@ -560,40 +560,6 @@ module chacha_core(
       reg [31 : 0]  lsb_block_state15;
 
       reg [511 : 0] lsb_block_state;
-
-      msb_block_state0  <= 32'h00000000;
-      msb_block_state1  <= 32'h00000000;
-      msb_block_state2  <= 32'h00000000;
-      msb_block_state3  <= 32'h00000000;
-      msb_block_state4  <= 32'h00000000;
-      msb_block_state5  <= 32'h00000000;
-      msb_block_state6  <= 32'h00000000;
-      msb_block_state7  <= 32'h00000000;
-      msb_block_state8  <= 32'h00000000;
-      msb_block_state9  <= 32'h00000000;
-      msb_block_state10 <= 32'h00000000;
-      msb_block_state11 <= 32'h00000000;
-      msb_block_state12 <= 32'h00000000;
-      msb_block_state13 <= 32'h00000000;
-      msb_block_state14 <= 32'h00000000;
-      msb_block_state15 <= 32'h00000000;
-
-      lsb_block_state0  <= 32'h00000000;
-      lsb_block_state1  <= 32'h00000000;
-      lsb_block_state2  <= 32'h00000000;
-      lsb_block_state3  <= 32'h00000000;
-      lsb_block_state4  <= 32'h00000000;
-      lsb_block_state5  <= 32'h00000000;
-      lsb_block_state6  <= 32'h00000000;
-      lsb_block_state7  <= 32'h00000000;
-      lsb_block_state8  <= 32'h00000000;
-      lsb_block_state9  <= 32'h00000000;
-      lsb_block_state10 <= 32'h00000000;
-      lsb_block_state11 <= 32'h00000000;
-      lsb_block_state12 <= 32'h00000000;
-      lsb_block_state13 <= 32'h00000000;
-      lsb_block_state14 <= 32'h00000000;
-      lsb_block_state15 <= 32'h00000000;
       
       lsb_block_state = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
@@ -699,14 +665,14 @@ module chacha_core(
                                msb_block_state15[23 : 16], 
                                msb_block_state15[31 : 24]};
 
-          lsb_block_state = {msb_block_state0,  msb_block_state1,
-                             msb_block_state2,  msb_block_state3,
-                             msb_block_state4,  msb_block_state5,
-                             msb_block_state6,  msb_block_state7,
-                             msb_block_state8,  msb_block_state9,
-                             msb_block_state10, msb_block_state11,
-                             msb_block_state12, msb_block_state13,
-                             msb_block_state14, msb_block_state15};
+          lsb_block_state = {lsb_block_state0,  lsb_block_state1,
+                             lsb_block_state2,  lsb_block_state3,
+                             lsb_block_state4,  lsb_block_state5,
+                             lsb_block_state6,  lsb_block_state7,
+                             lsb_block_state8,  lsb_block_state9,
+                             lsb_block_state10, lsb_block_state11,
+                             lsb_block_state12, lsb_block_state13,
+                             lsb_block_state14, lsb_block_state15};
 
           data_out_new = data_in_reg ^ lsb_block_state;
           data_out_we   = 1;
