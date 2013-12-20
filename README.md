@@ -26,6 +26,10 @@ quarterounds version will achieve 1 cycle/round.
 
 
 ## Status ##
+(2013-12-20)
+- Top anc core are verified. A somewhat major overhaul of the design was
+needed to fix proper handling of multiple block messages.
+
 (2013-12-17)
 - Top is almost completely verified. Top testbench runs self checking
 test cases.
