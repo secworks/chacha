@@ -275,11 +275,38 @@ module chacha_core(
   wire [31 : 0] qr0_c_prim;
   wire [31 : 0] qr0_d_prim;
   
+  reg [31 : 0]  qr1_a;
+  reg [31 : 0]  qr1_b;
+  reg [31 : 0]  qr1_c;
+  reg [31 : 0]  qr1_d;
+  wire [31 : 0] qr1_a_prim;
+  wire [31 : 0] qr1_b_prim;
+  wire [31 : 0] qr1_c_prim;
+  wire [31 : 0] qr1_d_prim;
+  
+  reg [31 : 0]  qr2_a;
+  reg [31 : 0]  qr2_b;
+  reg [31 : 0]  qr2_c;
+  reg [31 : 0]  qr2_d;
+  wire [31 : 0] qr2_a_prim;
+  wire [31 : 0] qr2_b_prim;
+  wire [31 : 0] qr2_c_prim;
+  wire [31 : 0] qr2_d_prim;
+  
+  reg [31 : 0]  qr3_a;
+  reg [31 : 0]  qr3_b;
+  reg [31 : 0]  qr3_c;
+  reg [31 : 0]  qr3_d;
+  wire [31 : 0] qr3_a_prim;
+  wire [31 : 0] qr3_b_prim;
+  wire [31 : 0] qr3_c_prim;
+  wire [31 : 0] qr3_d_prim;
+  
   reg ready_wire;
 
 
   //----------------------------------------------------------------
-  // Instantiation of the qr module.
+  // Instantiation of the qr modules.
   //----------------------------------------------------------------
   chacha_qr qr0(
                 .a(qr0_a),
@@ -293,6 +320,42 @@ module chacha_core(
                 .d_prim(qr0_d_prim)
                );
 
+  chacha_qr qr1(
+                .a(qr1_a),
+                .b(qr1_b),
+                .c(qr1_c),
+                .d(qr1_d),
+                
+                .a_prim(qr1_a_prim),
+                .b_prim(qr1_b_prim),
+                .c_prim(qr1_c_prim),
+                .d_prim(qr1_d_prim)
+               );
+  
+  chacha_qr qr2(
+                .a(qr2_a),
+                .b(qr2_b),
+                .c(qr2_c),
+                .d(qr2_d),
+                
+                .a_prim(qr2_a_prim),
+                .b_prim(qr2_b_prim),
+                .c_prim(qr2_c_prim),
+                .d_prim(qr2_d_prim)
+               );
+
+  chacha_qr qr3(
+                .a(qr3_a),
+                .b(qr3_b),
+                .c(qr3_c),
+                .d(qr3_d),
+                
+                .a_prim(qr3_a_prim),
+                .b_prim(qr3_b_prim),
+                .c_prim(qr3_c_prim),
+                .d_prim(qr3_d_prim)
+               );
+  
   
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
