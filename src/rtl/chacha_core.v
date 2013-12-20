@@ -250,23 +250,21 @@ module chacha_core(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  reg update_state;
-  reg init_state;
   reg sample_params;
+  reg init_state;
+  reg update_state;
   reg update_output;
   
-  reg [31 : 0] qr0_a;
-  reg [31 : 0] qr0_b;
-  reg [31 : 0] qr0_c;
-  reg [31 : 0] qr0_d;
+  reg [31 : 0]  qr0_a;
+  reg [31 : 0]  qr0_b;
+  reg [31 : 0]  qr0_c;
+  reg [31 : 0]  qr0_d;
   wire [31 : 0] qr0_a_prim;
   wire [31 : 0] qr0_b_prim;
   wire [31 : 0] qr0_c_prim;
   wire [31 : 0] qr0_d_prim;
   
   reg ready_wire;
-
-  reg [511 : 0] tmp_data_out;
 
 
   //----------------------------------------------------------------
@@ -288,7 +286,7 @@ module chacha_core(
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
-  assign data_out = tmp_data_out;
+  assign data_out = data_out_reg;
   
   assign data_out_valid = data_out_valid_reg;
   
