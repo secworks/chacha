@@ -40,27 +40,21 @@
 //======================================================================
 
 module chacha_core(
-                   // Clock and reset.
                    input wire            clk,
                    input wire            reset_n,
                 
-                   // Control.
                    input wire            init,
                    input wire            next,
 
-                   // Parameters.
                    input wire [255 : 0]  key,
                    input wire            keylen,
                    input wire [63 : 0]   iv,
                    input wire [4 : 0]    rounds,
                    
-                   // Data input.
                    input wire [511 : 0]  data_in,
                    
-                   // Status output.
                    output wire           ready,
                     
-                   // Data out with valid signal.
                    output wire [511 : 0] data_out,
                    output wire           data_out_valid
                   );
@@ -79,11 +73,8 @@ module chacha_core(
   parameter QR6 = 3'h6;
   parameter QR7 = 3'h7;
 
-  // NUM_ROUNDS
-  // Default number of rounds
   parameter NUM_ROUNDS = 4'h8;
 
-  // TAU and SIGMA constants.
   parameter TAU0 = 32'h61707865;
   parameter TAU1 = 32'h3120646e;
   parameter TAU2 = 32'h79622d36;
@@ -94,7 +85,6 @@ module chacha_core(
   parameter SIGMA2 = 32'h79622d32;
   parameter SIGMA3 = 32'h6b206574;
   
-  // State names for the control FSM.
   parameter CTRL_IDLE     = 3'h0;
   parameter CTRL_INIT     = 3'h1;
   parameter CTRL_ROUNDS   = 3'h2;
@@ -231,8 +221,6 @@ module chacha_core(
   reg init_state;
   reg sample_params;
   
-  // Wires to connect the pure combinational quarterround 
-  // to the state update logic.
   reg [31 : 0] qr0_a;
   reg [31 : 0] qr0_b;
   reg [31 : 0] qr0_c;
@@ -242,7 +230,6 @@ module chacha_core(
   wire [31 : 0] qr0_c_prim;
   wire [31 : 0] qr0_d_prim;
   
-  // ready flag wire.
   reg ready_wire;
 
   reg [511 : 0] tmp_data_out;
@@ -284,7 +271,6 @@ module chacha_core(
     begin : reg_update
       if (!reset_n)
         begin
-          // Reset all registers to defined values.
           key0_reg           <= 32'h00000000;
           key1_reg           <= 32'h00000000;
           key2_reg           <= 32'h00000000;
@@ -542,6 +528,7 @@ module chacha_core(
 
   
   //----------------------------------------------------------------
+  // quarterround_mux
   // Quarterround muxes that selects operands for quarterrounds.
   //----------------------------------------------------------------
   always @*
@@ -615,6 +602,7 @@ module chacha_core(
 
 
   //----------------------------------------------------------------
+  // state_update
   // Update the internal state by adding the new state with the old
   // state. We do this as 16 separate words.
   //----------------------------------------------------------------
@@ -747,7 +735,7 @@ module chacha_core(
           x7_new = new_state_word7;
           x8_new = new_state_word8;
           x9_new = new_state_word9;
-          x10_new = new_state_word10
+          x10_new = new_state_word10;
           x11_new = new_state_word11;
           x12_new = new_state_word12;
           x13_new = new_state_word13;
@@ -757,8 +745,6 @@ module chacha_core(
       
       else if (update_dp)
         begin
-          // Quarterround update.
-          // Write results from the quarterround to the state regs.
           x0_new  = qr0_a_prim;
           x1_new  = qr0_a_prim; 
           x2_new  = qr0_a_prim;
@@ -845,7 +831,6 @@ module chacha_core(
               end
           endcase // case (quarterround_select)
         end // if (update_dp)
-
     end // state_update
   
   
@@ -856,7 +841,6 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : qr_ctr
-      // Defult assignments
       qr_ctr_new = 0;
       qr_ctr_we  = 0;
       
@@ -881,7 +865,6 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : dr_ctr
-      // Defult assignments
       dr_ctr_new = 0;
       dr_ctr_we  = 0;
       
@@ -939,7 +922,6 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : chacha_ctrl_fsm
-      // Default assignments
       init_cipher        = 0;
       init_round         = 0;
       update_dp          = 0;
@@ -993,10 +975,6 @@ module chacha_core(
             chacha_ctrl_we  = 1;
           end
         
-        // We perform 8 quarterrounds for each
-        // double round and repeat until we have
-        // processed the block. We then set data 
-        // valid and move to CTR_DONE.
         CTRL_ROUNDS:
           begin
             update_state = 1;
@@ -1013,8 +991,6 @@ module chacha_core(
           end
 
 
-        // Add final state of X to state to create the final
-        // block state.
         CTRL_FINALIZE:
           begin
             update_state       = 1;
@@ -1025,10 +1001,6 @@ module chacha_core(
           end
         
         
-        // We wait for either next block signal or
-        // init signal. When then drop valid, perform
-        // initialization or 
-        // either starts on a new block or 
         CTRL_DONE:
           begin
             ready_wire = 1;
@@ -1052,7 +1024,6 @@ module chacha_core(
           end
       endcase // case (chacha_ctrl_reg)
     end // chacha_ctrl_fsm
-
 endmodule // chacha_core
 
 //======================================================================
