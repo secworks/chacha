@@ -629,7 +629,7 @@ module chacha(
       data_in14_we  = 0;
       data_in15_new = 32'h00000000;
       data_in15_we  = 0;
-
+      
       tmp_data_out = 32'h00000000;
       
       if (cs)
@@ -812,6 +812,12 @@ module chacha(
                     data_in15_new = data_in;
                     data_in15_we  = 1;
                   end
+                
+                default:
+                  begin
+                    // Empty since default assignemnts are handled
+                    // outside of the if-mux construct.
+                  end
               endcase // case (address)
             end // if (write_read)
 
@@ -966,6 +972,12 @@ module chacha(
                 ADDR_DATA_OUT15:
                   begin
                     tmp_data_out = data_out15_reg;
+                  end
+                
+                default:
+                  begin
+                    // Empty since default assignemnts are handled
+                    // outside of the if-mux construct.                  
                   end
               endcase // case (address)
             end
