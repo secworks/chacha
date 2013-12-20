@@ -40,27 +40,21 @@
 //======================================================================
 
 module chacha_core(
-                   // Clock and reset.
                    input wire            clk,
                    input wire            reset_n,
                 
-                   // Control.
                    input wire            init,
                    input wire            next,
 
-                   // Parameters.
                    input wire [255 : 0]  key,
                    input wire            keylen,
                    input wire [63 : 0]   iv,
                    input wire [4 : 0]    rounds,
                    
-                   // Data input.
                    input wire [511 : 0]  data_in,
                    
-                   // Status output.
                    output wire           ready,
                     
-                   // Data out with valid signal.
                    output wire [511 : 0] data_out,
                    output wire           data_out_valid
                   );
@@ -79,11 +73,8 @@ module chacha_core(
   parameter QR6 = 3'h6;
   parameter QR7 = 3'h7;
 
-  // NUM_ROUNDS
-  // Default number of rounds
   parameter NUM_ROUNDS = 4'h8;
 
-  // TAU and SIGMA constants.
   parameter TAU0 = 32'h61707865;
   parameter TAU1 = 32'h3120646e;
   parameter TAU2 = 32'h79622d36;
@@ -94,7 +85,6 @@ module chacha_core(
   parameter SIGMA2 = 32'h79622d32;
   parameter SIGMA3 = 32'h6b206574;
   
-  // State names for the control FSM.
   parameter CTRL_IDLE     = 3'h0;
   parameter CTRL_INIT     = 3'h1;
   parameter CTRL_ROUNDS   = 3'h2;
@@ -105,14 +95,54 @@ module chacha_core(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
-  // internal state.
-  reg [511 : 0] state_reg;
-  reg [511 : 0] state_new;
-  reg           state_we;
+  reg [31 : 0] key0_reg;
+  reg [31 : 0] key1_reg;
+  reg [31 : 0] key2_reg;
+  reg [31 : 0] key3_reg;
+  reg [31 : 0] key4_reg;
+  reg [31 : 0] key5_reg;
+  reg [31 : 0] key6_reg;
+  reg [31 : 0] key7_reg;
+
+  reg keylen_reg;
   
-  // x0..x15
-  // 16 working state registers including update vectors 
-  // and write enable signals.
+  reg [31 : 0] iv0_reg;
+  reg [31 : 0] iv1_reg;
+
+  reg [31 : 0] state0_reg;
+  reg [31 : 0] state0_new;
+  reg [31 : 0] state1_reg;
+  reg [31 : 0] state1_new;
+  reg [31 : 0] state2_reg;
+  reg [31 : 0] state2_new;
+  reg [31 : 0] state3_reg;
+  reg [31 : 0] state3_new;
+  reg [31 : 0] state4_reg;
+  reg [31 : 0] state4_new;
+  reg [31 : 0] state5_reg;
+  reg [31 : 0] state5_new;
+  reg [31 : 0] state6_reg;
+  reg [31 : 0] state6_new;
+  reg [31 : 0] state7_reg;
+  reg [31 : 0] state7_new;
+  reg [31 : 0] state8_reg;
+  reg [31 : 0] state8_new;
+  reg [31 : 0] state9_reg;
+  reg [31 : 0] state9_new;
+  reg [31 : 0] state10_reg;
+  reg [31 : 0] state10_new;
+  reg [31 : 0] state11_reg;
+  reg [31 : 0] state11_new;
+  reg [31 : 0] state12_reg;
+  reg [31 : 0] state12_new;
+  reg [31 : 0] state13_reg;
+  reg [31 : 0] state13_new;
+  reg [31 : 0] state14_reg;
+  reg [31 : 0] state14_new;
+  reg [31 : 0] state15_reg;
+  reg [31 : 0] state15_new;
+  reg state_we;
+  
   reg [31 : 0] x0_reg;
   reg [31 : 0] x0_new;
   reg          x0_we;
@@ -177,41 +207,37 @@ module chacha_core(
   reg [31 : 0] x15_new;
   reg          x15_we;
 
+  // Note: 4 bits since we count double rounds.
+  reg [3 : 0] rounds_reg;
+
   reg [511 : 0] data_in_reg;
   reg           data_in_we;
 
-  // Note: 4 bits since we count double rounds.
-  reg [3 : 0] rounds_reg;
-  reg         rounds_we;
+  reg [511 : 0] data_out_reg;
+  reg [511 : 0] data_out_new;
+  reg           data_out_we;
   
   reg  data_out_valid_reg;
   reg  data_out_valid_new;
   reg  data_out_valid_we;
 
-  // Quarterround counter register with
-  // reset and increment control.
   reg [2 : 0] qr_ctr_reg;
   reg [2 : 0] qr_ctr_new;
   reg         qr_ctr_we;
   reg         qr_ctr_inc;
   reg         qr_ctr_rst;
   
-  // Doubleround counter register with
-  // reset and increment control.
   reg [3 : 0] dr_ctr_reg;
   reg [3 : 0] dr_ctr_new;
   reg         dr_ctr_we;
   reg         dr_ctr_inc;
   reg         dr_ctr_rst;
 
-  // 64 bit block counter based on two
-  // 32 bit words with reset and 
-  // increment control.
   reg [31 : 0] block0_ctr_reg;
   reg [31 : 0] block0_ctr_new;
+  reg          block0_ctr_we;
   reg [31 : 0] block1_ctr_reg;
   reg [31 : 0] block1_ctr_new;
-  reg          block0_ctr_we;
   reg          block1_ctr_we;
   reg          block_ctr_inc;
   reg          block_ctr_rst;
@@ -224,28 +250,21 @@ module chacha_core(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  reg init_cipher;
-  reg init_round;
-  reg init_block;
-  reg next_block;
-  reg update_dp;
+  reg sample_params;
+  reg init_state;
   reg update_state;
-
-  // Wires to connect the pure combinational quarterround 
-  // to the state update logic.
-  reg [31 : 0] qr0_a;
-  reg [31 : 0] qr0_b;
-  reg [31 : 0] qr0_c;
-  reg [31 : 0] qr0_d;
+  reg update_output;
+  
+  reg [31 : 0]  qr0_a;
+  reg [31 : 0]  qr0_b;
+  reg [31 : 0]  qr0_c;
+  reg [31 : 0]  qr0_d;
   wire [31 : 0] qr0_a_prim;
   wire [31 : 0] qr0_b_prim;
   wire [31 : 0] qr0_c_prim;
   wire [31 : 0] qr0_d_prim;
   
-  // ready flag wire.
   reg ready_wire;
-
-  reg [511 : 0] tmp_data_out;
 
 
   //----------------------------------------------------------------
@@ -267,12 +286,11 @@ module chacha_core(
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
-  assign data_out = tmp_data_out;
+  assign data_out = data_out_reg;
   
   assign data_out_valid = data_out_valid_reg;
   
   assign ready = ready_wire;
-
   
   
   //----------------------------------------------------------------
@@ -285,7 +303,32 @@ module chacha_core(
     begin : reg_update
       if (!reset_n)
         begin
-          // Reset all registers to defined values.
+          key0_reg           <= 32'h00000000;
+          key1_reg           <= 32'h00000000;
+          key2_reg           <= 32'h00000000;
+          key3_reg           <= 32'h00000000;
+          key4_reg           <= 32'h00000000;
+          key5_reg           <= 32'h00000000;
+          key6_reg           <= 32'h00000000;
+          key7_reg           <= 32'h00000000;
+          iv0_reg            <= 32'h00000000;
+          iv1_reg            <= 32'h00000000;
+          state0_reg         <= 32'h00000000;
+          state1_reg         <= 32'h00000000;
+          state2_reg         <= 32'h00000000;
+          state3_reg         <= 32'h00000000;
+          state4_reg         <= 32'h00000000;
+          state5_reg         <= 32'h00000000;
+          state6_reg         <= 32'h00000000;
+          state7_reg         <= 32'h00000000;
+          state8_reg         <= 32'h00000000;
+          state9_reg         <= 32'h00000000;
+          state10_reg        <= 32'h00000000;
+          state11_reg        <= 32'h00000000;
+          state12_reg        <= 32'h00000000;
+          state13_reg        <= 32'h00000000;
+          state14_reg        <= 32'h00000000;
+          state15_reg        <= 32'h00000000;
           x0_reg             <= 32'h00000000;
           x1_reg             <= 32'h00000000;
           x2_reg             <= 32'h00000000;
@@ -303,9 +346,8 @@ module chacha_core(
           x14_reg            <= 32'h00000000;
           x15_reg            <= 32'h00000000;
           data_in_reg        <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-          state_reg          <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+          data_out_reg       <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
           rounds_reg         <= 4'h0;
-          state_reg          <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
           data_out_valid_reg <= 0;
           qr_ctr_reg         <= QR0;
           dr_ctr_reg         <= 0;
@@ -315,9 +357,45 @@ module chacha_core(
         end
       else
         begin
+          if (sample_params)
+            begin
+              key0_reg   <= key[255 : 224];
+              key1_reg   <= key[223 : 192];
+              key2_reg   <= key[191 : 160];
+              key3_reg   <= key[159 : 128];
+              key4_reg   <= key[127 :  96];
+              key5_reg   <= key[95  :  64];
+              key6_reg   <= key[63  :  32];
+              key7_reg   <= key[31  :   0];
+              iv0_reg    <= iv[63  :  32];
+              iv1_reg    <= iv[31  :   0];
+              rounds_reg <= rounds[4 : 1];
+              keylen_reg <= keylen;
+            end
+
+          if (data_in_we)
+            begin
+              data_in_reg <= data_in;
+            end
+
           if (state_we)
             begin
-              state_reg <= state_new;
+              state0_reg  <= state0_new;
+              state1_reg  <= state1_new;
+              state2_reg  <= state2_new;
+              state3_reg  <= state3_new;
+              state4_reg  <= state4_new;
+              state5_reg  <= state5_new;
+              state6_reg  <= state6_new;
+              state7_reg  <= state7_new;
+              state8_reg  <= state8_new;
+              state9_reg  <= state9_new;
+              state10_reg <= state10_new;
+              state11_reg <= state11_new;
+              state12_reg <= state12_new;
+              state13_reg <= state13_new;
+              state14_reg <= state14_new;
+              state15_reg <= state15_new;
             end
           
           if (x0_we)
@@ -400,6 +478,11 @@ module chacha_core(
               x15_reg <= x15_new;
             end
 
+          if (data_out_we)
+            begin
+              data_out_reg <= data_out_new;
+            end
+
           if (data_out_valid_we)
             begin
               data_out_valid_reg <= data_out_valid_new;
@@ -413,17 +496,6 @@ module chacha_core(
           if (dr_ctr_we)
             begin
               dr_ctr_reg <= dr_ctr_new;
-            end
-
-          if (data_in_we)
-            begin
-              data_in_reg <= data_in;
-            end
-
-          // Note we skip the low bit.
-          if (rounds_we)
-            begin
-              rounds_reg <= rounds[4 : 1];
             end
 
           if (block0_ctr_we)
@@ -453,215 +525,319 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : data_out_logic
-      reg [31 : 0]  lsb_out0;
-      reg [31 : 0]  lsb_out1;
-      reg [31 : 0]  lsb_out2;
-      reg [31 : 0]  lsb_out3;
-      reg [31 : 0]  lsb_out4;
-      reg [31 : 0]  lsb_out5;
-      reg [31 : 0]  lsb_out6;
-      reg [31 : 0]  lsb_out7;
-      reg [31 : 0]  lsb_out8;
-      reg [31 : 0]  lsb_out9;
-      reg [31 : 0]  lsb_out10;
-      reg [31 : 0]  lsb_out11;
-      reg [31 : 0]  lsb_out12;
-      reg [31 : 0]  lsb_out13;
-      reg [31 : 0]  lsb_out14;
-      reg [31 : 0]  lsb_out15;
-      reg [511 : 0] msb_data_out;
+      reg [31 : 0]  msb_block_state0;
+      reg [31 : 0]  msb_block_state1;
+      reg [31 : 0]  msb_block_state2;
+      reg [31 : 0]  msb_block_state3;
+      reg [31 : 0]  msb_block_state4;
+      reg [31 : 0]  msb_block_state5;
+      reg [31 : 0]  msb_block_state6;
+      reg [31 : 0]  msb_block_state7;
+      reg [31 : 0]  msb_block_state8;
+      reg [31 : 0]  msb_block_state9;
+      reg [31 : 0]  msb_block_state10;
+      reg [31 : 0]  msb_block_state11;
+      reg [31 : 0]  msb_block_state12;
+      reg [31 : 0]  msb_block_state13;
+      reg [31 : 0]  msb_block_state14;
+      reg [31 : 0]  msb_block_state15;
       
-      msb_data_out = data_in_reg ^ state_reg;
+      reg [31 : 0]  lsb_block_state0;
+      reg [31 : 0]  lsb_block_state1;
+      reg [31 : 0]  lsb_block_state2;
+      reg [31 : 0]  lsb_block_state3;
+      reg [31 : 0]  lsb_block_state4;
+      reg [31 : 0]  lsb_block_state5;
+      reg [31 : 0]  lsb_block_state6;
+      reg [31 : 0]  lsb_block_state7;
+      reg [31 : 0]  lsb_block_state8;
+      reg [31 : 0]  lsb_block_state9;
+      reg [31 : 0]  lsb_block_state10;
+      reg [31 : 0]  lsb_block_state11;
+      reg [31 : 0]  lsb_block_state12;
+      reg [31 : 0]  lsb_block_state13;
+      reg [31 : 0]  lsb_block_state14;
+      reg [31 : 0]  lsb_block_state15;
 
-      lsb_out0  = {msb_data_out[487 : 480], msb_data_out[495 : 488],
-                   msb_data_out[503 : 496], msb_data_out[511 : 504]};
+      reg [511 : 0] lsb_block_state;
       
-      lsb_out1 = {msb_data_out[455 : 448], msb_data_out[463 : 456], 
-                  msb_data_out[471 : 464], msb_data_out[479 : 472]};
-      
-      lsb_out2 = {msb_data_out[423 : 416], msb_data_out[431 : 424], 
-                  msb_data_out[439 : 432], msb_data_out[447 : 440]};
-      
-      lsb_out3 = {msb_data_out[391 : 384], msb_data_out[399 : 392], 
-                  msb_data_out[407 : 400], msb_data_out[415 : 408]};
-      
-      lsb_out4 = {msb_data_out[359 : 352], msb_data_out[367 : 360], 
-                  msb_data_out[375 : 368], msb_data_out[383 : 376]};
-      
-      lsb_out5 = {msb_data_out[327 : 320], msb_data_out[335 : 328], 
-                  msb_data_out[343 : 336], msb_data_out[351 : 344]};
-      
-      lsb_out6 = {msb_data_out[295 : 288], msb_data_out[303 : 296], 
-                  msb_data_out[311 : 304], msb_data_out[319 : 312]};
-      
-      lsb_out7 = {msb_data_out[263 : 256], msb_data_out[271 : 264], 
-                  msb_data_out[279 : 272], msb_data_out[287 : 280]};
-      
-      lsb_out8 = {msb_data_out[231 : 224], msb_data_out[239 : 232], 
-                  msb_data_out[247 : 240], msb_data_out[255 : 248]};
-      
-      lsb_out9 = {msb_data_out[199 : 192], msb_data_out[207 : 200], 
-                  msb_data_out[215 : 208], msb_data_out[223 : 216]};
-      
-      lsb_out10 = {msb_data_out[167 : 160], msb_data_out[175 : 168], 
-                   msb_data_out[183 : 176], msb_data_out[191 : 184]};
-      
-      lsb_out11 = {msb_data_out[135 : 128], msb_data_out[143 : 136], 
-                   msb_data_out[151 : 144], msb_data_out[159 : 152]};
+      lsb_block_state = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
 
-      lsb_out12 = {msb_data_out[103 :  96], msb_data_out[111 : 104],
-                   msb_data_out[119 : 112], msb_data_out[127 : 120]};
-      
-      lsb_out13 = {msb_data_out[71 : 64], msb_data_out[79 : 72],
-                    msb_data_out[87 : 80], msb_data_out[95 : 88]};
-      
-      lsb_out14 = {msb_data_out[39 : 32], msb_data_out[47 : 40],
-                   msb_data_out[55 : 48], msb_data_out[63 : 56]};
-      
-      lsb_out15 = {msb_data_out[7  :  0], msb_data_out[15 :  8],
-                   msb_data_out[23 : 16], msb_data_out[31 : 24]};
+      data_out_new = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+      data_out_we = 0;
 
-      tmp_data_out = {lsb_out0,  lsb_out1,  lsb_out2,  lsb_out3,
-                      lsb_out4,  lsb_out5,  lsb_out6,  lsb_out7,
-                      lsb_out8,  lsb_out9,  lsb_out10, lsb_out11,
-                      lsb_out12, lsb_out13, lsb_out14, lsb_out15};
+      if (update_output)
+        begin
+          msb_block_state0  = state0_reg  + x0_reg;
+          msb_block_state1  = state1_reg  + x1_reg;
+          msb_block_state2  = state2_reg  + x2_reg;
+          msb_block_state3  = state3_reg  + x3_reg;
+          msb_block_state4  = state4_reg  + x4_reg;
+          msb_block_state5  = state5_reg  + x5_reg;
+          msb_block_state6  = state6_reg  + x6_reg;
+          msb_block_state7  = state7_reg  + x7_reg;
+          msb_block_state8  = state8_reg  + x8_reg;
+          msb_block_state9  = state9_reg  + x9_reg;
+          msb_block_state10 = state10_reg + x10_reg;
+          msb_block_state11 = state11_reg + x11_reg;
+          msb_block_state12 = state12_reg + x12_reg;
+          msb_block_state13 = state13_reg + x13_reg;
+          msb_block_state14 = state14_reg + x14_reg;
+          msb_block_state15 = state15_reg + x15_reg;
 
+          lsb_block_state0 = {msb_block_state0[7  :  0], 
+                              msb_block_state0[15 :  8],
+                              msb_block_state0[23 : 16], 
+                              msb_block_state0[31 : 24]};
+
+          lsb_block_state1 = {msb_block_state1[7  :  0], 
+                              msb_block_state1[15 :  8],
+                              msb_block_state1[23 : 16], 
+                              msb_block_state1[31 : 24]};
+
+          lsb_block_state2 = {msb_block_state2[7  :  0], 
+                              msb_block_state2[15 :  8],
+                              msb_block_state2[23 : 16], 
+                              msb_block_state2[31 : 24]};
+
+          lsb_block_state3 = {msb_block_state3[7  :  0], 
+                              msb_block_state3[15 :  8],
+                              msb_block_state3[23 : 16], 
+                              msb_block_state3[31 : 24]};
+
+          lsb_block_state4 = {msb_block_state4[7  :  0], 
+                              msb_block_state4[15 :  8],
+                              msb_block_state4[23 : 16], 
+                              msb_block_state4[31 : 24]};
+
+          lsb_block_state5 = {msb_block_state5[7  :  0], 
+                              msb_block_state5[15 :  8],
+                              msb_block_state5[23 : 16], 
+                              msb_block_state5[31 : 24]};
+
+          lsb_block_state6 = {msb_block_state6[7  :  0], 
+                              msb_block_state6[15 :  8],
+                              msb_block_state6[23 : 16], 
+                              msb_block_state6[31 : 24]};
+
+          lsb_block_state7 = {msb_block_state7[7  :  0], 
+                              msb_block_state7[15 :  8],
+                              msb_block_state7[23 : 16], 
+                              msb_block_state7[31 : 24]};
+
+          lsb_block_state8 = {msb_block_state8[7  :  0], 
+                              msb_block_state8[15 :  8],
+                              msb_block_state8[23 : 16], 
+                              msb_block_state8[31 : 24]};
+
+          lsb_block_state9 = {msb_block_state9[7  :  0], 
+                              msb_block_state9[15 :  8],
+                              msb_block_state9[23 : 16], 
+                              msb_block_state9[31 : 24]};
+
+          lsb_block_state10 = {msb_block_state10[7  :  0], 
+                               msb_block_state10[15 :  8],
+                               msb_block_state10[23 : 16], 
+                               msb_block_state10[31 : 24]};
+
+          lsb_block_state11 = {msb_block_state11[7  :  0], 
+                               msb_block_state11[15 :  8],
+                               msb_block_state11[23 : 16], 
+                               msb_block_state11[31 : 24]};
+
+          lsb_block_state12 = {msb_block_state12[7  :  0], 
+                               msb_block_state12[15 :  8],
+                               msb_block_state12[23 : 16], 
+                               msb_block_state12[31 : 24]};
+
+          lsb_block_state13 = {msb_block_state13[7  :  0], 
+                               msb_block_state13[15 :  8],
+                               msb_block_state13[23 : 16], 
+                               msb_block_state13[31 : 24]};
+
+          lsb_block_state14 = {msb_block_state14[7  :  0], 
+                               msb_block_state14[15 :  8],
+                               msb_block_state14[23 : 16], 
+                               msb_block_state14[31 : 24]};
+          
+          lsb_block_state15 = {msb_block_state15[7  :  0], 
+                               msb_block_state15[15 :  8],
+                               msb_block_state15[23 : 16], 
+                               msb_block_state15[31 : 24]};
+
+          lsb_block_state = {lsb_block_state0,  lsb_block_state1,
+                             lsb_block_state2,  lsb_block_state3,
+                             lsb_block_state4,  lsb_block_state5,
+                             lsb_block_state6,  lsb_block_state7,
+                             lsb_block_state8,  lsb_block_state9,
+                             lsb_block_state10, lsb_block_state11,
+                             lsb_block_state12, lsb_block_state13,
+                             lsb_block_state14, lsb_block_state15};
+
+          data_out_new = data_in_reg ^ lsb_block_state;
+          data_out_we   = 1;
+        end // if (update_output)
     end // data_out_logic
 
-  
-  //----------------------------------------------------------------
-  // Quarterround muxes that selects operands for quarterrounds.
-  //----------------------------------------------------------------
-  always @*
-    begin : quarterround_mux
-      case (qr_ctr_reg)
-          QR0:
-            begin
-              qr0_a = x0_reg;
-              qr0_b = x4_reg;
-              qr0_c = x8_reg;
-              qr0_d = x12_reg;
-            end
-        
-          QR1:
-            begin
-              qr0_a = x1_reg;
-              qr0_b = x5_reg;
-              qr0_c = x9_reg;
-              qr0_d = x13_reg;
-            end
-        
-          QR2:
-            begin
-              qr0_a = x2_reg;
-              qr0_b = x6_reg;
-              qr0_c = x10_reg;
-              qr0_d = x14_reg;
-            end
-        
-          QR3:
-            begin
-              qr0_a = x3_reg;
-              qr0_b = x7_reg;
-              qr0_c = x11_reg;
-              qr0_d = x15_reg;
-            end
-        
-          QR4:
-            begin
-              qr0_a = x0_reg;
-              qr0_b = x5_reg;
-              qr0_c = x10_reg;
-              qr0_d = x15_reg;
-            end
-        
-          QR5:
-            begin
-              qr0_a = x1_reg;
-              qr0_b = x6_reg;
-              qr0_c = x11_reg;
-              qr0_d = x12_reg;
-            end
-        
-          QR6:
-            begin
-              qr0_a = x2_reg;
-              qr0_b = x7_reg;
-              qr0_c = x8_reg;
-              qr0_d = x13_reg;
-            end
-        
-          QR7:
-            begin
-              qr0_a = x3_reg;
-              qr0_b = x4_reg;
-              qr0_c = x9_reg;
-              qr0_d = x14_reg;
-            end
-      endcase // case (quarterround_select)
-    end // quarterround_mux
-
 
   //----------------------------------------------------------------
-  // x_update
-  //
-  // Logic to update the internal round state X during
-  // round processing.
+  // state_logic
+  // Logic to init and update the internal state.
   //----------------------------------------------------------------
   always @*
-    begin : x_update
-      // Default assignments
-      x0_new = 32'h00000000;
-      x0_we  = 0;
-      x1_new = 32'h00000000;
-      x1_we  = 0;
-      x2_new = 32'h00000000;
-      x2_we  = 0;
-      x3_new = 32'h00000000;
-      x3_we  = 0;
-      x4_new = 32'h00000000;
-      x4_we  = 0;
-      x5_new = 32'h00000000;
-      x5_we  = 0;
-      x6_new = 32'h00000000;
-      x6_we  = 0;
-      x7_new = 32'h00000000;
-      x7_we  = 0;
-      x8_new = 32'h00000000;
-      x8_we  = 0;
-      x9_new = 32'h00000000;
-      x9_we  = 0;
-      x10_new = 32'h00000000;
-      x10_we  = 0;
-      x11_new = 32'h00000000;
-      x11_we  = 0;
-      x12_new = 32'h00000000;
-      x12_we  = 0;
-      x13_new = 32'h00000000;
-      x13_we  = 0;
-      x14_new = 32'h00000000;
-      x14_we  = 0;
-      x15_new = 32'h00000000;
-      x15_we  = 0;
+    begin : state_logic
+      reg [31 : 0] new_state_word0;
+      reg [31 : 0] new_state_word1;
+      reg [31 : 0] new_state_word2;
+      reg [31 : 0] new_state_word3;
+      reg [31 : 0] new_state_word4;
+      reg [31 : 0] new_state_word5;
+      reg [31 : 0] new_state_word6;
+      reg [31 : 0] new_state_word7;
+      reg [31 : 0] new_state_word8;
+      reg [31 : 0] new_state_word9;
+      reg [31 : 0] new_state_word10;
+      reg [31 : 0] new_state_word11;
+      reg [31 : 0] new_state_word12;
+      reg [31 : 0] new_state_word13;
+      reg [31 : 0] new_state_word14;
+      reg [31 : 0] new_state_word15;
+
+      new_state_word0  = 32'h00000000;
+      new_state_word1  = 32'h00000000;
+      new_state_word2  = 32'h00000000;
+      new_state_word3  = 32'h00000000;
+      new_state_word4  = 32'h00000000;
+      new_state_word5  = 32'h00000000;
+      new_state_word6  = 32'h00000000;
+      new_state_word7  = 32'h00000000;
+      new_state_word8  = 32'h00000000;
+      new_state_word9  = 32'h00000000;
+      new_state_word10 = 32'h00000000;
+      new_state_word11 = 32'h00000000;
+      new_state_word12 = 32'h00000000;
+      new_state_word13 = 32'h00000000;
+      new_state_word14 = 32'h00000000;
+      new_state_word15 = 32'h00000000;
       
-      if (init_block)
+      x0_new  = 32'h00000000;
+      x1_new  = 32'h00000000;
+      x2_new  = 32'h00000000;
+      x3_new  = 32'h00000000;
+      x4_new  = 32'h00000000;
+      x5_new  = 32'h00000000;
+      x6_new  = 32'h00000000;
+      x7_new  = 32'h00000000;
+      x8_new  = 32'h00000000;
+      x9_new  = 32'h00000000;
+      x10_new = 32'h00000000;
+      x11_new = 32'h00000000;
+      x12_new = 32'h00000000;
+      x13_new = 32'h00000000;
+      x14_new = 32'h00000000;
+      x15_new = 32'h00000000;
+      x0_we   = 0;
+      x1_we   = 0;
+      x2_we   = 0;
+      x3_we   = 0;
+      x4_we   = 0;
+      x5_we   = 0;
+      x6_we   = 0;
+      x7_we   = 0;
+      x8_we   = 0;
+      x9_we   = 0;
+      x10_we  = 0;
+      x11_we  = 0;
+      x12_we  = 0;
+      x13_we  = 0;
+      x14_we  = 0;
+      x15_we  = 0;
+
+      state0_new  = 32'h00000000;
+      state1_new  = 32'h00000000;
+      state2_new  = 32'h00000000;
+      state3_new  = 32'h00000000;
+      state4_new  = 32'h00000000;
+      state5_new  = 32'h00000000;
+      state6_new  = 32'h00000000;
+      state7_new  = 32'h00000000;
+      state8_new  = 32'h00000000;
+      state9_new  = 32'h00000000;
+      state10_new = 32'h00000000;
+      state11_new = 32'h00000000;
+      state12_new = 32'h00000000;
+      state13_new = 32'h00000000;
+      state14_new = 32'h00000000;
+      state15_new = 32'h00000000;
+      state_we = 0;
+      
+      if (init_state)
         begin
-          x0_new  = state_reg[511 : 480];
-          x1_new  = state_reg[479 : 448];
-          x2_new  = state_reg[447 : 416];
-          x3_new  = state_reg[415 : 384];
-          x4_new  = state_reg[384 : 352];
-          x5_new  = state_reg[351 : 320];
-          x6_new  = state_reg[319 : 288];
-          x7_new  = state_reg[287 : 256];
-          x8_new  = state_reg[255 : 224];
-          x9_new  = state_reg[223 : 192];
-          x10_new = state_reg[191 : 160];
-          x11_new = state_reg[159 : 128];
-          x12_new = state_reg[127 :  96];
-          x13_new = state_reg[95  :  64];
-          x14_new = state_reg[63  :  32];
-          x15_new = state_reg[31  :   0];
+          new_state_word4  = {key[231 : 224], key[239 : 232], 
+                              key[247 : 240], key[255 : 248]};
+          new_state_word5  = {key[199 : 192], key[207 : 200], 
+                              key[215 : 208], key[223 : 216]};
+          new_state_word6  = {key[167 : 160], key[175 : 168], 
+                              key[183 : 176], key[191 : 184]};
+          new_state_word7  = {key[135 : 128], key[143 : 136], 
+                              key[151 : 144], key[159 : 152]};
+
+          new_state_word12 = block0_ctr_reg;
+          new_state_word13 = block1_ctr_reg;
+          
+          new_state_word14 = {iv[39  :  32], iv[47  :  40],
+                              iv[55  :  48], iv[63  :  56]};
+          new_state_word15 = {iv[7   :   0], iv[15  :   8],
+                              iv[23  :  16], iv[31  :  24]};
+
+          if (keylen)
+            begin
+              // 256 bit key.
+              new_state_word0  = SIGMA0;
+              new_state_word1  = SIGMA1;
+              new_state_word2  = SIGMA2;
+              new_state_word3  = SIGMA3;
+              new_state_word8  = {key[103 :  96], key[111 : 104],
+                                  key[119 : 112], key[127 : 120]};
+              new_state_word9  = {key[71  :  64], key[79  :  72],
+                                  key[87  :  80], key[95  :  88]};
+              new_state_word10 = {key[39  :  32], key[47  :  40],
+                                  key[55  :  48], key[63  :  56]};
+              new_state_word11 = {key[7   :   0], key[15  :   8],
+                                  key[23  :  16], key[31  :  24]};
+            end
+          else
+            begin
+              // 128 bit key.
+              new_state_word0  = TAU0;
+              new_state_word1  = TAU1;
+              new_state_word2  = TAU2;
+              new_state_word3  = TAU3;
+              new_state_word8  = {key[231 : 224], key[239 : 232], 
+                                  key[247 : 240], key[255 : 248]};
+              new_state_word9  = {key[199 : 192], key[207 : 200], 
+                                  key[215 : 208], key[223 : 216]};
+              new_state_word10  = {key[167 : 160], key[175 : 168], 
+                                  key[183 : 176], key[191 : 184]};
+              new_state_word11  = {key[135 : 128], key[143 : 136], 
+                                  key[151 : 144], key[159 : 152]};
+            end
+          x0_new  = new_state_word0;
+          x1_new  = new_state_word1;
+          x2_new  = new_state_word2;
+          x3_new  = new_state_word3;
+          x4_new  = new_state_word4;
+          x5_new  = new_state_word5;
+          x6_new  = new_state_word6;
+          x7_new  = new_state_word7;
+          x8_new  = new_state_word8;
+          x9_new  = new_state_word9;
+          x10_new = new_state_word10;
+          x11_new = new_state_word11;
+          x12_new = new_state_word12;
+          x13_new = new_state_word13;
+          x14_new = new_state_word14;
+          x15_new = new_state_word15;
           x0_we  = 1;
           x1_we  = 1;
           x2_we  = 1;
@@ -678,20 +854,28 @@ module chacha_core(
           x13_we = 1;
           x14_we = 1;
           x15_we = 1;
-        end
-
-      else if (init_round)
-        begin
-          x12_new = block0_ctr_reg;
-          x12_we  = 1;
-          x13_new = block1_ctr_reg;
-          x13_we  = 1;
-        end
+          
+          state0_new  = new_state_word0;
+          state1_new  = new_state_word1;
+          state2_new  = new_state_word2;
+          state3_new  = new_state_word3;
+          state4_new  = new_state_word4;
+          state5_new  = new_state_word5;
+          state6_new  = new_state_word6;
+          state7_new  = new_state_word7;
+          state8_new  = new_state_word8;
+          state9_new  = new_state_word9;
+          state10_new = new_state_word10;
+          state11_new = new_state_word11;
+          state12_new = new_state_word12;
+          state13_new = new_state_word13;
+          state14_new = new_state_word14;
+          state15_new = new_state_word15;
+          state_we = 1;
+        end // if (init_state)
       
-      else if (update_dp)
+      else if (update_state)
         begin
-          // Quarterround update.
-          // Write results from the quarterround to the state regs.
           x0_new  = qr0_a_prim;
           x1_new  = qr0_a_prim; 
           x2_new  = qr0_a_prim;
@@ -777,142 +961,83 @@ module chacha_core(
                 x14_we  = 1;
               end
           endcase // case (quarterround_select)
-        end // if (update_dp)
-    end // x_update
+        end // if (update_state)
+    end // state_logic
 
-
+  
   //----------------------------------------------------------------
-  // Update the internal state by adding the new state with the old
-  // state. We do this as 16 separate words.
+  // quarterround_mux
+  // Quarterround muxes that selects operands for quarterrounds.
   //----------------------------------------------------------------
   always @*
-    begin : state_update
-      // Wires to extract LSB words from state and words
-      // to update the state.
-      reg [31 : 0] state_word0;
-      reg [31 : 0] state_word1;
-      reg [31 : 0] state_word2;
-      reg [31 : 0] state_word3;
-      reg [31 : 0] state_word4;
-      reg [31 : 0] state_word5;
-      reg [31 : 0] state_word6;
-      reg [31 : 0] state_word7;
-      reg [31 : 0] state_word8;
-      reg [31 : 0] state_word9;
-      reg [31 : 0] state_word10;
-      reg [31 : 0] state_word11;
-      reg [31 : 0] state_word12;
-      reg [31 : 0] state_word13;
-      reg [31 : 0] state_word14;
-      reg [31 : 0] state_word15;
-      
-      reg [31 : 0] new_state_word0;
-      reg [31 : 0] new_state_word1;
-      reg [31 : 0] new_state_word2;
-      reg [31 : 0] new_state_word3;
-      reg [31 : 0] new_state_word4;
-      reg [31 : 0] new_state_word5;
-      reg [31 : 0] new_state_word6;
-      reg [31 : 0] new_state_word7;
-      reg [31 : 0] new_state_word8;
-      reg [31 : 0] new_state_word9;
-      reg [31 : 0] new_state_word10;
-      reg [31 : 0] new_state_word11;
-      reg [31 : 0] new_state_word12;
-      reg [31 : 0] new_state_word13;
-      reg [31 : 0] new_state_word14;
-      reg [31 : 0] new_state_word15;
-      
-      // Default assignment
-      state_we = 0;
-      
-      if (init_cipher)
-        begin
-          state_we = 1;
-          new_state_word4  = {key[231 : 224], key[239 : 232], 
-                              key[247 : 240], key[255 : 248]};
-          new_state_word5  = {key[199 : 192], key[207 : 200], 
-                              key[215 : 208], key[223 : 216]};
-          new_state_word6  = {key[167 : 160], key[175 : 168], 
-                              key[183 : 176], key[191 : 184]};
-          new_state_word7  = {key[135 : 128], key[143 : 136], 
-                              key[151 : 144], key[159 : 152]};
-
-          new_state_word12 = 32'h00000000;
-          new_state_word13 = 32'h00000000;
-          
-          new_state_word14 = {iv[39  :  32], iv[47  :  40],
-                              iv[55  :  48], iv[63  :  56]};
-          new_state_word15 = {iv[7   :   0], iv[15  :   8],
-                              iv[23  :  16], iv[31  :  24]};
-
-          if (keylen)
+    begin : quarterround_mux
+      case (qr_ctr_reg)
+          QR0:
             begin
-              // 256 bit key.
-              new_state_word0  = SIGMA0;
-              new_state_word1  = SIGMA1;
-              new_state_word2  = SIGMA2;
-              new_state_word3  = SIGMA3;
-              new_state_word8  = {key[103 :  96], key[111 : 104],
-                                  key[119 : 112], key[127 : 120]};
-              new_state_word9  = {key[71  :  64], key[79  :  72],
-                                  key[87  :  80], key[95  :  88]};
-              new_state_word10 = {key[39  :  32], key[47  :  40],
-                                  key[55  :  48], key[63  :  56]};
-              new_state_word11 = {key[7   :   0], key[15  :   8],
-                                  key[23  :  16], key[31  :  24]};
+              qr0_a = x0_reg;
+              qr0_b = x4_reg;
+              qr0_c = x8_reg;
+              qr0_d = x12_reg;
             end
-          else
+        
+          QR1:
             begin
-              // 128 bit key.
-              new_state_word0  = TAU0;
-              new_state_word1  = TAU1;
-              new_state_word2  = TAU2;
-              new_state_word3  = TAU3;
-              new_state_word8  = {key[231 : 224], key[239 : 232], 
-                                  key[247 : 240], key[255 : 248]};
-              new_state_word9  = {key[199 : 192], key[207 : 200], 
-                                  key[215 : 208], key[223 : 216]};
-              new_state_word10  = {key[167 : 160], key[175 : 168], 
-                                  key[183 : 176], key[191 : 184]};
-              new_state_word11  = {key[135 : 128], key[143 : 136], 
-                                  key[151 : 144], key[159 : 152]};
+              qr0_a = x1_reg;
+              qr0_b = x5_reg;
+              qr0_c = x9_reg;
+              qr0_d = x13_reg;
             end
-        end // if (init_cipher)
-      
-      if (update_state)
-        begin
-          state_we = 1;
-          
-          new_state_word0  = x0_reg  + state_reg[511 : 480];
-          new_state_word1  = x1_reg  + state_reg[479 : 448];
-          new_state_word2  = x2_reg  + state_reg[447 : 416];
-          new_state_word3  = x3_reg  + state_reg[415 : 384];
-          new_state_word4  = x4_reg  + state_reg[384 : 352];
-          new_state_word5  = x5_reg  + state_reg[351 : 320];
-          new_state_word6  = x6_reg  + state_reg[319 : 288];
-          new_state_word7  = x7_reg  + state_reg[287 : 256];
-          new_state_word8  = x8_reg  + state_reg[255 : 224];
-          new_state_word9  = x9_reg  + state_reg[223 : 192];
-          new_state_word10 = x10_reg + state_reg[191 : 160];
-          new_state_word11 = x11_reg + state_reg[159 : 128];
-          new_state_word12 = x12_reg + state_reg[127 :  96];
-          new_state_word13 = x13_reg + state_reg[95  :  64];
-          new_state_word14 = x14_reg + state_reg[63  :  32];
-          new_state_word15 = x15_reg + state_reg[31  :   0];
-        end
+        
+          QR2:
+            begin
+              qr0_a = x2_reg;
+              qr0_b = x6_reg;
+              qr0_c = x10_reg;
+              qr0_d = x14_reg;
+            end
+        
+          QR3:
+            begin
+              qr0_a = x3_reg;
+              qr0_b = x7_reg;
+              qr0_c = x11_reg;
+              qr0_d = x15_reg;
+            end
+        
+          QR4:
+            begin
+              qr0_a = x0_reg;
+              qr0_b = x5_reg;
+              qr0_c = x10_reg;
+              qr0_d = x15_reg;
+            end
+        
+          QR5:
+            begin
+              qr0_a = x1_reg;
+              qr0_b = x6_reg;
+              qr0_c = x11_reg;
+              qr0_d = x12_reg;
+            end
+        
+          QR6:
+            begin
+              qr0_a = x2_reg;
+              qr0_b = x7_reg;
+              qr0_c = x8_reg;
+              qr0_d = x13_reg;
+            end
+        
+          QR7:
+            begin
+              qr0_a = x3_reg;
+              qr0_b = x4_reg;
+              qr0_c = x9_reg;
+              qr0_d = x14_reg;
+            end
+      endcase // case (quarterround_select)
+    end // quarterround_mux
 
-      state_new = {new_state_word0, new_state_word1, 
-                   new_state_word2, new_state_word3,
-                   new_state_word4, new_state_word5,
-                   new_state_word6, new_state_word7,
-                   new_state_word8, new_state_word9,
-                   new_state_word10, new_state_word11,
-                   new_state_word12, new_state_word13,
-                   new_state_word14, new_state_word15};
-      
-    end // state_update
-  
   
   //----------------------------------------------------------------
   // qr_ctr
@@ -921,7 +1046,6 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : qr_ctr
-      // Defult assignments
       qr_ctr_new = 0;
       qr_ctr_we  = 0;
       
@@ -946,7 +1070,6 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : dr_ctr
-      // Defult assignments
       dr_ctr_new = 0;
       dr_ctr_we  = 0;
       
@@ -1004,13 +1127,11 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : chacha_ctrl_fsm
-      // Default assignments
-      init_cipher        = 0;
-      init_round         = 0;
-      update_dp          = 0;
-      init_block         = 0;
-      next_block         = 0;
-                         
+      init_state         = 0;
+      update_state       = 0;
+      sample_params      = 0;
+      update_output      = 0;
+      
       qr_ctr_inc         = 0;
       qr_ctr_rst         = 0;
                          
@@ -1021,7 +1142,6 @@ module chacha_core(
       block_ctr_rst      = 0;
                          
       data_in_we         = 0;
-      rounds_we          = 0;
 
       ready_wire         = 0;
       
@@ -1030,48 +1150,37 @@ module chacha_core(
       
       chacha_ctrl_new    = CTRL_IDLE;
       chacha_ctrl_we     = 0;
-
-      update_state       = 0;
+      
       
       case (chacha_ctrl_reg)
-        // Wait for init signal. When init is given
-        // we initialize the datapath. Note that we
-        // also assume that init implies start of
-        // processing first block.
         CTRL_IDLE:
           begin
             ready_wire = 1;
             if (init)
               begin
-                init_cipher     = 1;
-                qr_ctr_rst      = 1;
-                dr_ctr_rst      = 1;
-                block_ctr_rst   = 1;
                 data_in_we      = 1;
-                rounds_we       = 1;
+                sample_params   = 1;
+                block_ctr_rst   = 1;
                 chacha_ctrl_new = CTRL_INIT;
                 chacha_ctrl_we  = 1;
               end
           end
 
         
-        // Copy from state register to X registers
-        // including converstion to LSB words.
         CTRL_INIT:
           begin
-            init_block      = 1;
+            init_state      = 1;
+            qr_ctr_rst      = 1;
+            dr_ctr_rst      = 1;
             chacha_ctrl_new = CTRL_ROUNDS;
             chacha_ctrl_we  = 1;
           end
+
         
-        // We perform 8 quarterrounds for each
-        // double round and repeat until we have
-        // processed the block. We then set data 
-        // valid and move to CTR_DONE.
         CTRL_ROUNDS:
           begin
-            update_dp  = 1;
-            qr_ctr_inc = 1;
+            update_state = 1;
+            qr_ctr_inc   = 1;
             if (qr_ctr_reg == QR7)
               begin
                 dr_ctr_inc = 1;
@@ -1084,11 +1193,9 @@ module chacha_core(
           end
 
 
-        // Add final state of X to state to create the final
-        // block state.
         CTRL_FINALIZE:
           begin
-            update_state       = 1;
+            update_output      = 1;
             data_out_valid_new = 1;
             data_out_valid_we  = 1;
             chacha_ctrl_new    = CTRL_DONE;
@@ -1096,10 +1203,6 @@ module chacha_core(
           end
         
         
-        // We wait for either next block signal or
-        // init signal. When then drop valid, perform
-        // initialization or 
-        // either starts on a new block or 
         CTRL_DONE:
           begin
             ready_wire = 1;
@@ -1107,33 +1210,24 @@ module chacha_core(
               begin
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
-                block_ctr_rst      = 1;
-                init_cipher        = 1;
-                qr_ctr_rst         = 1;
-                dr_ctr_rst         = 1;
                 data_in_we         = 1;
-                rounds_we          = 1;
+                sample_params      = 1;
+                block_ctr_rst      = 1;
                 chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
               end
             else if (next)
               begin
-                init_round         = 1;
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
-                block_ctr_inc      = 1;
-                next_block         = 1;
-                qr_ctr_rst         = 1;
-                dr_ctr_rst         = 1;
                 data_in_we         = 1;
-                rounds_we          = 1;
+                block_ctr_inc      = 1;
                 chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
               end
           end
       endcase // case (chacha_ctrl_reg)
     end // chacha_ctrl_fsm
-
 endmodule // chacha_core
 
 //======================================================================

@@ -348,8 +348,8 @@ module tb_chacha();
       $display("");
       $display("Core internal state");
       $display("-------------------");
-      $display("Internal data state vector:");
-      $display("0x%064x", dut.core.state_reg);
+//      $display("Internal data state vector:");
+//      $display("0x%064x", dut.core.state_reg);
       $display("");
       
       $display("Round state X:");
