@@ -96,18 +96,29 @@ module chacha_core(
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
   reg [31 : 0] key0_reg;
+  reg [31 : 0] key0_new;
   reg [31 : 0] key1_reg;
+  reg [31 : 0] key1_new;
   reg [31 : 0] key2_reg;
+  reg [31 : 0] key2_new;
   reg [31 : 0] key3_reg;
+  reg [31 : 0] key3_new;
   reg [31 : 0] key4_reg;
+  reg [31 : 0] key4_new;
   reg [31 : 0] key5_reg;
+  reg [31 : 0] key5_new;
   reg [31 : 0] key6_reg;
+  reg [31 : 0] key6_new;
   reg [31 : 0] key7_reg;
+  reg [31 : 0] key7_new;
 
   reg keylen_reg;
+  reg keylen_new;
   
   reg [31 : 0] iv0_reg;
+  reg [31 : 0] iv0_new;
   reg [31 : 0] iv1_reg;
+  reg [31 : 0] iv1_new;
 
   reg [31 : 0] state0_reg;
   reg [31 : 0] state0_new;
@@ -207,8 +218,8 @@ module chacha_core(
   reg [31 : 0] x15_new;
   reg          x15_we;
 
-  // Note: 4 bits since we count double rounds.
   reg [3 : 0] rounds_reg;
+  reg [3 : 0] rounds_new;
 
   reg [511 : 0] data_in_reg;
   reg           data_in_we;
@@ -291,8 +302,9 @@ module chacha_core(
   assign data_out_valid = data_out_valid_reg;
   
   assign ready = ready_wire;
-  
-  
+
+
+    
   //----------------------------------------------------------------
   // reg_update
   // Update functionality for all registers in the core.
@@ -359,16 +371,16 @@ module chacha_core(
         begin
           if (sample_params)
             begin
-              key0_reg   <= key[255 : 224];
-              key1_reg   <= key[223 : 192];
-              key2_reg   <= key[191 : 160];
-              key3_reg   <= key[159 : 128];
-              key4_reg   <= key[127 :  96];
-              key5_reg   <= key[95  :  64];
-              key6_reg   <= key[63  :  32];
-              key7_reg   <= key[31  :   0];
-              iv0_reg    <= iv[63  :  32];
-              iv1_reg    <= iv[31  :   0];
+              key0_reg   <= key0_new;
+              key1_reg   <= key1_new;
+              key2_reg   <= key2_new;
+              key3_reg   <= key3_new;
+              key4_reg   <= key4_new;
+              key5_reg   <= key5_new;
+              key6_reg   <= key6_new;
+              key7_reg   <= key7_new;
+              iv0_reg    <= iv0_new;
+              iv1_reg    <= iv1_new;
               rounds_reg <= rounds[4 : 1];
               keylen_reg <= keylen;
             end
@@ -679,7 +691,59 @@ module chacha_core(
         end // if (update_output)
     end // data_out_logic
 
+  
+  //----------------------------------------------------------------
+  // sample_parameters
+  // Logic (wires) that convert parameter input to appropriate
+  // format for processing.
+  //----------------------------------------------------------------
+  always @*
+    begin : sample_parameters
+      key0_new   = 32'h00000000;
+      key1_new   = 32'h00000000;
+      key2_new   = 32'h00000000;
+      key3_new   = 32'h00000000;
+      key4_new   = 32'h00000000;
+      key5_new   = 32'h00000000;
+      key6_new   = 32'h00000000;
+      key7_new   = 32'h00000000;
+      iv0_new    = 32'h00000000;
+      iv1_new    = 32'h00000000;
+      rounds_new = 4'h0;
+      keylen_new = 1'b0;
+      
+      if (sample_params)
+        begin
+          key0_new = {key[231 : 224], key[239 : 232], 
+                      key[247 : 240], key[255 : 248]};
+          key1_new = {key[199 : 192], key[207 : 200], 
+                      key[215 : 208], key[223 : 216]};
+          key2_new = {key[167 : 160], key[175 : 168], 
+                      key[183 : 176], key[191 : 184]};
+          key3_new = {key[135 : 128], key[143 : 136], 
+                      key[151 : 144], key[159 : 152]};
+          key4_new = {key[103 :  96], key[111 : 104],
+                      key[119 : 112], key[127 : 120]};
+          key5_new = {key[71  :  64], key[79  :  72],
+                      key[87  :  80], key[95  :  88]};
+          key6_new = {key[39  :  32], key[47  :  40],
+                      key[55  :  48], key[63  :  56]};
+          key7_new = {key[7   :   0], key[15  :   8],
+                      key[23  :  16], key[31  :  24]};
+          
+          iv0_new = {iv[39  :  32], iv[47  :  40],
+                     iv[55  :  48], iv[63  :  56]};
+          iv1_new = {iv[7   :   0], iv[15  :   8],
+                     iv[23  :  16], iv[31  :  24]};
 
+          // Div by two since we count double rounds.
+          rounds_new = rounds[4 : 1];
+
+          keylen_new = keylen;
+        end
+    end
+
+  
   //----------------------------------------------------------------
   // state_logic
   // Logic to init and update the internal state.
@@ -773,38 +837,28 @@ module chacha_core(
       
       if (init_state)
         begin
-          new_state_word4  = {key[231 : 224], key[239 : 232], 
-                              key[247 : 240], key[255 : 248]};
-          new_state_word5  = {key[199 : 192], key[207 : 200], 
-                              key[215 : 208], key[223 : 216]};
-          new_state_word6  = {key[167 : 160], key[175 : 168], 
-                              key[183 : 176], key[191 : 184]};
-          new_state_word7  = {key[135 : 128], key[143 : 136], 
-                              key[151 : 144], key[159 : 152]};
+          new_state_word4  = key0_reg;
+          new_state_word5  = key1_reg;
+          new_state_word6  = key2_reg;
+          new_state_word7  = key3_reg;
 
           new_state_word12 = block0_ctr_reg;
           new_state_word13 = block1_ctr_reg;
           
-          new_state_word14 = {iv[39  :  32], iv[47  :  40],
-                              iv[55  :  48], iv[63  :  56]};
-          new_state_word15 = {iv[7   :   0], iv[15  :   8],
-                              iv[23  :  16], iv[31  :  24]};
+          new_state_word14 = iv0_reg;
+          new_state_word15 = iv1_reg;
 
-          if (keylen)
+          if (keylen_reg)
             begin
               // 256 bit key.
               new_state_word0  = SIGMA0;
               new_state_word1  = SIGMA1;
               new_state_word2  = SIGMA2;
               new_state_word3  = SIGMA3;
-              new_state_word8  = {key[103 :  96], key[111 : 104],
-                                  key[119 : 112], key[127 : 120]};
-              new_state_word9  = {key[71  :  64], key[79  :  72],
-                                  key[87  :  80], key[95  :  88]};
-              new_state_word10 = {key[39  :  32], key[47  :  40],
-                                  key[55  :  48], key[63  :  56]};
-              new_state_word11 = {key[7   :   0], key[15  :   8],
-                                  key[23  :  16], key[31  :  24]};
+              new_state_word8  = key4_reg;
+              new_state_word9  = key5_reg;
+              new_state_word10 = key6_reg;
+              new_state_word11 = key7_reg;
             end
           else
             begin
@@ -813,15 +867,12 @@ module chacha_core(
               new_state_word1  = TAU1;
               new_state_word2  = TAU2;
               new_state_word3  = TAU3;
-              new_state_word8  = {key[231 : 224], key[239 : 232], 
-                                  key[247 : 240], key[255 : 248]};
-              new_state_word9  = {key[199 : 192], key[207 : 200], 
-                                  key[215 : 208], key[223 : 216]};
-              new_state_word10  = {key[167 : 160], key[175 : 168], 
-                                  key[183 : 176], key[191 : 184]};
-              new_state_word11  = {key[135 : 128], key[143 : 136], 
-                                  key[151 : 144], key[159 : 152]};
+              new_state_word8  = key0_reg;
+              new_state_word9  = key1_reg;
+              new_state_word10 = key2_reg;
+              new_state_word11 = key3_reg;
             end
+          
           x0_new  = new_state_word0;
           x1_new  = new_state_word1;
           x2_new  = new_state_word2;
