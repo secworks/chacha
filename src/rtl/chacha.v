@@ -217,8 +217,6 @@ module chacha(
   reg [31 : 0] data_in15_new;
   reg          data_in15_we;
 
-
-  // Data out registers.
   reg [31 : 0] data_out0_reg;
   reg [31 : 0] data_out0_new;
   reg [31 : 0] data_out1_reg;
@@ -831,7 +829,8 @@ module chacha(
                 
                 ADDR_STATUS:
                   begin
-                    tmp_data_out = {28'h0000000, 3'b000, ready_reg};
+                    tmp_data_out = {28'h0000000, 2'b00, 
+                                    {data_out_valid_reg, ready_reg}};
                   end
                   
                 ADDR_KEYLEN:
