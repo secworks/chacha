@@ -222,7 +222,7 @@ module tb_chacha();
                 end
               else
                 begin
-                  $display("*** Read acess: addr 0x%02x = 0x%08x", dut.address, dut.data_out_reg);
+                  $display("*** Read acess: addr 0x%02x = 0x%08x", dut.address, dut.data_out);
                 end
             end
         end
