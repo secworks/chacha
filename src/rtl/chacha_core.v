@@ -381,8 +381,8 @@ module chacha_core(
               key7_reg   <= key7_new;
               iv0_reg    <= iv0_new;
               iv1_reg    <= iv1_new;
-              rounds_reg <= rounds[4 : 1];
-              keylen_reg <= keylen;
+              rounds_reg <= rounds_new;
+              keylen_reg <= keylen_new;
             end
 
           if (data_in_we)
