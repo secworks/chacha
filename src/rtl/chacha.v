@@ -267,7 +267,7 @@ module chacha(
   wire [511 : 0] core_data_out;
   wire           core_data_out_valid;
 
-  reg [31 : 0]   data_out_reg;
+  reg [31 : 0]   tmp_data_out;
   
   
   //----------------------------------------------------------------
@@ -291,7 +291,7 @@ module chacha(
                          data_in8_reg, data_in9_reg, data_in10_reg, data_in11_reg,
                          data_in12_reg, data_in13_reg, data_in14_reg, data_in15_reg};
 
-  assign data_out = data_out_reg;
+  assign data_out = tmp_data_out;
 
              
   //----------------------------------------------------------------
@@ -630,7 +630,7 @@ module chacha(
       data_in15_new = 32'h00000000;
       data_in15_we  = 0;
 
-      data_out_reg = 32'h00000000;
+      tmp_data_out = 32'h00000000;
       
       if (cs)
         begin
@@ -820,152 +820,152 @@ module chacha(
               case (address)
                 ADDR_CTRL:
                   begin
-                    data_out_reg = {28'h0000000, 2'b00, next_reg, init_reg};
+                    tmp_data_out = {28'h0000000, 2'b00, next_reg, init_reg};
                   end
                 
                 ADDR_STATUS:
                   begin
-                    data_out_reg = {28'h0000000, 3'b000, ready_reg};
+                    tmp_data_out = {28'h0000000, 3'b000, ready_reg};
                   end
                   
                 ADDR_KEYLEN:
                   begin
-                    data_out_reg = {28'h0000000, 3'b000, keylen_reg};
+                    tmp_data_out = {28'h0000000, 3'b000, keylen_reg};
                   end
 
                 ADDR_ROUNDS:
                   begin
-                    data_out_reg = {24'h000000, 3'b000, rounds_reg};
+                    tmp_data_out = {24'h000000, 3'b000, rounds_reg};
                   end
   
                 ADDR_KEY0:
                   begin
-                    data_out_reg = key0_reg;
+                    tmp_data_out = key0_reg;
                   end
                 
                 ADDR_KEY1:
                   begin
-                    data_out_reg = key1_reg;
+                    tmp_data_out = key1_reg;
                   end
 
                 ADDR_KEY2:
                   begin
-                    data_out_reg = key2_reg;
+                    tmp_data_out = key2_reg;
                   end
 
                 ADDR_KEY3:
                   begin
-                    data_out_reg = key3_reg;
+                    tmp_data_out = key3_reg;
                   end
 
                 ADDR_KEY4:
                   begin
-                    data_out_reg = key4_reg;
+                    tmp_data_out = key4_reg;
                   end
 
                 ADDR_KEY5:
                   begin
-                    data_out_reg = key5_reg;
+                    tmp_data_out = key5_reg;
                   end
 
                 ADDR_KEY6:
                   begin
-                    data_out_reg = key6_reg;
+                    tmp_data_out = key6_reg;
                   end
 
                 ADDR_KEY7:
                   begin
-                    data_out_reg = key7_reg;
+                    tmp_data_out = key7_reg;
                   end
                   
                 ADDR_IV0:
                   begin
-                    data_out_reg = iv0_reg;
+                    tmp_data_out = iv0_reg;
                   end
 
                 ADDR_IV1:
                   begin
-                    data_out_reg = iv1_reg;
+                    tmp_data_out = iv1_reg;
                   end
                 
                 ADDR_DATA_OUT0:
                   begin
-                    data_out_reg = data_out0_reg;
+                    tmp_data_out = data_out0_reg;
                   end
                 
                 ADDR_DATA_OUT1:
                   begin
-                    data_out_reg = data_out1_reg;
+                    tmp_data_out = data_out1_reg;
                   end
                 
                 ADDR_DATA_OUT2:
                   begin
-                    data_out_reg = data_out2_reg;
+                    tmp_data_out = data_out2_reg;
                   end
                 
                 ADDR_DATA_OUT3:
                   begin
-                    data_out_reg = data_out3_reg;
+                    tmp_data_out = data_out3_reg;
                   end
                 
                 ADDR_DATA_OUT4:
                   begin
-                    data_out_reg = data_out4_reg;
+                    tmp_data_out = data_out4_reg;
                   end
                 
                 ADDR_DATA_OUT5:
                   begin
-                    data_out_reg = data_out5_reg;
+                    tmp_data_out = data_out5_reg;
                   end
                 
                 ADDR_DATA_OUT6:
                   begin
-                    data_out_reg = data_out6_reg;
+                    tmp_data_out = data_out6_reg;
                   end
                 
                 ADDR_DATA_OUT7:
                   begin
-                    data_out_reg = data_out7_reg;
+                    tmp_data_out = data_out7_reg;
                   end
                 
                 ADDR_DATA_OUT8:
                   begin
-                    data_out_reg = data_out8_reg;
+                    tmp_data_out = data_out8_reg;
                   end
                 
                 ADDR_DATA_OUT9:
                   begin
-                    data_out_reg = data_out9_reg;
+                    tmp_data_out = data_out9_reg;
                   end
                 
                 ADDR_DATA_OUT10:
                   begin
-                    data_out_reg = data_out10_reg;
+                    tmp_data_out = data_out10_reg;
                   end
                 
                 ADDR_DATA_OUT11:
                   begin
-                    data_out_reg = data_out11_reg;
+                    tmp_data_out = data_out11_reg;
                   end
                 
                 ADDR_DATA_OUT12:
                   begin
-                    data_out_reg = data_out12_reg;
+                    tmp_data_out = data_out12_reg;
                   end
                 
                 ADDR_DATA_OUT13:
                   begin
-                    data_out_reg = data_out13_reg;
+                    tmp_data_out = data_out13_reg;
                   end
                 
                 ADDR_DATA_OUT14:
                   begin
-                    data_out_reg = data_out14_reg;
+                    tmp_data_out = data_out14_reg;
                   end
                 
                 ADDR_DATA_OUT15:
                   begin
-                    data_out_reg = data_out15_reg;
+                    tmp_data_out = data_out15_reg;
                   end
               endcase // case (address)
             end
