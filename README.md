@@ -25,10 +25,34 @@ more version with 2 and 4 parallel quarterrounds respectively. The four
 quarterounds version will achieve 1 cycle/round.
 
 
+## Implementation ##
+Implementation results using Altera Quartus 13 design tool
+
+### Cyclone IV GX ###
+- 5628 LEs
+- 3629 registers
+- 60.1 MHz
+- 35 cycles latency
+- 870 Mbps perfomance.
+
+
+### Cyclone V GX ###
+- 2491 ALMs for logic
+- 3679 registers
+- 53.4 MHz
+- 35 cycles latency
+- 781 Mbps performance.
+
+
 ## Status ##
 (2013-12-20)
-- Top anc core are verified. A somewhat major overhaul of the design was
+- Top and core are verified. A somewhat major overhaul of the design was
 needed to fix proper handling of multiple block messages.
+
+- The design has been synthesized and senth trough the Altera Quartus
+backend to get completed implementations for Alteras Cyclone IV GX and
+Cyclone V GX devises.
+
 
 (2013-12-17)
 - Top is almost completely verified. Top testbench runs self checking
