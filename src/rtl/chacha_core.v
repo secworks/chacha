@@ -525,23 +525,6 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : data_out_logic
-      reg [31 : 0]  lsb_out0;
-      reg [31 : 0]  lsb_out1;
-      reg [31 : 0]  lsb_out2;
-      reg [31 : 0]  lsb_out3;
-      reg [31 : 0]  lsb_out4;
-      reg [31 : 0]  lsb_out5;
-      reg [31 : 0]  lsb_out6;
-      reg [31 : 0]  lsb_out7;
-      reg [31 : 0]  lsb_out8;
-      reg [31 : 0]  lsb_out9;
-      reg [31 : 0]  lsb_out10;
-      reg [31 : 0]  lsb_out11;
-      reg [31 : 0]  lsb_out12;
-      reg [31 : 0]  lsb_out13;
-      reg [31 : 0]  lsb_out14;
-      reg [31 : 0]  lsb_out15;
-
       reg [31 : 0]  msb_block_state0;
       reg [31 : 0]  msb_block_state1;
       reg [31 : 0]  msb_block_state2;
@@ -578,6 +561,40 @@ module chacha_core(
 
       reg [511 : 0] lsb_block_state;
 
+      msb_block_state0  <= 32'h00000000;
+      msb_block_state1  <= 32'h00000000;
+      msb_block_state2  <= 32'h00000000;
+      msb_block_state3  <= 32'h00000000;
+      msb_block_state4  <= 32'h00000000;
+      msb_block_state5  <= 32'h00000000;
+      msb_block_state6  <= 32'h00000000;
+      msb_block_state7  <= 32'h00000000;
+      msb_block_state8  <= 32'h00000000;
+      msb_block_state9  <= 32'h00000000;
+      msb_block_state10 <= 32'h00000000;
+      msb_block_state11 <= 32'h00000000;
+      msb_block_state12 <= 32'h00000000;
+      msb_block_state13 <= 32'h00000000;
+      msb_block_state14 <= 32'h00000000;
+      msb_block_state15 <= 32'h00000000;
+
+      lsb_block_state0  <= 32'h00000000;
+      lsb_block_state1  <= 32'h00000000;
+      lsb_block_state2  <= 32'h00000000;
+      lsb_block_state3  <= 32'h00000000;
+      lsb_block_state4  <= 32'h00000000;
+      lsb_block_state5  <= 32'h00000000;
+      lsb_block_state6  <= 32'h00000000;
+      lsb_block_state7  <= 32'h00000000;
+      lsb_block_state8  <= 32'h00000000;
+      lsb_block_state9  <= 32'h00000000;
+      lsb_block_state10 <= 32'h00000000;
+      lsb_block_state11 <= 32'h00000000;
+      lsb_block_state12 <= 32'h00000000;
+      lsb_block_state13 <= 32'h00000000;
+      lsb_block_state14 <= 32'h00000000;
+      lsb_block_state15 <= 32'h00000000;
+      
       lsb_block_state = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;;
 
       data_out_new = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;;
@@ -1158,22 +1175,24 @@ module chacha_core(
             ready_wire = 1;
             if (init)
               begin
+                data_in_we      = 1;
                 sample_params   = 1;
                 block_ctr_rst   = 1;
                 chacha_ctrl_new = CTRL_INIT;
                 chacha_ctrl_we  = 1;
               end
           end
+
         
         CTRL_INIT:
           begin
-            data_in_we      = 1;
+            init_state      = 1;
             qr_ctr_rst      = 1;
             dr_ctr_rst      = 1;
-            init_state      = 1;
             chacha_ctrl_new = CTRL_ROUNDS;
             chacha_ctrl_we  = 1;
           end
+
         
         CTRL_ROUNDS:
           begin
@@ -1208,6 +1227,7 @@ module chacha_core(
               begin
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
+                data_in_we         = 1;
                 sample_params      = 1;
                 block_ctr_rst      = 1;
                 chacha_ctrl_new    = CTRL_INIT;
@@ -1217,6 +1237,7 @@ module chacha_core(
               begin
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
+                data_in_we         = 1;
                 block_ctr_inc      = 1;
                 chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
