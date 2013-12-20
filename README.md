@@ -26,14 +26,14 @@ quarterounds version will achieve 1 cycle/round.
 
 
 ## Implementation ##
-Implementation results using Altera Quartus 13 design tool
+Implementation results using the Altera Quartus 13 design tool.
 
 ### Cyclone IV GX ###
 - 5628 LEs
 - 3629 registers
 - 60.1 MHz
 - 35 cycles latency
-- 870 Mbps perfomance.
+- 870 Mbps performance.
 
 
 ### Cyclone V GX ###
