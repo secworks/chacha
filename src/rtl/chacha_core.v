@@ -5,9 +5,6 @@
 // Verilog 2001 implementation of the stream cipher ChaCha.
 // This is the internal core with wide interfaces.
 //
-// Note: data_in, state and data_out is treated as a 512 bit
-// representation of a LSB vector of bytes. That is the LSB
-// is stored in bits [511..
 //
 // Copyright (c) 2013 Secworks Sweden AB
 // All rights reserved.
