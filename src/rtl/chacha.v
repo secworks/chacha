@@ -162,10 +162,8 @@ module chacha(
   reg          key7_we;
 
   reg [31 : 0] iv0_reg;
-  reg [31 : 0] iv0_new;
   reg          iv0_we;
   reg [31 : 0] iv1_reg;
-  reg [31 : 0] iv1_new;
   reg          iv1_we;
 
   reg [31 : 0] data_in0_reg;
@@ -430,12 +428,12 @@ module chacha(
           
           if (iv0_we)
             begin
-              iv0_reg <= iv0_new;
+              iv0_reg <= data_in;
             end
           
           if (iv1_we)
             begin
-              iv1_reg <= iv1_new;
+              iv1_reg <= data_in;
             end
 
           if (data_in0_we)
@@ -574,10 +572,8 @@ module chacha(
       key7_new      = 32'h00000000;
       key7_we       = 0;
 
-      iv0_new       = 32'h00000000;
-      iv0_we        = 0;
-      iv1_new       = 32'h00000000;
-      iv1_we        = 0;
+      iv0_we       = 0;
+      iv1_we       = 0;
 
       data_in0_we  = 0;
       data_in1_we  = 0;
@@ -673,14 +669,12 @@ module chacha(
                   
                 ADDR_IV0:
                   begin
-                    iv0_new = data_in;
-                    iv0_we  = 1;
+                    iv0_we = 1;
                   end
 
                 ADDR_IV1:
                   begin
-                    iv1_new = data_in;
-                    iv1_we  = 1;
+                    iv1_we = 1;
                   end
                 
                 ADDR_DATA_IN0:
