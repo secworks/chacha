@@ -64,14 +64,8 @@ module chacha_core(
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   // Datapath quartterround states names.
-  parameter QR0 = 3'h0;
-  parameter QR1 = 3'h1;
-  parameter QR2 = 3'h2;
-  parameter QR3 = 3'h3;
-  parameter QR4 = 3'h4;
-  parameter QR5 = 3'h5;
-  parameter QR6 = 3'h6;
-  parameter QR7 = 3'h7;
+  parameter QR0 = 1'b0;
+  parameter QR1 = 1'b1;
 
   parameter NUM_ROUNDS = 4'h8;
 
@@ -232,8 +226,8 @@ module chacha_core(
   reg  data_out_valid_new;
   reg  data_out_valid_we;
 
-  reg [2 : 0] qr_ctr_reg;
-  reg [2 : 0] qr_ctr_new;
+  reg         qr_ctr_reg;
+  reg         qr_ctr_new;
   reg         qr_ctr_we;
   reg         qr_ctr_inc;
   reg         qr_ctr_rst;
@@ -1032,18 +1026,6 @@ module chacha_core(
             
             QR1:
               begin
-              end
-            
-            QR2:
-              begin
-              end
-            
-            QR3:
-              begin
-              end
-            
-            QR4:
-              begin
                 x0_new  = qr0_a_prim;
                 x5_new  = qr0_b_prim;
                 x10_new = qr0_c_prim;
@@ -1079,18 +1061,6 @@ module chacha_core(
                 x4_we   = 1;
                 x9_we   = 1;
                 x14_we  = 1;
-              end
-            
-            QR5:
-              begin
-              end
-        
-            QR6:
-              begin
-              end
-            
-            QR7:
-              begin
               end
           endcase // case (quarterround_select)
         end // if (update_state)
@@ -1129,18 +1099,6 @@ module chacha_core(
         
           QR1:
             begin
-            end
-        
-          QR2:
-            begin
-            end
-        
-          QR3:
-            begin
-            end
-        
-          QR4:
-            begin
               qr0_a = x0_reg;
               qr0_b = x5_reg;
               qr0_c = x10_reg;
@@ -1160,18 +1118,6 @@ module chacha_core(
               qr3_b = x4_reg;
               qr3_c = x9_reg;
               qr3_d = x14_reg;
-            end
-        
-          QR5:
-            begin
-            end
-        
-          QR6:
-            begin
-            end
-        
-          QR7:
-            begin
             end
       endcase // case (quarterround_select)
     end // quarterround_mux
@@ -1319,7 +1265,7 @@ module chacha_core(
           begin
             update_state = 1;
             qr_ctr_inc   = 1;
-            if (qr_ctr_reg == QR7)
+            if (qr_ctr_reg == QR1)
               begin
                 dr_ctr_inc = 1;
                 if (dr_ctr_reg == (rounds_reg - 1))
