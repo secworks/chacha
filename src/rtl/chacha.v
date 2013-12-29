@@ -117,21 +117,15 @@ module chacha(
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
   reg init_reg;
-  reg init_new;
-  reg init_we;
-  
   reg next_reg;
-  reg next_new;
-  reg next_we;
+  reg ctrl_we;
   
   reg ready_reg;
   
   reg keylen_reg;
-  reg keylen_new;
   reg keylen_we;
 
   reg [4 : 0] rounds_reg;
-  reg [4 : 0] rounds_new;
   reg         rounds_we;
 
   reg data_out_valid_reg;
@@ -358,24 +352,20 @@ module chacha(
           ready_reg          <= core_ready;
           data_out_valid_reg <= core_data_out_valid;
 
-          if (init_we)
+          if (ctrl_we)
             begin
-              init_reg <= init_new;
-            end
-
-          if (next_we)
-            begin
-              next_reg <= next_new;
+              init_reg <= data_in[CTRL_INIT_BIT];
+              next_reg <= data_in[CTRL_NEXT_BIT];
             end
 
           if (keylen_we)
             begin
-              keylen_reg <= keylen_new;
+              keylen_reg <= data_in[KEYLEN_BIT];
             end
           
           if (rounds_we)
             begin
-              rounds_reg <= rounds_new;
+              rounds_reg <= data_in[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
             end
           
           if (key0_we)
@@ -536,16 +526,9 @@ module chacha(
   //----------------------------------------------------------------
   always @*
     begin : addr_decoder
-      init_new      = 0;
-      init_we       = 0;
-      next_new      = 0;
-      next_we       = 0;
-                    
-      keylen_new    = 0;
-      keylen_we     = 0;
-                    
-      rounds_new    = 5'b00000;
-      rounds_we     = 0;
+      ctrl_we      = 0;
+      keylen_we    = 0;
+      rounds_we    = 0;
       
       key0_we      = 0;
       key1_we      = 0;
@@ -585,21 +568,16 @@ module chacha(
               case (address)
                 ADDR_CTRL:
                   begin
-                    init_new = data_in[CTRL_INIT_BIT];
-                    init_we  = 1;
-                    next_new = data_in[CTRL_NEXT_BIT];
-                    next_we  = 1;
+                    ctrl_we  = 1;
                   end
                   
                 ADDR_KEYLEN:
                   begin
-                    keylen_new = data_in[KEYLEN_BIT];
                     keylen_we = 1;
                   end
 
                 ADDR_ROUNDS:
                   begin
-                    rounds_new = data_in[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
                     rounds_we  = 1;
                   end
   
