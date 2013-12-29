@@ -1138,7 +1138,7 @@ module chacha_core(
 
       if (qr_ctr_inc)
         begin
-          qr_ctr_new = qr_ctr_reg + 1;
+          qr_ctr_new = qr_ctr_reg + 1'b1;
           qr_ctr_we  = 1;
         end
     end // qr_ctr
@@ -1162,7 +1162,7 @@ module chacha_core(
 
       if (dr_ctr_inc)
         begin
-          dr_ctr_new = dr_ctr_reg + 1;
+          dr_ctr_new = dr_ctr_reg + 1'b1;
           dr_ctr_we  = 1;
         end
     end // dr_ctr
