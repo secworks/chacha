@@ -37,14 +37,21 @@ Implementation results using the Altera Quartus 13 design tool.
 
 
 ### Cyclone V GX ###
-- 2491 ALMs for logic
+- 2631 ALMs for logic
 - 3679 registers
-- 53.4 MHz
-- 35 cycles latency
-- 781 Mbps performance.
+- 54.3 MHz
+- 11 cycles latency
+- 2.5 Gbps performance.
 
 
 ## Status ##
+(2013-12-29)
+- Changed to four parallel QR engines to more than quadruple the
+performance using 5% more logic. The latency is down from  35 cycles (8
+* 4 + 3 cycles) for 8 rounds to 11 cycles (2 * 4 + 3). This gives a
+performance of 2.5 Gbps.
+
+
 (2013-12-20)
 - Top and core are verified. A somewhat major overhaul of the design was
 needed to fix proper handling of multiple block messages.
