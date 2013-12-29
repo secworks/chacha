@@ -29,16 +29,16 @@ quarterounds version will achieve 1 cycle/round.
 Implementation results using the Altera Quartus 13 design tool.
 
 ### Cyclone IV GX ###
-- 5628 LEs
-- 3629 registers
-- 60.1 MHz
-- 35 cycles latency
-- 870 Mbps performance.
+- 6233 LEs
+- 3677 registers
+- 56.1 MHz
+- 11 cycles latency
+- 2.6 Gbps performance.
 
 
 ### Cyclone V GX ###
 - 2631 ALMs for logic
-- 3679 registers
+- 3677 registers
 - 54.3 MHz
 - 11 cycles latency
 - 2.5 Gbps performance.
@@ -48,9 +48,7 @@ Implementation results using the Altera Quartus 13 design tool.
 (2013-12-29)
 - Changed to four parallel QR engines to more than quadruple the
 performance using 5% more logic. The latency is down from  35 cycles (8
-* 4 + 3 cycles) for 8 rounds to 11 cycles (2 * 4 + 3). This gives a
-performance of 2.5 Gbps.
-
+* 4 + 3 cycles) for 8 rounds to 11 cycles (2 * 4 + 3).
 
 (2013-12-20)
 - Top and core are verified. A somewhat major overhaul of the design was
