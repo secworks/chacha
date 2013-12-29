@@ -990,29 +990,13 @@ module chacha_core(
       
       else if (update_state)
         begin
-          x0_new  = qr0_a_prim;
-          x1_new  = qr0_a_prim; 
-          x2_new  = qr0_a_prim;
-          x3_new  = qr0_a_prim;
-
-          x4_new  = qr0_b_prim;
-          x5_new  = qr0_b_prim;
-          x6_new  = qr0_b_prim;
-          x7_new  = qr0_b_prim;
-
-          x8_new  = qr0_c_prim;
-          x9_new  = qr0_c_prim;
-          x10_new = qr0_c_prim;
-          x11_new = qr0_c_prim; 
-
-          x12_new = qr0_d_prim;
-          x13_new = qr0_d_prim;
-          x14_new = qr0_d_prim;
-          x15_new = qr0_d_prim;
-          
           case (qr_ctr_reg)
             QR0:
               begin
+                x0_new  = qr0_a_prim;
+                x4_new  = qr0_b_prim;
+                x8_new  = qr0_c_prim;
+                x12_new = qr0_d_prim;
                 x0_we   = 1;
                 x4_we   = 1;
                 x8_we   = 1;
@@ -1021,6 +1005,10 @@ module chacha_core(
             
             QR1:
               begin
+                x1_new  = qr0_a_prim;
+                x5_new  = qr0_b_prim;
+                x9_new  = qr0_c_prim;
+                x13_new = qr0_d_prim;
                 x1_we   = 1;
                 x5_we   = 1;
                 x9_we   = 1;
@@ -1029,6 +1017,10 @@ module chacha_core(
             
             QR2:
               begin
+                x2_new  = qr0_a_prim;
+                x6_new  = qr0_b_prim;
+                x10_new = qr0_c_prim;
+                x14_new = qr0_d_prim;
                 x2_we   = 1;
                 x6_we   = 1;
                 x10_we  = 1;
@@ -1037,6 +1029,10 @@ module chacha_core(
             
             QR3:
               begin
+                x3_new  = qr0_a_prim;
+                x7_new  = qr0_b_prim;
+                x11_new = qr0_c_prim;
+                x15_new = qr0_d_prim;
                 x3_we   = 1;
                 x7_we   = 1;
                 x11_we  = 1;
@@ -1045,6 +1041,10 @@ module chacha_core(
             
             QR4:
               begin
+                x0_new  = qr0_a_prim;
+                x5_new  = qr0_b_prim;
+                x10_new = qr0_c_prim;
+                x15_new = qr0_d_prim;
                 x0_we   = 1;
                 x5_we   = 1;
                 x10_we  = 1;
@@ -1053,6 +1053,10 @@ module chacha_core(
             
             QR5:
               begin
+                x1_new  = qr0_a_prim;
+                x6_new  = qr0_b_prim;
+                x11_new = qr0_c_prim;
+                x12_new = qr0_d_prim;
                 x1_we   = 1;
                 x6_we   = 1;
                 x11_we  = 1;
@@ -1061,6 +1065,10 @@ module chacha_core(
         
             QR6:
               begin
+                x2_new  = qr0_a_prim;
+                x7_new  = qr0_b_prim;
+                x8_new  = qr0_c_prim;
+                x13_new = qr0_d_prim;
                 x2_we   = 1;
                 x7_we   = 1;
                 x8_we   = 1;
@@ -1069,6 +1077,10 @@ module chacha_core(
             
             QR7:
               begin
+                x3_new  = qr0_a_prim;
+                x4_new  = qr0_b_prim;
+                x9_new  = qr0_c_prim;
+                x14_new = qr0_d_prim;
                 x3_we   = 1;
                 x4_we   = 1;
                 x9_we   = 1;
