@@ -47,8 +47,8 @@ Implementation results using the Altera Quartus 13 design tool.
 ## Status ##
 (2013-12-29)
 - Changed to four parallel QR engines to more than quadruple the
-performance using 5% more logic. The latency is down from  35 cycles (8
-* 4 + 3 cycles) for 8 rounds to 11 cycles (2 * 4 + 3).
+performance using 5% more logic. The latency is down from  35 cycles to
+11 cycles.
 
 (2013-12-20)
 - Top and core are verified. A somewhat major overhaul of the design was
