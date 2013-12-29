@@ -137,28 +137,20 @@ module chacha(
   reg data_out_valid_reg;
   
   reg [31 : 0] key0_reg;
-  reg [31 : 0] key0_new;
   reg          key0_we;
   reg [31 : 0] key1_reg;
-  reg [31 : 0] key1_new;
   reg          key1_we;
   reg [31 : 0] key2_reg;
-  reg [31 : 0] key2_new;
   reg          key2_we;
   reg [31 : 0] key3_reg;
-  reg [31 : 0] key3_new;
   reg          key3_we;
   reg [31 : 0] key4_reg;
-  reg [31 : 0] key4_new;
   reg          key4_we;
   reg [31 : 0] key5_reg;
-  reg [31 : 0] key5_new;
   reg          key5_we;
   reg [31 : 0] key6_reg;
-  reg [31 : 0] key6_new;
   reg          key6_we;
   reg [31 : 0] key7_reg;
-  reg [31 : 0] key7_new;
   reg          key7_we;
 
   reg [31 : 0] iv0_reg;
@@ -388,42 +380,42 @@ module chacha(
           
           if (key0_we)
             begin
-              key0_reg <= key0_new;
+              key0_reg <= data_in;
             end
           
           if (key1_we)
             begin
-              key1_reg <= key1_new;
+              key1_reg <= data_in;
             end
           
           if (key2_we)
             begin
-              key2_reg <= key2_new;
+              key2_reg <= data_in;
             end
           
           if (key3_we)
             begin
-              key3_reg <= key3_new;
+              key3_reg <= data_in;
             end
           
           if (key4_we)
             begin
-              key4_reg <= key4_new;
+              key4_reg <= data_in;
             end
           
           if (key5_we)
             begin
-              key5_reg <= key5_new;
+              key5_reg <= data_in;
             end
           
           if (key6_we)
             begin
-              key6_reg <= key6_new;
+              key6_reg <= data_in;
             end
           
           if (key7_we)
             begin
-              key7_reg <= key7_new;
+              key7_reg <= data_in;
             end
           
           if (iv0_we)
@@ -555,22 +547,14 @@ module chacha(
       rounds_new    = 5'b00000;
       rounds_we     = 0;
       
-      key0_new      = 32'h00000000;
-      key0_we       = 0;
-      key1_new      = 32'h00000000;
-      key1_we       = 0;
-      key2_new      = 32'h00000000;
-      key2_we       = 0;
-      key3_new      = 32'h00000000;
-      key3_we       = 0;
-      key4_new      = 32'h00000000;
-      key4_we       = 0;
-      key5_new      = 32'h00000000;
-      key5_we       = 0;
-      key6_new      = 32'h00000000;
-      key6_we       = 0;
-      key7_new      = 32'h00000000;
-      key7_we       = 0;
+      key0_we      = 0;
+      key1_we      = 0;
+      key2_we      = 0;
+      key3_we      = 0;
+      key4_we      = 0;
+      key5_we      = 0;
+      key6_we      = 0;
+      key7_we      = 0;
 
       iv0_we       = 0;
       iv1_we       = 0;
@@ -621,49 +605,41 @@ module chacha(
   
                 ADDR_KEY0:
                   begin
-                    key0_new = data_in;
                     key0_we  = 1;
                   end
   
                 ADDR_KEY1:
                   begin
-                    key1_new = data_in;
                     key1_we  = 1;
                   end
   
                 ADDR_KEY2:
                   begin
-                    key2_new = data_in;
                     key2_we  = 1;
                   end
   
                 ADDR_KEY3:
                   begin
-                    key3_new = data_in;
                     key3_we  = 1;
                   end
   
                 ADDR_KEY4:
                   begin
-                    key4_new = data_in;
                     key4_we  = 1;
                   end
   
                 ADDR_KEY5:
                   begin
-                    key5_new = data_in;
                     key5_we  = 1;
                   end
                 
                 ADDR_KEY6:
                   begin
-                    key6_new = data_in;
                     key6_we  = 1;
                   end
 
                 ADDR_KEY7:
                   begin
-                    key7_new = data_in;
                     key7_we  = 1;
                   end
                   
