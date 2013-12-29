@@ -169,52 +169,36 @@ module chacha(
   reg          iv1_we;
 
   reg [31 : 0] data_in0_reg;
-  reg [31 : 0] data_in0_new;
   reg          data_in0_we;
   reg [31 : 0] data_in1_reg;
-  reg [31 : 0] data_in1_new;
   reg          data_in1_we;
   reg [31 : 0] data_in2_reg;
-  reg [31 : 0] data_in2_new;
   reg          data_in2_we;
   reg [31 : 0] data_in3_reg;
-  reg [31 : 0] data_in3_new;
   reg          data_in3_we;
   reg [31 : 0] data_in4_reg;
-  reg [31 : 0] data_in4_new;
   reg          data_in4_we;
   reg [31 : 0] data_in5_reg;
-  reg [31 : 0] data_in5_new;
   reg          data_in5_we;
   reg [31 : 0] data_in6_reg;
-  reg [31 : 0] data_in6_new;
   reg          data_in6_we;
   reg [31 : 0] data_in7_reg;
-  reg [31 : 0] data_in7_new;
   reg          data_in7_we;
   reg [31 : 0] data_in8_reg;
-  reg [31 : 0] data_in8_new;
   reg          data_in8_we;
   reg [31 : 0] data_in9_reg;
-  reg [31 : 0] data_in9_new;
   reg          data_in9_we;
   reg [31 : 0] data_in10_reg;
-  reg [31 : 0] data_in10_new;
   reg          data_in10_we;
   reg [31 : 0] data_in11_reg;
-  reg [31 : 0] data_in11_new;
   reg          data_in11_we;
   reg [31 : 0] data_in12_reg;
-  reg [31 : 0] data_in12_new;
   reg          data_in12_we;
   reg [31 : 0] data_in13_reg;
-  reg [31 : 0] data_in13_new;
   reg          data_in13_we;
   reg [31 : 0] data_in14_reg;
-  reg [31 : 0] data_in14_new;
   reg          data_in14_we;
   reg [31 : 0] data_in15_reg;
-  reg [31 : 0] data_in15_new;
   reg          data_in15_we;
 
   reg [31 : 0] data_out0_reg;
@@ -456,82 +440,82 @@ module chacha(
 
           if (data_in0_we)
             begin
-              data_in0_reg <= data_in0_new;
+              data_in0_reg <= data_in;
             end
 
           if (data_in1_we)
             begin
-              data_in1_reg <= data_in1_new;
+              data_in1_reg <= data_in;
             end
 
           if (data_in2_we)
             begin
-              data_in2_reg <= data_in2_new;
+              data_in2_reg <= data_in;
             end
 
           if (data_in3_we)
             begin
-              data_in3_reg <= data_in3_new;
+              data_in3_reg <= data_in;
             end
 
           if (data_in4_we)
             begin
-              data_in4_reg <= data_in4_new;
+              data_in4_reg <= data_in;
             end
 
           if (data_in5_we)
             begin
-              data_in5_reg <= data_in5_new;
+              data_in5_reg <= data_in;
             end
 
           if (data_in6_we)
             begin
-              data_in6_reg <= data_in6_new;
+              data_in6_reg <= data_in;
             end
 
           if (data_in7_we)
             begin
-              data_in7_reg <= data_in7_new;
+              data_in7_reg <= data_in;
             end
 
           if (data_in8_we)
             begin
-              data_in8_reg <= data_in8_new;
+              data_in8_reg <= data_in;
             end
 
           if (data_in9_we)
             begin
-              data_in9_reg <= data_in9_new;
+              data_in9_reg <= data_in;
             end
 
           if (data_in10_we)
             begin
-              data_in10_reg <= data_in10_new;
+              data_in10_reg <= data_in;
             end
 
           if (data_in11_we)
             begin
-              data_in11_reg <= data_in11_new;
+              data_in11_reg <= data_in;
             end
 
           if (data_in12_we)
             begin
-              data_in12_reg <= data_in12_new;
+              data_in12_reg <= data_in;
             end
 
           if (data_in13_we)
             begin
-              data_in13_reg <= data_in13_new;
+              data_in13_reg <= data_in;
             end
 
           if (data_in14_we)
             begin
-              data_in14_reg <= data_in14_new;
+              data_in14_reg <= data_in;
             end
 
           if (data_in15_we)
             begin
-              data_in15_reg <= data_in15_new;
+              data_in15_reg <= data_in;
             end
           
           if (core_data_out_valid)
@@ -595,38 +579,22 @@ module chacha(
       iv1_new       = 32'h00000000;
       iv1_we        = 0;
 
-      data_in0_new  = 32'h00000000;
-      data_in0_we   = 0;
-      data_in1_new  = 32'h00000000;
-      data_in1_we   = 0;
-      data_in2_new  = 32'h00000000;
-      data_in2_we   = 0;
-      data_in3_new  = 32'h00000000;
-      data_in3_we   = 0;
-      data_in4_new  = 32'h00000000;
-      data_in4_we   = 0;
-      data_in5_new  = 32'h00000000;
-      data_in5_we   = 0;
-      data_in6_new  = 32'h00000000;
-      data_in6_we   = 0;
-      data_in7_new  = 32'h00000000;
-      data_in7_we   = 0;
-      data_in8_new  = 32'h00000000;
-      data_in8_we   = 0;
-      data_in9_new  = 32'h00000000;
-      data_in9_we   = 0;
-      data_in10_new = 32'h00000000;
-      data_in10_we  = 0;
-      data_in11_new = 32'h00000000;
-      data_in11_we  = 0;
-      data_in12_new = 32'h00000000;
-      data_in12_we  = 0;
-      data_in13_new = 32'h00000000;
-      data_in13_we  = 0;
-      data_in14_new = 32'h00000000;
-      data_in14_we  = 0;
-      data_in15_new = 32'h00000000;
-      data_in15_we  = 0;
+      data_in0_we  = 0;
+      data_in1_we  = 0;
+      data_in2_we  = 0;
+      data_in3_we  = 0;
+      data_in4_we  = 0;
+      data_in5_we  = 0;
+      data_in6_we  = 0;
+      data_in7_we  = 0;
+      data_in8_we  = 0;
+      data_in9_we  = 0;
+      data_in10_we = 0;
+      data_in11_we = 0;
+      data_in12_we = 0;
+      data_in13_we = 0;
+      data_in14_we = 0;
+      data_in15_we = 0;
       
       tmp_data_out = 32'h00000000;
       
@@ -717,98 +685,82 @@ module chacha(
                 
                 ADDR_DATA_IN0:
                   begin
-                    data_in0_new = data_in;
-                    data_in0_we  = 1;
+                    data_in0_we = 1;
                   end
                 
                 ADDR_DATA_IN1:
                   begin
-                    data_in1_new = data_in;
-                    data_in1_we  = 1;
+                    data_in1_we = 1;
                   end
                 
                 ADDR_DATA_IN2:
                   begin
-                    data_in2_new = data_in;
-                    data_in2_we  = 1;
+                    data_in2_we = 1;
                   end
                 
                 ADDR_DATA_IN3:
                   begin
-                    data_in3_new = data_in;
-                    data_in3_we  = 1;
+                    data_in3_we = 1;
                   end
                 
                 ADDR_DATA_IN4:
                   begin
-                    data_in4_new = data_in;
-                    data_in4_we  = 1;
+                    data_in4_we = 1;
                   end
                 
                 ADDR_DATA_IN5:
                   begin
-                    data_in5_new = data_in;
-                    data_in5_we  = 1;
+                    data_in5_we = 1;
                   end
                 
                 ADDR_DATA_IN6:
                   begin
-                    data_in6_new = data_in;
-                    data_in6_we  = 1;
+                    data_in6_we = 1;
                   end
                 
                 ADDR_DATA_IN7:
                   begin
-                    data_in7_new = data_in;
-                    data_in7_we  = 1;
+                    data_in7_we = 1;
                   end
                 
                 ADDR_DATA_IN8:
                   begin
-                    data_in8_new = data_in;
-                    data_in8_we  = 1;
+                    data_in8_we = 1;
                   end
                 
                 ADDR_DATA_IN9:
                   begin
-                    data_in9_new = data_in;
-                    data_in9_we  = 1;
+                    data_in9_we = 1;
                   end
                 
                 ADDR_DATA_IN10:
                   begin
-                    data_in10_new = data_in;
-                    data_in10_we  = 1;
+                    data_in10_we = 1;
                   end
                 
                 ADDR_DATA_IN11:
                   begin
-                    data_in11_new = data_in;
-                    data_in11_we  = 1;
+                    data_in11_we = 1;
                   end
                 
                 ADDR_DATA_IN12:
                   begin
-                    data_in12_new = data_in;
-                    data_in12_we  = 1;
+                    data_in12_we = 1;
                   end
                 
                 ADDR_DATA_IN13:
                   begin
-                    data_in13_new = data_in;
-                    data_in13_we  = 1;
+                    data_in13_we = 1;
                   end
                 
                 ADDR_DATA_IN14:
                   begin
-                    data_in14_new = data_in;
-                    data_in14_we  = 1;
+                    data_in14_we = 1;
                   end
                 
                 ADDR_DATA_IN15:
                   begin
-                    data_in15_new = data_in;
-                    data_in15_we  = 1;
+                    data_in15_we = 1;
                   end
                 
                 default:
