@@ -61,14 +61,8 @@ module chacha_core(
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   // Datapath quartterround states names.
-  parameter QR0 = 3'h0;
-  parameter QR1 = 3'h1;
-  parameter QR2 = 3'h2;
-  parameter QR3 = 3'h3;
-  parameter QR4 = 3'h4;
-  parameter QR5 = 3'h5;
-  parameter QR6 = 3'h6;
-  parameter QR7 = 3'h7;
+  parameter QR0 = 1'b0;
+  parameter QR1 = 1'b1;
 
   parameter NUM_ROUNDS = 4'h8;
 
@@ -229,8 +223,8 @@ module chacha_core(
   reg  data_out_valid_new;
   reg  data_out_valid_we;
 
-  reg [2 : 0] qr_ctr_reg;
-  reg [2 : 0] qr_ctr_new;
+  reg         qr_ctr_reg;
+  reg         qr_ctr_new;
   reg         qr_ctr_we;
   reg         qr_ctr_inc;
   reg         qr_ctr_rst;
@@ -272,11 +266,38 @@ module chacha_core(
   wire [31 : 0] qr0_c_prim;
   wire [31 : 0] qr0_d_prim;
   
+  reg [31 : 0]  qr1_a;
+  reg [31 : 0]  qr1_b;
+  reg [31 : 0]  qr1_c;
+  reg [31 : 0]  qr1_d;
+  wire [31 : 0] qr1_a_prim;
+  wire [31 : 0] qr1_b_prim;
+  wire [31 : 0] qr1_c_prim;
+  wire [31 : 0] qr1_d_prim;
+  
+  reg [31 : 0]  qr2_a;
+  reg [31 : 0]  qr2_b;
+  reg [31 : 0]  qr2_c;
+  reg [31 : 0]  qr2_d;
+  wire [31 : 0] qr2_a_prim;
+  wire [31 : 0] qr2_b_prim;
+  wire [31 : 0] qr2_c_prim;
+  wire [31 : 0] qr2_d_prim;
+  
+  reg [31 : 0]  qr3_a;
+  reg [31 : 0]  qr3_b;
+  reg [31 : 0]  qr3_c;
+  reg [31 : 0]  qr3_d;
+  wire [31 : 0] qr3_a_prim;
+  wire [31 : 0] qr3_b_prim;
+  wire [31 : 0] qr3_c_prim;
+  wire [31 : 0] qr3_d_prim;
+  
   reg ready_wire;
 
 
   //----------------------------------------------------------------
-  // Instantiation of the qr module.
+  // Instantiation of the qr modules.
   //----------------------------------------------------------------
   chacha_qr qr0(
                 .a(qr0_a),
@@ -290,6 +311,42 @@ module chacha_core(
                 .d_prim(qr0_d_prim)
                );
 
+  chacha_qr qr1(
+                .a(qr1_a),
+                .b(qr1_b),
+                .c(qr1_c),
+                .d(qr1_d),
+                
+                .a_prim(qr1_a_prim),
+                .b_prim(qr1_b_prim),
+                .c_prim(qr1_c_prim),
+                .d_prim(qr1_d_prim)
+               );
+  
+  chacha_qr qr2(
+                .a(qr2_a),
+                .b(qr2_b),
+                .c(qr2_c),
+                .d(qr2_d),
+                
+                .a_prim(qr2_a_prim),
+                .b_prim(qr2_b_prim),
+                .c_prim(qr2_c_prim),
+                .d_prim(qr2_d_prim)
+               );
+
+  chacha_qr qr3(
+                .a(qr3_a),
+                .b(qr3_b),
+                .c(qr3_c),
+                .d(qr3_d),
+                
+                .a_prim(qr3_a_prim),
+                .b_prim(qr3_b_prim),
+                .c_prim(qr3_c_prim),
+                .d_prim(qr3_d_prim)
+               );
+  
   
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
@@ -924,85 +981,79 @@ module chacha_core(
       
       else if (update_state)
         begin
-          x0_new  = qr0_a_prim;
-          x1_new  = qr0_a_prim; 
-          x2_new  = qr0_a_prim;
-          x3_new  = qr0_a_prim;
-
-          x4_new  = qr0_b_prim;
-          x5_new  = qr0_b_prim;
-          x6_new  = qr0_b_prim;
-          x7_new  = qr0_b_prim;
-
-          x8_new  = qr0_c_prim;
-          x9_new  = qr0_c_prim;
-          x10_new = qr0_c_prim;
-          x11_new = qr0_c_prim; 
-
-          x12_new = qr0_d_prim;
-          x13_new = qr0_d_prim;
-          x14_new = qr0_d_prim;
-          x15_new = qr0_d_prim;
-          
           case (qr_ctr_reg)
             QR0:
               begin
+                x0_new  = qr0_a_prim;
+                x4_new  = qr0_b_prim;
+                x8_new  = qr0_c_prim;
+                x12_new = qr0_d_prim;
                 x0_we   = 1;
                 x4_we   = 1;
                 x8_we   = 1;
                 x12_we  = 1;
-              end
-            
-            QR1:
-              begin
+
+                x1_new  = qr1_a_prim;
+                x5_new  = qr1_b_prim;
+                x9_new  = qr1_c_prim;
+                x13_new = qr1_d_prim;
                 x1_we   = 1;
                 x5_we   = 1;
                 x9_we   = 1;
                 x13_we  = 1;
-              end
-            
-            QR2:
-              begin
+
+                x2_new  = qr2_a_prim;
+                x6_new  = qr2_b_prim;
+                x10_new = qr2_c_prim;
+                x14_new = qr2_d_prim;
                 x2_we   = 1;
                 x6_we   = 1;
                 x10_we  = 1;
                 x14_we  = 1;
-              end
-            
-            QR3:
-              begin
+
+                x3_new  = qr3_a_prim;
+                x7_new  = qr3_b_prim;
+                x11_new = qr3_c_prim;
+                x15_new = qr3_d_prim;
                 x3_we   = 1;
                 x7_we   = 1;
                 x11_we  = 1;
                 x15_we  = 1;
               end
             
-            QR4:
+            QR1:
               begin
+                x0_new  = qr0_a_prim;
+                x5_new  = qr0_b_prim;
+                x10_new = qr0_c_prim;
+                x15_new = qr0_d_prim;
                 x0_we   = 1;
                 x5_we   = 1;
                 x10_we  = 1;
                 x15_we  = 1;
-              end
-            
-            QR5:
-              begin
+
+                x1_new  = qr1_a_prim;
+                x6_new  = qr1_b_prim;
+                x11_new = qr1_c_prim;
+                x12_new = qr1_d_prim;
                 x1_we   = 1;
                 x6_we   = 1;
                 x11_we  = 1;
                 x12_we  = 1;
-              end
-        
-            QR6:
-              begin
+                
+                x2_new  = qr2_a_prim;
+                x7_new  = qr2_b_prim;
+                x8_new  = qr2_c_prim;
+                x13_new = qr2_d_prim;
                 x2_we   = 1;
                 x7_we   = 1;
                 x8_we   = 1;
                 x13_we  = 1;
-              end
-            
-            QR7:
-              begin
+
+                x3_new  = qr3_a_prim;
+                x4_new  = qr3_b_prim;
+                x9_new  = qr3_c_prim;
+                x14_new = qr3_d_prim;
                 x3_we   = 1;
                 x4_we   = 1;
                 x9_we   = 1;
@@ -1026,62 +1077,44 @@ module chacha_core(
               qr0_b = x4_reg;
               qr0_c = x8_reg;
               qr0_d = x12_reg;
+              
+              qr1_a = x1_reg;
+              qr1_b = x5_reg;
+              qr1_c = x9_reg;
+              qr1_d = x13_reg;
+
+              qr2_a = x2_reg;
+              qr2_b = x6_reg;
+              qr2_c = x10_reg;
+              qr2_d = x14_reg;
+
+              qr3_a = x3_reg;
+              qr3_b = x7_reg;
+              qr3_c = x11_reg;
+              qr3_d = x15_reg;
             end
         
           QR1:
-            begin
-              qr0_a = x1_reg;
-              qr0_b = x5_reg;
-              qr0_c = x9_reg;
-              qr0_d = x13_reg;
-            end
-        
-          QR2:
-            begin
-              qr0_a = x2_reg;
-              qr0_b = x6_reg;
-              qr0_c = x10_reg;
-              qr0_d = x14_reg;
-            end
-        
-          QR3:
-            begin
-              qr0_a = x3_reg;
-              qr0_b = x7_reg;
-              qr0_c = x11_reg;
-              qr0_d = x15_reg;
-            end
-        
-          QR4:
             begin
               qr0_a = x0_reg;
               qr0_b = x5_reg;
               qr0_c = x10_reg;
               qr0_d = x15_reg;
-            end
-        
-          QR5:
-            begin
-              qr0_a = x1_reg;
-              qr0_b = x6_reg;
-              qr0_c = x11_reg;
-              qr0_d = x12_reg;
-            end
-        
-          QR6:
-            begin
-              qr0_a = x2_reg;
-              qr0_b = x7_reg;
-              qr0_c = x8_reg;
-              qr0_d = x13_reg;
-            end
-        
-          QR7:
-            begin
-              qr0_a = x3_reg;
-              qr0_b = x4_reg;
-              qr0_c = x9_reg;
-              qr0_d = x14_reg;
+
+              qr1_a = x1_reg;
+              qr1_b = x6_reg;
+              qr1_c = x11_reg;
+              qr1_d = x12_reg;
+
+              qr2_a = x2_reg;
+              qr2_b = x7_reg;
+              qr2_c = x8_reg;
+              qr2_d = x13_reg;
+
+              qr3_a = x3_reg;
+              qr3_b = x4_reg;
+              qr3_c = x9_reg;
+              qr3_d = x14_reg;
             end
       endcase // case (quarterround_select)
     end // quarterround_mux
@@ -1229,7 +1262,7 @@ module chacha_core(
           begin
             update_state = 1;
             qr_ctr_inc   = 1;
-            if (qr_ctr_reg == QR7)
+            if (qr_ctr_reg == QR1)
               begin
                 dr_ctr_inc = 1;
                 if (dr_ctr_reg == (rounds_reg - 1))

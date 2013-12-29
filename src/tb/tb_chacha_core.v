@@ -83,6 +83,7 @@ module tb_chacha_core();
   //----------------------------------------------------------------
   reg [31 : 0] cycle_ctr;
   reg [31 : 0] error_ctr;
+  reg [31 : 0] tc_ctr;
 
   reg tb_clk;
   reg tb_reset_n;
@@ -414,6 +415,8 @@ module tb_chacha_core();
       $display("*** TC %0d-%0d started.", major, minor);
       $display("");
 
+      tc_ctr = tc_ctr + 1;
+
       cycle_reset();
       set_core_key_iv_rounds(key, key_length, iv, rounds);
       set_core_init(1);
@@ -453,7 +456,7 @@ module tb_chacha_core();
     begin
       if (error_ctr == 0)
         begin
-          $display("*** All %d test cases completed successfully", error_ctr);
+          $display("*** All %d test cases completed successfully", tc_ctr);
         end
       else
         begin
@@ -474,6 +477,7 @@ module tb_chacha_core();
       tb_clk            = 0;
       tb_reset_n        = 0;
       error_ctr         = 0;
+      tc_ctr            = 0;
       set_core_key_iv_rounds(256'h0000000000000001000000000000000100000000000000010000000000000001,
                         1'b0,
                         64'h0000000000000001,
