@@ -42,12 +42,13 @@ module chacha(
               
               // Control.
               input wire           cs,
-              input wire           write_read,
+              input wire           we,
               
               // Data ports.
               input wire  [7 : 0]  address,
-              input wire  [31 : 0] data_in,
-              output wire [31 : 0] data_out
+              input wire  [31 : 0] write_data,
+              output wire [31 : 0] read_data,
+              output wire          error
              );
 
   //----------------------------------------------------------------
@@ -233,7 +234,8 @@ module chacha(
   wire [511 : 0] core_data_out;
   wire           core_data_out_valid;
 
-  reg [31 : 0]   tmp_data_out;
+  reg [31 : 0]   tmp_read_data;
+  reg            tmp_error;
   
   
   //----------------------------------------------------------------
@@ -257,8 +259,9 @@ module chacha(
                          data_in8_reg, data_in9_reg, data_in10_reg, data_in11_reg,
                          data_in12_reg, data_in13_reg, data_in14_reg, data_in15_reg};
 
-  assign data_out = tmp_data_out;
-
+  assign read_data = tmp_read_data;
+  assign error     = tmp_error;
+  
              
   //----------------------------------------------------------------
   // core instantiation.
@@ -354,148 +357,148 @@ module chacha(
 
           if (ctrl_we)
             begin
-              init_reg <= data_in[CTRL_INIT_BIT];
-              next_reg <= data_in[CTRL_NEXT_BIT];
+              init_reg <= write_data[CTRL_INIT_BIT];
+              next_reg <= write_data[CTRL_NEXT_BIT];
             end
 
           if (keylen_we)
             begin
-              keylen_reg <= data_in[KEYLEN_BIT];
+              keylen_reg <= write_data[KEYLEN_BIT];
             end
           
           if (rounds_we)
             begin
-              rounds_reg <= data_in[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
+              rounds_reg <= write_data[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
             end
           
           if (key0_we)
             begin
-              key0_reg <= data_in;
+              key0_reg <= write_data;
             end
           
           if (key1_we)
             begin
-              key1_reg <= data_in;
+              key1_reg <= write_data;
             end
           
           if (key2_we)
             begin
-              key2_reg <= data_in;
+              key2_reg <= write_data;
             end
           
           if (key3_we)
             begin
-              key3_reg <= data_in;
+              key3_reg <= write_data;
             end
           
           if (key4_we)
             begin
-              key4_reg <= data_in;
+              key4_reg <= write_data;
             end
           
           if (key5_we)
             begin
-              key5_reg <= data_in;
+              key5_reg <= write_data;
             end
           
           if (key6_we)
             begin
-              key6_reg <= data_in;
+              key6_reg <= write_data;
             end
           
           if (key7_we)
             begin
-              key7_reg <= data_in;
+              key7_reg <= write_data;
             end
           
           if (iv0_we)
             begin
-              iv0_reg <= data_in;
+              iv0_reg <= write_data;
             end
           
           if (iv1_we)
             begin
-              iv1_reg <= data_in;
+              iv1_reg <= write_data;
             end
 
           if (data_in0_we)
             begin
-              data_in0_reg <= data_in;
+              data_in0_reg <= write_data;
             end
 
           if (data_in1_we)
             begin
-              data_in1_reg <= data_in;
+              data_in1_reg <= write_data;
             end
 
           if (data_in2_we)
             begin
-              data_in2_reg <= data_in;
+              data_in2_reg <= write_data;
             end
 
           if (data_in3_we)
             begin
-              data_in3_reg <= data_in;
+              data_in3_reg <= write_data;
             end
 
           if (data_in4_we)
             begin
-              data_in4_reg <= data_in;
+              data_in4_reg <= write_data;
             end
 
           if (data_in5_we)
             begin
-              data_in5_reg <= data_in;
+              data_in5_reg <= write_data;
             end
 
           if (data_in6_we)
             begin
-              data_in6_reg <= data_in;
+              data_in6_reg <= write_data;
             end
 
           if (data_in7_we)
             begin
-              data_in7_reg <= data_in;
+              data_in7_reg <= write_data;
             end
 
           if (data_in8_we)
             begin
-              data_in8_reg <= data_in;
+              data_in8_reg <= write_data;
             end
 
           if (data_in9_we)
             begin
-              data_in9_reg <= data_in;
+              data_in9_reg <= write_data;
             end
 
           if (data_in10_we)
             begin
-              data_in10_reg <= data_in;
+              data_in10_reg <= write_data;
             end
 
           if (data_in11_we)
             begin
-              data_in11_reg <= data_in;
+              data_in11_reg <= write_data;
             end
 
           if (data_in12_we)
             begin
-              data_in12_reg <= data_in;
+              data_in12_reg <= write_data;
             end
 
           if (data_in13_we)
             begin
-              data_in13_reg <= data_in;
+              data_in13_reg <= write_data;
             end
 
           if (data_in14_we)
             begin
-              data_in14_reg <= data_in;
+              data_in14_reg <= write_data;
             end
 
           if (data_in15_we)
             begin
-              data_in15_reg <= data_in;
+              data_in15_reg <= write_data;
             end
           
           if (core_data_out_valid)
@@ -559,11 +562,12 @@ module chacha(
       data_in14_we = 0;
       data_in15_we = 0;
       
-      tmp_data_out = 32'h00000000;
+      tmp_read_data = 32'h00000000;
+      tmp_error     = 0;
       
       if (cs)
         begin
-          if (write_read)
+          if (we)
             begin
               case (address)
                 ADDR_CTRL:
@@ -713,170 +717,168 @@ module chacha(
                 
                 default:
                   begin
-                    // Empty since default assignemnts are handled
-                    // outside of the if-mux construct.
+                    tmp_error = 1;
                   end
               endcase // case (address)
-            end // if (write_read)
+            end // if (we)
 
           else
             begin
               case (address)
                 ADDR_CTRL:
                   begin
-                    tmp_data_out = {28'h0000000, 2'b00, next_reg, init_reg};
+                    tmp_read_data = {28'h0000000, 2'b00, next_reg, init_reg};
                   end
                 
                 ADDR_STATUS:
                   begin
-                    tmp_data_out = {28'h0000000, 2'b00, 
+                    tmp_read_data = {28'h0000000, 2'b00, 
                                     {data_out_valid_reg, ready_reg}};
                   end
                   
                 ADDR_KEYLEN:
                   begin
-                    tmp_data_out = {28'h0000000, 3'b000, keylen_reg};
+                    tmp_read_data = {28'h0000000, 3'b000, keylen_reg};
                   end
 
                 ADDR_ROUNDS:
                   begin
-                    tmp_data_out = {24'h000000, 3'b000, rounds_reg};
+                    tmp_read_data = {24'h000000, 3'b000, rounds_reg};
                   end
   
                 ADDR_KEY0:
                   begin
-                    tmp_data_out = key0_reg;
+                    tmp_read_data = key0_reg;
                   end
                 
                 ADDR_KEY1:
                   begin
-                    tmp_data_out = key1_reg;
+                    tmp_read_data = key1_reg;
                   end
 
                 ADDR_KEY2:
                   begin
-                    tmp_data_out = key2_reg;
+                    tmp_read_data = key2_reg;
                   end
 
                 ADDR_KEY3:
                   begin
-                    tmp_data_out = key3_reg;
+                    tmp_read_data = key3_reg;
                   end
 
                 ADDR_KEY4:
                   begin
-                    tmp_data_out = key4_reg;
+                    tmp_read_data = key4_reg;
                   end
 
                 ADDR_KEY5:
                   begin
-                    tmp_data_out = key5_reg;
+                    tmp_read_data = key5_reg;
                   end
 
                 ADDR_KEY6:
                   begin
-                    tmp_data_out = key6_reg;
+                    tmp_read_data = key6_reg;
                   end
 
                 ADDR_KEY7:
                   begin
-                    tmp_data_out = key7_reg;
+                    tmp_read_data = key7_reg;
                   end
                   
                 ADDR_IV0:
                   begin
-                    tmp_data_out = iv0_reg;
+                    tmp_read_data = iv0_reg;
                   end
 
                 ADDR_IV1:
                   begin
-                    tmp_data_out = iv1_reg;
+                    tmp_read_data = iv1_reg;
                   end
                 
                 ADDR_DATA_OUT0:
                   begin
-                    tmp_data_out = data_out0_reg;
+                    tmp_read_data = data_out0_reg;
                   end
                 
                 ADDR_DATA_OUT1:
                   begin
-                    tmp_data_out = data_out1_reg;
+                    tmp_read_data = data_out1_reg;
                   end
                 
                 ADDR_DATA_OUT2:
                   begin
-                    tmp_data_out = data_out2_reg;
+                    tmp_read_data = data_out2_reg;
                   end
                 
                 ADDR_DATA_OUT3:
                   begin
-                    tmp_data_out = data_out3_reg;
+                    tmp_read_data = data_out3_reg;
                   end
                 
                 ADDR_DATA_OUT4:
                   begin
-                    tmp_data_out = data_out4_reg;
+                    tmp_read_data = data_out4_reg;
                   end
                 
                 ADDR_DATA_OUT5:
                   begin
-                    tmp_data_out = data_out5_reg;
+                    tmp_read_data = data_out5_reg;
                   end
                 
                 ADDR_DATA_OUT6:
                   begin
-                    tmp_data_out = data_out6_reg;
+                    tmp_read_data = data_out6_reg;
                   end
                 
                 ADDR_DATA_OUT7:
                   begin
-                    tmp_data_out = data_out7_reg;
+                    tmp_read_data = data_out7_reg;
                   end
                 
                 ADDR_DATA_OUT8:
                   begin
-                    tmp_data_out = data_out8_reg;
+                    tmp_read_data = data_out8_reg;
                   end
                 
                 ADDR_DATA_OUT9:
                   begin
-                    tmp_data_out = data_out9_reg;
+                    tmp_read_data = data_out9_reg;
                   end
                 
                 ADDR_DATA_OUT10:
                   begin
-                    tmp_data_out = data_out10_reg;
+                    tmp_read_data = data_out10_reg;
                   end
                 
                 ADDR_DATA_OUT11:
                   begin
-                    tmp_data_out = data_out11_reg;
+                    tmp_read_data = data_out11_reg;
                   end
                 
                 ADDR_DATA_OUT12:
                   begin
-                    tmp_data_out = data_out12_reg;
+                    tmp_read_data = data_out12_reg;
                   end
                 
                 ADDR_DATA_OUT13:
                   begin
-                    tmp_data_out = data_out13_reg;
+                    tmp_read_data = data_out13_reg;
                   end
                 
                 ADDR_DATA_OUT14:
                   begin
-                    tmp_data_out = data_out14_reg;
+                    tmp_read_data = data_out14_reg;
                   end
                 
                 ADDR_DATA_OUT15:
                   begin
-                    tmp_data_out = data_out15_reg;
+                    tmp_read_data = data_out15_reg;
                   end
                 
                 default:
                   begin
-                    // Empty since default assignemnts are handled
-                    // outside of the if-mux construct.                  
+                    tmp_error = 1;
                   end
               endcase // case (address)
             end

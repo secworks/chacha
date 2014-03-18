@@ -152,7 +152,8 @@ module tb_chacha();
   reg  [7 : 0]  tb_address;
   reg  [31 : 0] tb_data_in;
   wire [31 : 0] tb_data_out;
-
+  wire          tb_error;
+  
   reg [63 : 0] cycle_ctr;
   reg [31 : 0] error_ctr;
   reg [31 : 0] tc_ctr;
@@ -176,12 +177,13 @@ module tb_chacha();
              
              // Control.
              .cs(tb_cs),
-             .write_read(tb_write_read),
+             .we(tb_write_read),
              
              // Data ports.
              .address(tb_address),
-             .data_in(tb_data_in),
-             .data_out(tb_data_out)
+             .write_data(tb_data_in),
+             .read_data(tb_data_out),
+             .error(tb_error)
             );
   
 
@@ -216,13 +218,13 @@ module tb_chacha();
           
           if (dut.cs)
             begin
-              if (dut.write_read)
+              if (dut.we)
                 begin
-                  $display("*** Write acess: addr 0x%02x = 0x%08x", dut.address, dut.data_in);
+                  $display("*** Write acess: addr 0x%02x = 0x%08x", dut.address, dut.write_data);
                 end
               else
                 begin
-                  $display("*** Read acess: addr 0x%02x = 0x%08x", dut.address, dut.data_out);
+                  $display("*** Read acess: addr 0x%02x = 0x%08x", dut.address, dut.read_data);
                 end
             end
         end
