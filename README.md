@@ -1,4 +1,4 @@
-swchacha
+chacha
 ========
 
 Verilog 2001 implementation of the ChaCha stream cipher.
@@ -45,6 +45,10 @@ Implementation results using the Altera Quartus 13 design tool.
 
 
 ## Status ##
+(2014-03-18)
+- Renamed the repo to chacha. We don't need the sw-prefix.
+
+
 (2013-12-29)
 - Changed to four parallel QR engines to more than quadruple the
 performance using 5% more logic. The latency is down from  35 cycles to
