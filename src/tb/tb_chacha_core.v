@@ -76,6 +76,8 @@ module tb_chacha_core();
   
   parameter DISABLE = 0;
   parameter ENABLE  = 1;
+
+  parameter DEFAULT_CTR_INIT = 64'h0000000000000000;
                         
   
   //----------------------------------------------------------------
@@ -121,6 +123,7 @@ module tb_chacha_core();
                    .key(tb_core_key),
                    .keylen(tb_core_keylen),
                    .iv(tb_core_iv),
+                   .ctr(DEFAULT_CTR_INIT),
                    .rounds(tb_core_rounds),
                    
                    // Data input.

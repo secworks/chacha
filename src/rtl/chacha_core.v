@@ -46,6 +46,7 @@ module chacha_core(
                    input wire [255 : 0]  key,
                    input wire            keylen,
                    input wire [63 : 0]   iv,
+                   input wire [63 : 0]   ctr,
                    input wire [4 : 0]    rounds,
                    
                    input wire [511 : 0]  data_in,
@@ -1183,6 +1184,8 @@ module chacha_core(
       
       if (block_ctr_rst)
         begin
+          block0_ctr_new = ctr[31 : 00];
+          block1_ctr_new = ctr[63 : 32];
           block0_ctr_we = 1;
           block1_ctr_we = 1;
         end

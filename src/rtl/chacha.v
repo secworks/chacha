@@ -113,6 +113,8 @@ module chacha(
   parameter ADDR_DATA_OUT14  = 8'h8e;
   parameter ADDR_DATA_OUT15  = 8'h8f;
 
+  parameter DEFAULT_CTR_INIT = 64'h0000000000000000;
+  
   
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
@@ -276,6 +278,7 @@ module chacha(
                     .key(core_key),
                     .keylen(core_keylen),
                     .iv(core_iv),
+                    .ctr(DEFAULT_CTR_INIT),
                     .rounds(core_rounds),
                     
                     .data_in(core_data_in),
