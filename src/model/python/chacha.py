@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 #=======================================================================
 #
-# swchacha.py
-# -----------
+# chacha.py
+# ---------
 # Simple model of the ChaCha stream cipher. Used as a reference for
 # the HW implementation. The code follows the structure of the
 # HW implementation as much as possible.
@@ -691,5 +691,5 @@ if __name__=="__main__":
     sys.exit(main())
 
 #=======================================================================
-# EOF swchacha.py
+# EOF chacha.py
 #=======================================================================
