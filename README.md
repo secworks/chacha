@@ -45,6 +45,13 @@ Implementation results using the Altera Quartus 13 design tool.
 
 
 ## Status ##
+
+(2014-09-03)
+- Added a new port in the core to allow setting of the initial value of
+the counter. The top level wrapper currently sets this value to a
+constant zero.
+
+
 (2014-03-18)
 - Renamed the repo to chacha. We don't need the sw-prefix.
 
