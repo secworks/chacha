@@ -7,30 +7,30 @@
 //
 //
 // Copyright (c) 2013  Secworks Sweden AB
-// 
-// Redistribution and use in source and binary forms, with or 
-// without modification, are permitted provided that the following 
-// conditions are met: 
-// 
-// 1. Redistributions of source code must retain the above copyright 
-//    notice, this list of conditions and the following disclaimer. 
-// 
-// 2. Redistributions in binary form must reproduce the above copyright 
-//    notice, this list of conditions and the following disclaimer in 
-//    the documentation and/or other materials provided with the 
-//    distribution. 
-// 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
-// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE 
-// COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
-// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, 
+//
+// Redistribution and use in source and binary forms, with or
+// without modification, are permitted provided that the following
+// conditions are met:
+//
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+//
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in
+//    the documentation and/or other materials provided with the
+//    distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+// COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
 // BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 //======================================================================
@@ -39,11 +39,11 @@ module chacha(
               // Clock and reset.
               input wire           clk,
               input wire           reset_n,
-              
+
               // Control.
               input wire           cs,
               input wire           we,
-              
+
               // Data ports.
               input wire  [7 : 0]  address,
               input wire  [31 : 0] write_data,
@@ -60,13 +60,13 @@ module chacha(
 
   parameter ADDR_STATUS      = 8'h01;
   parameter STATUS_READY_BIT = 0;
-  
+
   parameter ADDR_KEYLEN      = 8'h08;
   parameter KEYLEN_BIT       = 0;
   parameter ADDR_ROUNDS      = 8'h09;
   parameter ROUNDS_HIGH_BIT  = 4;
   parameter ROUNDS_LOW_BIT   = 0;
-                             
+
   parameter ADDR_KEY0        = 8'h10;
   parameter ADDR_KEY1        = 8'h11;
   parameter ADDR_KEY2        = 8'h12;
@@ -75,10 +75,10 @@ module chacha(
   parameter ADDR_KEY5        = 8'h15;
   parameter ADDR_KEY6        = 8'h16;
   parameter ADDR_KEY7        = 8'h17;
-                             
+
   parameter ADDR_IV0         = 8'h20;
   parameter ADDR_IV1         = 8'h21;
-                             
+
   parameter ADDR_DATA_IN0    = 8'h40;
   parameter ADDR_DATA_IN1    = 8'h41;
   parameter ADDR_DATA_IN2    = 8'h42;
@@ -95,7 +95,7 @@ module chacha(
   parameter ADDR_DATA_IN13   = 8'h4d;
   parameter ADDR_DATA_IN14   = 8'h4e;
   parameter ADDR_DATA_IN15   = 8'h4f;
-                             
+
   parameter ADDR_DATA_OUT0   = 8'h80;
   parameter ADDR_DATA_OUT1   = 8'h81;
   parameter ADDR_DATA_OUT2   = 8'h82;
@@ -114,17 +114,17 @@ module chacha(
   parameter ADDR_DATA_OUT15  = 8'h8f;
 
   parameter DEFAULT_CTR_INIT = 64'h0000000000000000;
-  
-  
+
+
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
   reg init_reg;
   reg next_reg;
   reg ctrl_we;
-  
+
   reg ready_reg;
-  
+
   reg keylen_reg;
   reg keylen_we;
 
@@ -132,7 +132,7 @@ module chacha(
   reg         rounds_we;
 
   reg data_out_valid_reg;
-  
+
   reg [31 : 0] key0_reg;
   reg          key0_we;
   reg [31 : 0] key1_reg;
@@ -221,7 +221,7 @@ module chacha(
   reg [31 : 0] data_out15_reg;
   reg [31 : 0] data_out15_new;
 
-  
+
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
@@ -238,8 +238,8 @@ module chacha(
 
   reg [31 : 0]   tmp_read_data;
   reg            tmp_error;
-  
-  
+
+
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
@@ -263,40 +263,41 @@ module chacha(
 
   assign read_data = tmp_read_data;
   assign error     = tmp_error;
-  
-             
+
+
   //----------------------------------------------------------------
   // core instantiation.
   //----------------------------------------------------------------
   chacha_core core (
                     .clk(clk),
                     .reset_n(reset_n),
-                    
+
                     .init(core_init),
                     .next(core_next),
-                    
+
                     .key(core_key),
                     .keylen(core_keylen),
                     .iv(core_iv),
                     .ctr(DEFAULT_CTR_INIT),
                     .rounds(core_rounds),
-                    
+
                     .data_in(core_data_in),
-                    
+
                     .ready(core_ready),
-                    
+
                     .data_out(core_data_out),
                     .data_out_valid(core_data_out_valid)
                    );
-  
-  
+
+
   //----------------------------------------------------------------
   // reg_update
+  //
   // Update functionality for all registers in the core.
-  // All registers are positive edge triggered with synchronous
+  // All registers are positive edge triggered with asynchronous
   // active low reset. All registers have write enable.
   //----------------------------------------------------------------
-  always @ (posedge clk)
+  always @ (posedge clk or negedge reset_n)
     begin
       if (!reset_n)
         begin
@@ -306,7 +307,7 @@ module chacha(
           keylen_reg         <= 0;
           rounds_reg         <= 5'b00000;
           data_out_valid_reg <= 0;
-          
+
           key0_reg           <= 32'h00000000;
           key1_reg           <= 32'h00000000;
           key2_reg           <= 32'h00000000;
@@ -368,57 +369,57 @@ module chacha(
             begin
               keylen_reg <= write_data[KEYLEN_BIT];
             end
-          
+
           if (rounds_we)
             begin
               rounds_reg <= write_data[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
             end
-          
+
           if (key0_we)
             begin
               key0_reg <= write_data;
             end
-          
+
           if (key1_we)
             begin
               key1_reg <= write_data;
             end
-          
+
           if (key2_we)
             begin
               key2_reg <= write_data;
             end
-          
+
           if (key3_we)
             begin
               key3_reg <= write_data;
             end
-          
+
           if (key4_we)
             begin
               key4_reg <= write_data;
             end
-          
+
           if (key5_we)
             begin
               key5_reg <= write_data;
             end
-          
+
           if (key6_we)
             begin
               key6_reg <= write_data;
             end
-          
+
           if (key7_we)
             begin
               key7_reg <= write_data;
             end
-          
+
           if (iv0_we)
             begin
               iv0_reg <= write_data;
             end
-          
+
           if (iv1_we)
             begin
               iv1_reg <= write_data;
@@ -503,7 +504,7 @@ module chacha(
             begin
               data_in15_reg <= write_data;
             end
-          
+
           if (core_data_out_valid)
             begin
               data_out0_reg  <= core_data_out[511 : 480];
@@ -535,7 +536,7 @@ module chacha(
       ctrl_we      = 0;
       keylen_we    = 0;
       rounds_we    = 0;
-      
+
       key0_we      = 0;
       key1_we      = 0;
       key2_we      = 0;
@@ -564,10 +565,10 @@ module chacha(
       data_in13_we = 0;
       data_in14_we = 0;
       data_in15_we = 0;
-      
+
       tmp_read_data = 32'h00000000;
       tmp_error     = 0;
-      
+
       if (cs)
         begin
           if (we)
@@ -577,7 +578,7 @@ module chacha(
                   begin
                     ctrl_we  = 1;
                   end
-                  
+
                 ADDR_KEYLEN:
                   begin
                     keylen_we = 1;
@@ -587,37 +588,37 @@ module chacha(
                   begin
                     rounds_we  = 1;
                   end
-  
+
                 ADDR_KEY0:
                   begin
                     key0_we  = 1;
                   end
-  
+
                 ADDR_KEY1:
                   begin
                     key1_we  = 1;
                   end
-  
+
                 ADDR_KEY2:
                   begin
                     key2_we  = 1;
                   end
-  
+
                 ADDR_KEY3:
                   begin
                     key3_we  = 1;
                   end
-  
+
                 ADDR_KEY4:
                   begin
                     key4_we  = 1;
                   end
-  
+
                 ADDR_KEY5:
                   begin
                     key5_we  = 1;
                   end
-                
+
                 ADDR_KEY6:
                   begin
                     key6_we  = 1;
@@ -627,7 +628,7 @@ module chacha(
                   begin
                     key7_we  = 1;
                   end
-                  
+
                 ADDR_IV0:
                   begin
                     iv0_we = 1;
@@ -637,87 +638,87 @@ module chacha(
                   begin
                     iv1_we = 1;
                   end
-                
+
                 ADDR_DATA_IN0:
                   begin
                     data_in0_we = 1;
                   end
-                
+
                 ADDR_DATA_IN1:
                   begin
                     data_in1_we = 1;
                   end
-                
+
                 ADDR_DATA_IN2:
                   begin
                     data_in2_we = 1;
                   end
-                
+
                 ADDR_DATA_IN3:
                   begin
                     data_in3_we = 1;
                   end
-                
+
                 ADDR_DATA_IN4:
                   begin
                     data_in4_we = 1;
                   end
-                
+
                 ADDR_DATA_IN5:
                   begin
                     data_in5_we = 1;
                   end
-                
+
                 ADDR_DATA_IN6:
                   begin
                     data_in6_we = 1;
                   end
-                
+
                 ADDR_DATA_IN7:
                   begin
                     data_in7_we = 1;
                   end
-                
+
                 ADDR_DATA_IN8:
                   begin
                     data_in8_we = 1;
                   end
-                
+
                 ADDR_DATA_IN9:
                   begin
                     data_in9_we = 1;
                   end
-                
+
                 ADDR_DATA_IN10:
                   begin
                     data_in10_we = 1;
                   end
-                
+
                 ADDR_DATA_IN11:
                   begin
                     data_in11_we = 1;
                   end
-                
+
                 ADDR_DATA_IN12:
                   begin
                     data_in12_we = 1;
                   end
-                
+
                 ADDR_DATA_IN13:
                   begin
                     data_in13_we = 1;
                   end
-                
+
                 ADDR_DATA_IN14:
                   begin
                     data_in14_we = 1;
                   end
-                
+
                 ADDR_DATA_IN15:
                   begin
                     data_in15_we = 1;
                   end
-                
+
                 default:
                   begin
                     tmp_error = 1;
@@ -732,13 +733,13 @@ module chacha(
                   begin
                     tmp_read_data = {28'h0000000, 2'b00, next_reg, init_reg};
                   end
-                
+
                 ADDR_STATUS:
                   begin
-                    tmp_read_data = {28'h0000000, 2'b00, 
+                    tmp_read_data = {28'h0000000, 2'b00,
                                     {data_out_valid_reg, ready_reg}};
                   end
-                  
+
                 ADDR_KEYLEN:
                   begin
                     tmp_read_data = {28'h0000000, 3'b000, keylen_reg};
@@ -748,12 +749,12 @@ module chacha(
                   begin
                     tmp_read_data = {24'h000000, 3'b000, rounds_reg};
                   end
-  
+
                 ADDR_KEY0:
                   begin
                     tmp_read_data = key0_reg;
                   end
-                
+
                 ADDR_KEY1:
                   begin
                     tmp_read_data = key1_reg;
@@ -788,7 +789,7 @@ module chacha(
                   begin
                     tmp_read_data = key7_reg;
                   end
-                  
+
                 ADDR_IV0:
                   begin
                     tmp_read_data = iv0_reg;
@@ -798,87 +799,87 @@ module chacha(
                   begin
                     tmp_read_data = iv1_reg;
                   end
-                
+
                 ADDR_DATA_OUT0:
                   begin
                     tmp_read_data = data_out0_reg;
                   end
-                
+
                 ADDR_DATA_OUT1:
                   begin
                     tmp_read_data = data_out1_reg;
                   end
-                
+
                 ADDR_DATA_OUT2:
                   begin
                     tmp_read_data = data_out2_reg;
                   end
-                
+
                 ADDR_DATA_OUT3:
                   begin
                     tmp_read_data = data_out3_reg;
                   end
-                
+
                 ADDR_DATA_OUT4:
                   begin
                     tmp_read_data = data_out4_reg;
                   end
-                
+
                 ADDR_DATA_OUT5:
                   begin
                     tmp_read_data = data_out5_reg;
                   end
-                
+
                 ADDR_DATA_OUT6:
                   begin
                     tmp_read_data = data_out6_reg;
                   end
-                
+
                 ADDR_DATA_OUT7:
                   begin
                     tmp_read_data = data_out7_reg;
                   end
-                
+
                 ADDR_DATA_OUT8:
                   begin
                     tmp_read_data = data_out8_reg;
                   end
-                
+
                 ADDR_DATA_OUT9:
                   begin
                     tmp_read_data = data_out9_reg;
                   end
-                
+
                 ADDR_DATA_OUT10:
                   begin
                     tmp_read_data = data_out10_reg;
                   end
-                
+
                 ADDR_DATA_OUT11:
                   begin
                     tmp_read_data = data_out11_reg;
                   end
-                
+
                 ADDR_DATA_OUT12:
                   begin
                     tmp_read_data = data_out12_reg;
                   end
-                
+
                 ADDR_DATA_OUT13:
                   begin
                     tmp_read_data = data_out13_reg;
                   end
-                
+
                 ADDR_DATA_OUT14:
                   begin
                     tmp_read_data = data_out14_reg;
                   end
-                
+
                 ADDR_DATA_OUT15:
                   begin
                     tmp_read_data = data_out15_reg;
                   end
-                
+
                 default:
                   begin
                     tmp_error = 1;
