@@ -62,8 +62,8 @@ module chacha_core(
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   // Datapath quartterround states names.
-  parameter QR0 = 1'b0;
-  parameter QR1 = 1'b1;
+  parameter STATE_QR0 = 1'b0;
+  parameter STATE_QR1 = 1'b1;
 
   parameter NUM_ROUNDS = 4'h8;
 
@@ -420,7 +420,7 @@ module chacha_core(
           rounds_reg         <= 4'h0;
           ready_reg          <= 1;
           data_out_valid_reg <= 0;
-          qr_ctr_reg         <= QR0;
+          qr_ctr_reg         <= STATE_QR0;
           dr_ctr_reg         <= 0;
           block0_ctr_reg     <= 32'h00000000;
           block1_ctr_reg     <= 32'h00000000;
@@ -992,7 +992,7 @@ module chacha_core(
       else if (update_state)
         begin
           case (qr_ctr_reg)
-            QR0:
+            STATE_QR0:
               begin
                 x0_new  = qr0_a_prim;
                 x4_new  = qr0_b_prim;
@@ -1031,7 +1031,7 @@ module chacha_core(
                 x15_we  = 1;
               end
 
-            QR1:
+            STATE_QR1:
               begin
                 x0_new  = qr0_a_prim;
                 x5_new  = qr0_b_prim;
@@ -1081,7 +1081,7 @@ module chacha_core(
   always @*
     begin : quarterround_mux
       case (qr_ctr_reg)
-          QR0:
+          STATE_QR0:
             begin
               qr0_a = x0_reg;
               qr0_b = x4_reg;
@@ -1104,7 +1104,7 @@ module chacha_core(
               qr3_d = x15_reg;
             end
 
-          QR1:
+          STATE_QR1:
             begin
               qr0_a = x0_reg;
               qr0_b = x5_reg;
@@ -1276,7 +1276,7 @@ module chacha_core(
           begin
             update_state = 1;
             qr_ctr_inc   = 1;
-            if (qr_ctr_reg == QR1)
+            if (qr_ctr_reg == STATE_QR1)
               begin
                 dr_ctr_inc = 1;
                 if (dr_ctr_reg == (rounds_reg - 1))
