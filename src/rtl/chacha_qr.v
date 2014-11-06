@@ -85,8 +85,6 @@ module chacha_qr(
 
       reg [31 : 0] c0;
       reg [31 : 0] c1;
-      reg [31 : 0] c2;
-      reg [31 : 0] c3;
 
       reg [31 : 0] d0;
       reg [31 : 0] d1;

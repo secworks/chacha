@@ -189,37 +189,21 @@ module chacha(
   reg          data_in15_we;
 
   reg [31 : 0] data_out0_reg;
-  reg [31 : 0] data_out0_new;
   reg [31 : 0] data_out1_reg;
-  reg [31 : 0] data_out1_new;
   reg [31 : 0] data_out2_reg;
-  reg [31 : 0] data_out2_new;
   reg [31 : 0] data_out3_reg;
-  reg [31 : 0] data_out3_new;
   reg [31 : 0] data_out4_reg;
-  reg [31 : 0] data_out4_new;
   reg [31 : 0] data_out5_reg;
-  reg [31 : 0] data_out5_new;
   reg [31 : 0] data_out6_reg;
-  reg [31 : 0] data_out6_new;
   reg [31 : 0] data_out7_reg;
-  reg [31 : 0] data_out7_new;
   reg [31 : 0] data_out8_reg;
-  reg [31 : 0] data_out8_new;
   reg [31 : 0] data_out9_reg;
-  reg [31 : 0] data_out9_new;
   reg [31 : 0] data_out10_reg;
-  reg [31 : 0] data_out10_new;
   reg [31 : 0] data_out11_reg;
-  reg [31 : 0] data_out11_new;
   reg [31 : 0] data_out12_reg;
-  reg [31 : 0] data_out12_new;
   reg [31 : 0] data_out13_reg;
-  reg [31 : 0] data_out13_new;
   reg [31 : 0] data_out14_reg;
-  reg [31 : 0] data_out14_new;
   reg [31 : 0] data_out15_reg;
-  reg [31 : 0] data_out15_new;
 
 
   //----------------------------------------------------------------

@@ -1326,6 +1326,12 @@ module chacha_core(
                 chacha_ctrl_we     = 1;
               end
           end
+
+
+        default:
+          begin
+
+          end
       endcase // case (chacha_ctrl_reg)
     end // chacha_ctrl_fsm
 endmodule // chacha_core
