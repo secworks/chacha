@@ -148,67 +148,37 @@ module chacha_core(
 
   reg [31 : 0] x0_reg;
   reg [31 : 0] x0_new;
-  reg          x0_we;
-
   reg [31 : 0] x1_reg;
   reg [31 : 0] x1_new;
-  reg          x1_we;
-
   reg [31 : 0] x2_reg;
   reg [31 : 0] x2_new;
-  reg          x2_we;
-
   reg [31 : 0] x3_reg;
   reg [31 : 0] x3_new;
-  reg          x3_we;
-
   reg [31 : 0] x4_reg;
   reg [31 : 0] x4_new;
-  reg          x4_we;
-
   reg [31 : 0] x5_reg;
   reg [31 : 0] x5_new;
-  reg          x5_we;
-
   reg [31 : 0] x6_reg;
   reg [31 : 0] x6_new;
-  reg          x6_we;
-
   reg [31 : 0] x7_reg;
   reg [31 : 0] x7_new;
-  reg          x7_we;
-
   reg [31 : 0] x8_reg;
   reg [31 : 0] x8_new;
-  reg          x8_we;
-
   reg [31 : 0] x9_reg;
   reg [31 : 0] x9_new;
-  reg          x9_we;
-
   reg [31 : 0] x10_reg;
   reg [31 : 0] x10_new;
-  reg          x10_we;
-
   reg [31 : 0] x11_reg;
   reg [31 : 0] x11_new;
-  reg          x11_we;
-
   reg [31 : 0] x12_reg;
   reg [31 : 0] x12_new;
-  reg          x12_we;
-
   reg [31 : 0] x13_reg;
   reg [31 : 0] x13_new;
-  reg          x13_we;
-
   reg [31 : 0] x14_reg;
   reg [31 : 0] x14_new;
-  reg          x14_we;
-
   reg [31 : 0] x15_reg;
   reg [31 : 0] x15_new;
-  reg          x15_we;
+  reg          x_we;
 
   reg [3 : 0] rounds_reg;
   reg [3 : 0] rounds_new;
@@ -469,83 +439,23 @@ module chacha_core(
               state15_reg <= state15_new;
             end
 
-          if (x0_we)
+          if (x_we)
             begin
-              x0_reg <= x0_new;
-            end
-
-          if (x1_we)
-            begin
-              x1_reg <= x1_new;
-            end
-
-          if (x2_we)
-            begin
-              x2_reg <= x2_new;
-            end
-
-          if (x3_we)
-            begin
-              x3_reg <= x3_new;
-            end
-
-          if (x4_we)
-            begin
-              x4_reg <= x4_new;
-            end
-
-          if (x5_we)
-            begin
-              x5_reg <= x5_new;
-            end
-
-          if (x6_we)
-            begin
-              x6_reg <= x6_new;
-            end
-
-          if (x7_we)
-            begin
-              x7_reg <= x7_new;
-            end
-
-          if (x8_we)
-            begin
-              x8_reg <= x8_new;
-            end
-
-          if (x9_we)
-            begin
-              x9_reg <= x9_new;
-            end
-
-          if (x10_we)
-            begin
+              x0_reg  <= x0_new;
+              x1_reg  <= x1_new;
+              x2_reg  <= x2_new;
+              x3_reg  <= x3_new;
+              x4_reg  <= x4_new;
+              x5_reg  <= x5_new;
+              x6_reg  <= x6_new;
+              x7_reg  <= x7_new;
+              x8_reg  <= x8_new;
+              x9_reg  <= x9_new;
               x10_reg <= x10_new;
-            end
-
-          if (x11_we)
-            begin
               x11_reg <= x11_new;
-            end
-
-          if (x12_we)
-            begin
               x12_reg <= x12_new;
-            end
-
-          if (x13_we)
-            begin
               x13_reg <= x13_new;
-            end
-
-          if (x14_we)
-            begin
               x14_reg <= x14_new;
-            end
-
-          if (x15_we)
-            begin
               x15_reg <= x15_new;
             end
 
@@ -864,22 +774,7 @@ module chacha_core(
       x13_new = 32'h00000000;
       x14_new = 32'h00000000;
       x15_new = 32'h00000000;
-      x0_we   = 0;
-      x1_we   = 0;
-      x2_we   = 0;
-      x3_we   = 0;
-      x4_we   = 0;
-      x5_we   = 0;
-      x6_we   = 0;
-      x7_we   = 0;
-      x8_we   = 0;
-      x9_we   = 0;
-      x10_we  = 0;
-      x11_we  = 0;
-      x12_we  = 0;
-      x13_we  = 0;
-      x14_we  = 0;
-      x15_we  = 0;
+      x_we    = 0;
 
       state0_new  = 32'h00000000;
       state1_new  = 32'h00000000;
@@ -953,22 +848,7 @@ module chacha_core(
           x13_new = new_state_word13;
           x14_new = new_state_word14;
           x15_new = new_state_word15;
-          x0_we  = 1;
-          x1_we  = 1;
-          x2_we  = 1;
-          x3_we  = 1;
-          x4_we  = 1;
-          x5_we  = 1;
-          x6_we  = 1;
-          x7_we  = 1;
-          x8_we  = 1;
-          x9_we  = 1;
-          x10_we = 1;
-          x11_we = 1;
-          x12_we = 1;
-          x13_we = 1;
-          x14_we = 1;
-          x15_we = 1;
+          x_we    = 1;
 
           state0_new  = new_state_word0;
           state1_new  = new_state_word1;
@@ -1002,10 +882,6 @@ module chacha_core(
                 x4_new  = qr0_b_prim;
                 x8_new  = qr0_c_prim;
                 x12_new = qr0_d_prim;
-                x0_we   = 1;
-                x4_we   = 1;
-                x8_we   = 1;
-                x12_we  = 1;
 
                 qr1_a   = x1_reg;
                 qr1_b   = x5_reg;
@@ -1015,10 +891,6 @@ module chacha_core(
                 x5_new  = qr1_b_prim;
                 x9_new  = qr1_c_prim;
                 x13_new = qr1_d_prim;
-                x1_we   = 1;
-                x5_we   = 1;
-                x9_we   = 1;
-                x13_we  = 1;
 
                 qr2_a   = x2_reg;
                 qr2_b   = x6_reg;
@@ -1028,10 +900,6 @@ module chacha_core(
                 x6_new  = qr2_b_prim;
                 x10_new = qr2_c_prim;
                 x14_new = qr2_d_prim;
-                x2_we   = 1;
-                x6_we   = 1;
-                x10_we  = 1;
-                x14_we  = 1;
 
                 qr3_a   = x3_reg;
                 qr3_b   = x7_reg;
@@ -1041,10 +909,8 @@ module chacha_core(
                 x7_new  = qr3_b_prim;
                 x11_new = qr3_c_prim;
                 x15_new = qr3_d_prim;
-                x3_we   = 1;
-                x7_we   = 1;
-                x11_we  = 1;
-                x15_we  = 1;
+
+                x_we    = 1;
               end
 
             STATE_QR1:
@@ -1057,10 +923,6 @@ module chacha_core(
                 x5_new  = qr0_b_prim;
                 x10_new = qr0_c_prim;
                 x15_new = qr0_d_prim;
-                x0_we   = 1;
-                x5_we   = 1;
-                x10_we  = 1;
-                x15_we  = 1;
 
                 qr1_a   = x1_reg;
                 qr1_b   = x6_reg;
@@ -1070,10 +932,6 @@ module chacha_core(
                 x6_new  = qr1_b_prim;
                 x11_new = qr1_c_prim;
                 x12_new = qr1_d_prim;
-                x1_we   = 1;
-                x6_we   = 1;
-                x11_we  = 1;
-                x12_we  = 1;
 
                 qr2_a   = x2_reg;
                 qr2_b   = x7_reg;
@@ -1083,10 +941,6 @@ module chacha_core(
                 x7_new  = qr2_b_prim;
                 x8_new  = qr2_c_prim;
                 x13_new = qr2_d_prim;
-                x2_we   = 1;
-                x7_we   = 1;
-                x8_we   = 1;
-                x13_we  = 1;
 
                 qr3_a   = x3_reg;
                 qr3_b   = x4_reg;
@@ -1096,10 +950,8 @@ module chacha_core(
                 x4_new  = qr3_b_prim;
                 x9_new  = qr3_c_prim;
                 x14_new = qr3_d_prim;
-                x3_we   = 1;
-                x4_we   = 1;
-                x9_we   = 1;
-                x14_we  = 1;
+
+                x_we    = 1;
               end
           endcase // case (quarterround_select)
         end // if (update_state)
