@@ -994,6 +994,10 @@ module chacha_core(
           case (qr_ctr_reg)
             STATE_QR0:
               begin
+                qr0_a   = x0_reg;
+                qr0_b   = x4_reg;
+                qr0_c   = x8_reg;
+                qr0_d   = x12_reg;
                 x0_new  = qr0_a_prim;
                 x4_new  = qr0_b_prim;
                 x8_new  = qr0_c_prim;
@@ -1003,6 +1007,10 @@ module chacha_core(
                 x8_we   = 1;
                 x12_we  = 1;
 
+                qr1_a   = x1_reg;
+                qr1_b   = x5_reg;
+                qr1_c   = x9_reg;
+                qr1_d   = x13_reg;
                 x1_new  = qr1_a_prim;
                 x5_new  = qr1_b_prim;
                 x9_new  = qr1_c_prim;
@@ -1012,6 +1020,10 @@ module chacha_core(
                 x9_we   = 1;
                 x13_we  = 1;
 
+                qr2_a   = x2_reg;
+                qr2_b   = x6_reg;
+                qr2_c   = x10_reg;
+                qr2_d   = x14_reg;
                 x2_new  = qr2_a_prim;
                 x6_new  = qr2_b_prim;
                 x10_new = qr2_c_prim;
@@ -1021,6 +1033,10 @@ module chacha_core(
                 x10_we  = 1;
                 x14_we  = 1;
 
+                qr3_a   = x3_reg;
+                qr3_b   = x7_reg;
+                qr3_c   = x11_reg;
+                qr3_d   = x15_reg;
                 x3_new  = qr3_a_prim;
                 x7_new  = qr3_b_prim;
                 x11_new = qr3_c_prim;
@@ -1033,6 +1049,10 @@ module chacha_core(
 
             STATE_QR1:
               begin
+                qr0_a   = x0_reg;
+                qr0_b   = x5_reg;
+                qr0_c   = x10_reg;
+                qr0_d   = x15_reg;
                 x0_new  = qr0_a_prim;
                 x5_new  = qr0_b_prim;
                 x10_new = qr0_c_prim;
@@ -1042,6 +1062,10 @@ module chacha_core(
                 x10_we  = 1;
                 x15_we  = 1;
 
+                qr1_a   = x1_reg;
+                qr1_b   = x6_reg;
+                qr1_c   = x11_reg;
+                qr1_d   = x12_reg;
                 x1_new  = qr1_a_prim;
                 x6_new  = qr1_b_prim;
                 x11_new = qr1_c_prim;
@@ -1051,6 +1075,10 @@ module chacha_core(
                 x11_we  = 1;
                 x12_we  = 1;
 
+                qr2_a   = x2_reg;
+                qr2_b   = x7_reg;
+                qr2_c   = x8_reg;
+                qr2_d   = x13_reg;
                 x2_new  = qr2_a_prim;
                 x7_new  = qr2_b_prim;
                 x8_new  = qr2_c_prim;
@@ -1060,6 +1088,10 @@ module chacha_core(
                 x8_we   = 1;
                 x13_we  = 1;
 
+                qr3_a   = x3_reg;
+                qr3_b   = x4_reg;
+                qr3_c   = x9_reg;
+                qr3_d   = x14_reg;
                 x3_new  = qr3_a_prim;
                 x4_new  = qr3_b_prim;
                 x9_new  = qr3_c_prim;
@@ -1072,62 +1104,6 @@ module chacha_core(
           endcase // case (quarterround_select)
         end // if (update_state)
     end // state_logic
-
-
-  //----------------------------------------------------------------
-  // quarterround_mux
-  // Quarterround muxes that selects operands for quarterrounds.
-  //----------------------------------------------------------------
-  always @*
-    begin : quarterround_mux
-      case (qr_ctr_reg)
-          STATE_QR0:
-            begin
-              qr0_a = x0_reg;
-              qr0_b = x4_reg;
-              qr0_c = x8_reg;
-              qr0_d = x12_reg;
-
-              qr1_a = x1_reg;
-              qr1_b = x5_reg;
-              qr1_c = x9_reg;
-              qr1_d = x13_reg;
-
-              qr2_a = x2_reg;
-              qr2_b = x6_reg;
-              qr2_c = x10_reg;
-              qr2_d = x14_reg;
-
-              qr3_a = x3_reg;
-              qr3_b = x7_reg;
-              qr3_c = x11_reg;
-              qr3_d = x15_reg;
-            end
-
-          STATE_QR1:
-            begin
-              qr0_a = x0_reg;
-              qr0_b = x5_reg;
-              qr0_c = x10_reg;
-              qr0_d = x15_reg;
-
-              qr1_a = x1_reg;
-              qr1_b = x6_reg;
-              qr1_c = x11_reg;
-              qr1_d = x12_reg;
-
-              qr2_a = x2_reg;
-              qr2_b = x7_reg;
-              qr2_c = x8_reg;
-              qr2_d = x13_reg;
-
-              qr3_a = x3_reg;
-              qr3_b = x4_reg;
-              qr3_c = x9_reg;
-              qr3_d = x14_reg;
-            end
-      endcase // case (quarterround_select)
-    end // quarterround_mux
 
 
   //----------------------------------------------------------------
