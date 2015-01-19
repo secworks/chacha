@@ -104,8 +104,8 @@ module chacha_core(
   reg [31 : 0] key7_reg;
   reg [31 : 0] key7_new;
 
-  reg keylen_reg;
-  reg keylen_new;
+  reg          keylen_reg;
+  reg          keylen_new;
 
   reg [31 : 0] iv0_reg;
   reg [31 : 0] iv0_new;
@@ -144,7 +144,7 @@ module chacha_core(
   reg [31 : 0] state14_new;
   reg [31 : 0] state15_reg;
   reg [31 : 0] state15_new;
-  reg state_we;
+  reg          state_we;
 
   reg [31 : 0] x0_reg;
   reg [31 : 0] x0_new;
@@ -198,17 +198,17 @@ module chacha_core(
   reg  ready_new;
   reg  ready_we;
 
-  reg         qr_ctr_reg;
-  reg         qr_ctr_new;
-  reg         qr_ctr_we;
-  reg         qr_ctr_inc;
-  reg         qr_ctr_rst;
+  reg          qr_ctr_reg;
+  reg          qr_ctr_new;
+  reg          qr_ctr_we;
+  reg          qr_ctr_inc;
+  reg          qr_ctr_rst;
 
-  reg [3 : 0] dr_ctr_reg;
-  reg [3 : 0] dr_ctr_new;
-  reg         dr_ctr_we;
-  reg         dr_ctr_inc;
-  reg         dr_ctr_rst;
+  reg [3 : 0]  dr_ctr_reg;
+  reg [3 : 0]  dr_ctr_new;
+  reg          dr_ctr_we;
+  reg          dr_ctr_inc;
+  reg          dr_ctr_rst;
 
   reg [31 : 0] block0_ctr_reg;
   reg [31 : 0] block0_ctr_new;
@@ -385,8 +385,8 @@ module chacha_core(
           x13_reg            <= 32'h00000000;
           x14_reg            <= 32'h00000000;
           x15_reg            <= 32'h00000000;
-          data_in_reg        <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-          data_out_reg       <= 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+          data_in_reg        <= {16{32'h00000000}};
+          data_out_reg       <= {16{32'h00000000}};
           rounds_reg         <= 4'h0;
           ready_reg          <= 1;
           data_out_valid_reg <= 0;
@@ -547,10 +547,9 @@ module chacha_core(
 
       reg [511 : 0] lsb_block_state;
 
-      lsb_block_state = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-
-      data_out_new = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
-      data_out_we = 0;
+      lsb_block_state = {16{32'h00000000}};
+      data_out_new    = {16{32'h00000000}};
+      data_out_we     = 0;
 
       if (update_output)
         begin
