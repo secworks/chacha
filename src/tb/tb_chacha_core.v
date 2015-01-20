@@ -251,7 +251,10 @@ module tb_chacha_core();
       $display("chacha_ctrl_reg = %02x", dut.chacha_ctrl_reg);
       $display("");
 
-      $display("data_in_reg = %064x", dut.data_in_reg);
+      $display("data_in_reg[255 : 192] = %016x", dut.data_in_reg[255 : 192]);
+      $display("data_in_reg[191 : 128] = %016x", dut.data_in_reg[191 : 128]);
+      $display("data_in_reg[127 : 064] = %016x", dut.data_in_reg[127 : 064]);
+      $display("data_in_reg[063 : 000] = %016x", dut.data_in_reg[063 : 000]);
       $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
       $display("");
 
