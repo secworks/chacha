@@ -113,7 +113,7 @@ module chacha(
   parameter ADDR_DATA_OUT14  = 8'h8e;
   parameter ADDR_DATA_OUT15  = 8'h8f;
 
-  parameter DEFAULT_CTR_INIT = 64'h0000000000000000;
+  parameter DEFAULT_CTR_INIT = 64'h00;
 
 
   //----------------------------------------------------------------
@@ -292,51 +292,48 @@ module chacha(
           rounds_reg         <= 5'b00000;
           data_out_valid_reg <= 0;
 
-          key0_reg           <= 32'h00000000;
-          key1_reg           <= 32'h00000000;
-          key2_reg           <= 32'h00000000;
-          key3_reg           <= 32'h00000000;
-          key4_reg           <= 32'h00000000;
-          key5_reg           <= 32'h00000000;
-          key6_reg           <= 32'h00000000;
-          key7_reg           <= 32'h00000000;
-
-          iv0_reg            <= 32'h00000000;
-          iv1_reg            <= 32'h00000000;
-
-          data_in0_reg       <= 32'h00000000;
-          data_in1_reg       <= 32'h00000000;
-          data_in2_reg       <= 32'h00000000;
-          data_in3_reg       <= 32'h00000000;
-          data_in4_reg       <= 32'h00000000;
-          data_in5_reg       <= 32'h00000000;
-          data_in6_reg       <= 32'h00000000;
-          data_in7_reg       <= 32'h00000000;
-          data_in8_reg       <= 32'h00000000;
-          data_in9_reg       <= 32'h00000000;
-          data_in10_reg      <= 32'h00000000;
-          data_in11_reg      <= 32'h00000000;
-          data_in12_reg      <= 32'h00000000;
-          data_in13_reg      <= 32'h00000000;
-          data_in14_reg      <= 32'h00000000;
-          data_in15_reg      <= 32'h00000000;
-
-          data_out0_reg      <= 32'h00000000;
-          data_out1_reg      <= 32'h00000000;
-          data_out2_reg      <= 32'h00000000;
-          data_out3_reg      <= 32'h00000000;
-          data_out4_reg      <= 32'h00000000;
-          data_out5_reg      <= 32'h00000000;
-          data_out6_reg      <= 32'h00000000;
-          data_out7_reg      <= 32'h00000000;
-          data_out8_reg      <= 32'h00000000;
-          data_out9_reg      <= 32'h00000000;
-          data_out10_reg     <= 32'h00000000;
-          data_out11_reg     <= 32'h00000000;
-          data_out12_reg     <= 32'h00000000;
-          data_out13_reg     <= 32'h00000000;
-          data_out14_reg     <= 32'h00000000;
-          data_out15_reg     <= 32'h00000000;
+          key0_reg           <= 32'h00;
+          key1_reg           <= 32'h00;
+          key2_reg           <= 32'h00;
+          key3_reg           <= 32'h00;
+          key4_reg           <= 32'h00;
+          key5_reg           <= 32'h00;
+          key6_reg           <= 32'h00;
+          key7_reg           <= 32'h00;
+          iv0_reg            <= 32'h00;
+          iv1_reg            <= 32'h00;
+          data_in0_reg       <= 32'h00;
+          data_in1_reg       <= 32'h00;
+          data_in2_reg       <= 32'h00;
+          data_in3_reg       <= 32'h00;
+          data_in4_reg       <= 32'h00;
+          data_in5_reg       <= 32'h00;
+          data_in6_reg       <= 32'h00;
+          data_in7_reg       <= 32'h00;
+          data_in8_reg       <= 32'h00;
+          data_in9_reg       <= 32'h00;
+          data_in10_reg      <= 32'h00;
+          data_in11_reg      <= 32'h00;
+          data_in12_reg      <= 32'h00;
+          data_in13_reg      <= 32'h00;
+          data_in14_reg      <= 32'h00;
+          data_in15_reg      <= 32'h00;
+          data_out0_reg      <= 32'h00;
+          data_out1_reg      <= 32'h00;
+          data_out2_reg      <= 32'h00;
+          data_out3_reg      <= 32'h00;
+          data_out4_reg      <= 32'h00;
+          data_out5_reg      <= 32'h00;
+          data_out6_reg      <= 32'h00;
+          data_out7_reg      <= 32'h00;
+          data_out8_reg      <= 32'h00;
+          data_out9_reg      <= 32'h00;
+          data_out10_reg     <= 32'h00;
+          data_out11_reg     <= 32'h00;
+          data_out12_reg     <= 32'h00;
+          data_out13_reg     <= 32'h00;
+          data_out14_reg     <= 32'h00;
+          data_out15_reg     <= 32'h00;
         end
       else
         begin
@@ -350,144 +347,88 @@ module chacha(
             end
 
           if (keylen_we)
-            begin
-              keylen_reg <= write_data[KEYLEN_BIT];
-            end
+            keylen_reg <= write_data[KEYLEN_BIT];
 
           if (rounds_we)
-            begin
-              rounds_reg <= write_data[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
-            end
+            rounds_reg <= write_data[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
 
           if (key0_we)
-            begin
-              key0_reg <= write_data;
-            end
+            key0_reg <= write_data;
 
           if (key1_we)
-            begin
-              key1_reg <= write_data;
-            end
+            key1_reg <= write_data;
 
           if (key2_we)
-            begin
-              key2_reg <= write_data;
-            end
+            key2_reg <= write_data;
 
           if (key3_we)
-            begin
-              key3_reg <= write_data;
-            end
+            key3_reg <= write_data;
 
           if (key4_we)
-            begin
-              key4_reg <= write_data;
-            end
+            key4_reg <= write_data;
 
           if (key5_we)
-            begin
-              key5_reg <= write_data;
-            end
+            key5_reg <= write_data;
 
           if (key6_we)
-            begin
-              key6_reg <= write_data;
-            end
+            key6_reg <= write_data;
 
           if (key7_we)
-            begin
-              key7_reg <= write_data;
-            end
+            key7_reg <= write_data;
 
           if (iv0_we)
-            begin
-              iv0_reg <= write_data;
-            end
+            iv0_reg <= write_data;
 
           if (iv1_we)
-            begin
-              iv1_reg <= write_data;
-            end
+            iv1_reg <= write_data;
 
           if (data_in0_we)
-            begin
-              data_in0_reg <= write_data;
-            end
+            data_in0_reg <= write_data;
 
           if (data_in1_we)
-            begin
-              data_in1_reg <= write_data;
-            end
+            data_in1_reg <= write_data;
 
           if (data_in2_we)
-            begin
-              data_in2_reg <= write_data;
-            end
+            data_in2_reg <= write_data;
 
           if (data_in3_we)
-            begin
-              data_in3_reg <= write_data;
-            end
+            data_in3_reg <= write_data;
 
           if (data_in4_we)
-            begin
-              data_in4_reg <= write_data;
-            end
+            data_in4_reg <= write_data;
 
           if (data_in5_we)
-            begin
-              data_in5_reg <= write_data;
-            end
+            data_in5_reg <= write_data;
 
           if (data_in6_we)
-            begin
-              data_in6_reg <= write_data;
-            end
+            data_in6_reg <= write_data;
 
           if (data_in7_we)
-            begin
-              data_in7_reg <= write_data;
-            end
+            data_in7_reg <= write_data;
 
           if (data_in8_we)
-            begin
-              data_in8_reg <= write_data;
-            end
+            data_in8_reg <= write_data;
 
           if (data_in9_we)
-            begin
-              data_in9_reg <= write_data;
-            end
+            data_in9_reg <= write_data;
 
           if (data_in10_we)
-            begin
-              data_in10_reg <= write_data;
-            end
+            data_in10_reg <= write_data;
 
           if (data_in11_we)
-            begin
-              data_in11_reg <= write_data;
-            end
+            data_in11_reg <= write_data;
 
           if (data_in12_we)
-            begin
-              data_in12_reg <= write_data;
-            end
+            data_in12_reg <= write_data;
 
           if (data_in13_we)
-            begin
-              data_in13_reg <= write_data;
-            end
+            data_in13_reg <= write_data;
 
           if (data_in14_we)
-            begin
-              data_in14_reg <= write_data;
-            end
+            data_in14_reg <= write_data;
 
           if (data_in15_we)
-            begin
-              data_in15_reg <= write_data;
-            end
+            data_in15_reg <= write_data;
 
           if (core_data_out_valid)
             begin
@@ -520,7 +461,6 @@ module chacha(
       ctrl_we      = 0;
       keylen_we    = 0;
       rounds_we    = 0;
-
       key0_we      = 0;
       key1_we      = 0;
       key2_we      = 0;
@@ -529,10 +469,8 @@ module chacha(
       key5_we      = 0;
       key6_we      = 0;
       key7_we      = 0;
-
       iv0_we       = 0;
       iv1_we       = 0;
-
       data_in0_we  = 0;
       data_in1_we  = 0;
       data_in2_we  = 0;
@@ -549,8 +487,7 @@ module chacha(
       data_in13_we = 0;
       data_in14_we = 0;
       data_in15_we = 0;
-
-      tmp_read_data = 32'h00000000;
+      tmp_read_data = 32'h00;
       tmp_error     = 0;
 
       if (cs)
@@ -559,149 +496,91 @@ module chacha(
             begin
               case (address)
                 ADDR_CTRL:
-                  begin
-                    ctrl_we  = 1;
-                  end
+                  ctrl_we  = 1;
 
                 ADDR_KEYLEN:
-                  begin
-                    keylen_we = 1;
-                  end
+                  keylen_we = 1;
 
                 ADDR_ROUNDS:
-                  begin
-                    rounds_we  = 1;
-                  end
+                  rounds_we  = 1;
 
                 ADDR_KEY0:
-                  begin
-                    key0_we  = 1;
-                  end
+                  key0_we  = 1;
 
                 ADDR_KEY1:
-                  begin
-                    key1_we  = 1;
-                  end
+                  key1_we  = 1;
 
                 ADDR_KEY2:
-                  begin
-                    key2_we  = 1;
-                  end
+                  key2_we  = 1;
 
                 ADDR_KEY3:
-                  begin
-                    key3_we  = 1;
-                  end
+                  key3_we  = 1;
 
                 ADDR_KEY4:
-                  begin
-                    key4_we  = 1;
-                  end
+                  key4_we  = 1;
 
                 ADDR_KEY5:
-                  begin
-                    key5_we  = 1;
-                  end
+                  key5_we  = 1;
 
                 ADDR_KEY6:
-                  begin
-                    key6_we  = 1;
-                  end
+                  key6_we  = 1;
 
                 ADDR_KEY7:
-                  begin
-                    key7_we  = 1;
-                  end
+                  key7_we  = 1;
 
                 ADDR_IV0:
-                  begin
-                    iv0_we = 1;
-                  end
+                  iv0_we = 1;
 
                 ADDR_IV1:
-                  begin
-                    iv1_we = 1;
-                  end
+                  iv1_we = 1;
 
                 ADDR_DATA_IN0:
-                  begin
-                    data_in0_we = 1;
-                  end
+                  data_in0_we = 1;
 
                 ADDR_DATA_IN1:
-                  begin
-                    data_in1_we = 1;
-                  end
+                  data_in1_we = 1;
 
                 ADDR_DATA_IN2:
-                  begin
-                    data_in2_we = 1;
-                  end
+                  data_in2_we = 1;
 
                 ADDR_DATA_IN3:
-                  begin
-                    data_in3_we = 1;
-                  end
+                  data_in3_we = 1;
 
                 ADDR_DATA_IN4:
-                  begin
-                    data_in4_we = 1;
-                  end
+                  data_in4_we = 1;
 
                 ADDR_DATA_IN5:
-                  begin
-                    data_in5_we = 1;
-                  end
+                  data_in5_we = 1;
 
                 ADDR_DATA_IN6:
-                  begin
-                    data_in6_we = 1;
-                  end
+                  data_in6_we = 1;
 
                 ADDR_DATA_IN7:
-                  begin
-                    data_in7_we = 1;
-                  end
+                  data_in7_we = 1;
 
                 ADDR_DATA_IN8:
-                  begin
-                    data_in8_we = 1;
-                  end
+                  data_in8_we = 1;
 
                 ADDR_DATA_IN9:
-                  begin
-                    data_in9_we = 1;
-                  end
+                  data_in9_we = 1;
 
                 ADDR_DATA_IN10:
-                  begin
-                    data_in10_we = 1;
-                  end
+                  data_in10_we = 1;
 
                 ADDR_DATA_IN11:
-                  begin
-                    data_in11_we = 1;
-                  end
+                  data_in11_we = 1;
 
                 ADDR_DATA_IN12:
-                  begin
-                    data_in12_we = 1;
-                  end
+                  data_in12_we = 1;
 
                 ADDR_DATA_IN13:
-                  begin
-                    data_in13_we = 1;
-                  end
+                  data_in13_we = 1;
 
                 ADDR_DATA_IN14:
-                  begin
-                    data_in14_we = 1;
-                  end
+                  data_in14_we = 1;
 
                 ADDR_DATA_IN15:
-                  begin
-                    data_in15_we = 1;
-                  end
+                  data_in15_we = 1;
 
                 default:
                   begin
@@ -714,155 +593,95 @@ module chacha(
             begin
               case (address)
                 ADDR_CTRL:
-                  begin
-                    tmp_read_data = {28'h0000000, 2'b00, next_reg, init_reg};
-                  end
+                  tmp_read_data = {28'h0000000, 2'b00, next_reg, init_reg};
 
                 ADDR_STATUS:
-                  begin
-                    tmp_read_data = {28'h0000000, 2'b00,
-                                    {data_out_valid_reg, ready_reg}};
-                  end
+                  tmp_read_data = {28'h0000000, 2'b00,
+                                   {data_out_valid_reg, ready_reg}};
 
                 ADDR_KEYLEN:
-                  begin
-                    tmp_read_data = {28'h0000000, 3'b000, keylen_reg};
-                  end
+                  tmp_read_data = {28'h0000000, 3'b000, keylen_reg};
 
                 ADDR_ROUNDS:
-                  begin
-                    tmp_read_data = {24'h000000, 3'b000, rounds_reg};
-                  end
+                  tmp_read_data = {24'h000000, 3'b000, rounds_reg};
 
                 ADDR_KEY0:
-                  begin
-                    tmp_read_data = key0_reg;
-                  end
+                  tmp_read_data = key0_reg;
 
                 ADDR_KEY1:
-                  begin
-                    tmp_read_data = key1_reg;
-                  end
+                  tmp_read_data = key1_reg;
 
                 ADDR_KEY2:
-                  begin
-                    tmp_read_data = key2_reg;
-                  end
+                  tmp_read_data = key2_reg;
 
                 ADDR_KEY3:
-                  begin
-                    tmp_read_data = key3_reg;
-                  end
+                  tmp_read_data = key3_reg;
 
                 ADDR_KEY4:
-                  begin
-                    tmp_read_data = key4_reg;
-                  end
+                  tmp_read_data = key4_reg;
 
                 ADDR_KEY5:
-                  begin
-                    tmp_read_data = key5_reg;
-                  end
+                  tmp_read_data = key5_reg;
 
                 ADDR_KEY6:
-                  begin
-                    tmp_read_data = key6_reg;
-                  end
+                  tmp_read_data = key6_reg;
 
                 ADDR_KEY7:
-                  begin
-                    tmp_read_data = key7_reg;
-                  end
+                  tmp_read_data = key7_reg;
 
                 ADDR_IV0:
-                  begin
-                    tmp_read_data = iv0_reg;
-                  end
+                  tmp_read_data = iv0_reg;
 
                 ADDR_IV1:
-                  begin
-                    tmp_read_data = iv1_reg;
-                  end
+                  tmp_read_data = iv1_reg;
 
                 ADDR_DATA_OUT0:
-                  begin
-                    tmp_read_data = data_out0_reg;
-                  end
+                  tmp_read_data = data_out0_reg;
 
                 ADDR_DATA_OUT1:
-                  begin
-                    tmp_read_data = data_out1_reg;
-                  end
+                  tmp_read_data = data_out1_reg;
 
                 ADDR_DATA_OUT2:
-                  begin
-                    tmp_read_data = data_out2_reg;
-                  end
+                  tmp_read_data = data_out2_reg;
 
                 ADDR_DATA_OUT3:
-                  begin
-                    tmp_read_data = data_out3_reg;
-                  end
+                  tmp_read_data = data_out3_reg;
 
                 ADDR_DATA_OUT4:
-                  begin
-                    tmp_read_data = data_out4_reg;
-                  end
+                  tmp_read_data = data_out4_reg;
 
                 ADDR_DATA_OUT5:
-                  begin
-                    tmp_read_data = data_out5_reg;
-                  end
+                  tmp_read_data = data_out5_reg;
 
                 ADDR_DATA_OUT6:
-                  begin
-                    tmp_read_data = data_out6_reg;
-                  end
+                  tmp_read_data = data_out6_reg;
 
                 ADDR_DATA_OUT7:
-                  begin
-                    tmp_read_data = data_out7_reg;
-                  end
+                  tmp_read_data = data_out7_reg;
 
                 ADDR_DATA_OUT8:
-                  begin
-                    tmp_read_data = data_out8_reg;
-                  end
+                  tmp_read_data = data_out8_reg;
 
                 ADDR_DATA_OUT9:
-                  begin
-                    tmp_read_data = data_out9_reg;
-                  end
+                  tmp_read_data = data_out9_reg;
 
                 ADDR_DATA_OUT10:
-                  begin
                     tmp_read_data = data_out10_reg;
-                  end
 
                 ADDR_DATA_OUT11:
-                  begin
-                    tmp_read_data = data_out11_reg;
-                  end
+                  tmp_read_data = data_out11_reg;
 
                 ADDR_DATA_OUT12:
-                  begin
-                    tmp_read_data = data_out12_reg;
-                  end
+                  tmp_read_data = data_out12_reg;
 
                 ADDR_DATA_OUT13:
-                  begin
-                    tmp_read_data = data_out13_reg;
-                  end
+                  tmp_read_data = data_out13_reg;
 
                 ADDR_DATA_OUT14:
-                  begin
-                    tmp_read_data = data_out14_reg;
-                  end
+                  tmp_read_data = data_out14_reg;
 
                 ADDR_DATA_OUT15:
-                  begin
-                    tmp_read_data = data_out15_reg;
-                  end
+                  tmp_read_data = data_out15_reg;
 
                 default:
                   begin
