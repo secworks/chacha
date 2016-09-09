@@ -76,20 +76,6 @@ module chacha(
   localparam ADDR_DATA_IN15   = 8'h4f;
 
   localparam ADDR_DATA_OUT0   = 8'h80;
-  localparam ADDR_DATA_OUT1   = 8'h81;
-  localparam ADDR_DATA_OUT2   = 8'h82;
-  localparam ADDR_DATA_OUT3   = 8'h83;
-  localparam ADDR_DATA_OUT4   = 8'h84;
-  localparam ADDR_DATA_OUT5   = 8'h85;
-  localparam ADDR_DATA_OUT6   = 8'h86;
-  localparam ADDR_DATA_OUT7   = 8'h87;
-  localparam ADDR_DATA_OUT8   = 8'h88;
-  localparam ADDR_DATA_OUT9   = 8'h89;
-  localparam ADDR_DATA_OUT10  = 8'h8a;
-  localparam ADDR_DATA_OUT11  = 8'h8b;
-  localparam ADDR_DATA_OUT12  = 8'h8c;
-  localparam ADDR_DATA_OUT13  = 8'h8d;
-  localparam ADDR_DATA_OUT14  = 8'h8e;
   localparam ADDR_DATA_OUT15  = 8'h8f;
 
 
@@ -121,38 +107,7 @@ module chacha(
   reg [31 : 0] data_in_reg [0 : 15];
   reg          data_in_we;
 
-  reg [31 : 0] data_out0_reg;
-  reg [31 : 0] data_out0_new;
-  reg [31 : 0] data_out1_reg;
-  reg [31 : 0] data_out1_new;
-  reg [31 : 0] data_out2_reg;
-  reg [31 : 0] data_out2_new;
-  reg [31 : 0] data_out3_reg;
-  reg [31 : 0] data_out3_new;
-  reg [31 : 0] data_out4_reg;
-  reg [31 : 0] data_out4_new;
-  reg [31 : 0] data_out5_reg;
-  reg [31 : 0] data_out5_new;
-  reg [31 : 0] data_out6_reg;
-  reg [31 : 0] data_out6_new;
-  reg [31 : 0] data_out7_reg;
-  reg [31 : 0] data_out7_new;
-  reg [31 : 0] data_out8_reg;
-  reg [31 : 0] data_out8_new;
-  reg [31 : 0] data_out9_reg;
-  reg [31 : 0] data_out9_new;
-  reg [31 : 0] data_out10_reg;
-  reg [31 : 0] data_out10_new;
-  reg [31 : 0] data_out11_reg;
-  reg [31 : 0] data_out11_new;
-  reg [31 : 0] data_out12_reg;
-  reg [31 : 0] data_out12_new;
-  reg [31 : 0] data_out13_reg;
-  reg [31 : 0] data_out13_new;
-  reg [31 : 0] data_out14_reg;
-  reg [31 : 0] data_out14_new;
-  reg [31 : 0] data_out15_reg;
-  reg [31 : 0] data_out15_new;
+  reg [511 : 0] data_out_reg;
 
 
   //----------------------------------------------------------------
@@ -266,22 +221,7 @@ module chacha(
           data_in_reg[14]    <= 32'h00000000;
           data_in_reg[15]    <= 32'h00000000;
 
-          data_out0_reg      <= 32'h00000000;
-          data_out1_reg      <= 32'h00000000;
-          data_out2_reg      <= 32'h00000000;
-          data_out3_reg      <= 32'h00000000;
-          data_out4_reg      <= 32'h00000000;
-          data_out5_reg      <= 32'h00000000;
-          data_out6_reg      <= 32'h00000000;
-          data_out7_reg      <= 32'h00000000;
-          data_out8_reg      <= 32'h00000000;
-          data_out9_reg      <= 32'h00000000;
-          data_out10_reg     <= 32'h00000000;
-          data_out11_reg     <= 32'h00000000;
-          data_out12_reg     <= 32'h00000000;
-          data_out13_reg     <= 32'h00000000;
-          data_out14_reg     <= 32'h00000000;
-          data_out15_reg     <= 32'h00000000;
+          data_out_reg       <= 512'h0;
         end
       else
         begin
@@ -305,9 +245,7 @@ module chacha(
             end
 
           if (key_we)
-            begin
-              key_reg[address[2 : 0]] <= data_in;
-            end
+            key_reg[address[2 : 0]] <= data_in;
 
           if (iv0_we)
             begin
@@ -320,29 +258,10 @@ module chacha(
             end
 
           if (data_in_we)
-            begin
-              data_in_reg[address[3 : 0]] <= data_in;
-            end
+            data_in_reg[address[3 : 0]] <= data_in;
 
           if (core_data_out_valid)
-            begin
-              data_out0_reg  <= core_data_out[511 : 480];
-              data_out1_reg  <= core_data_out[479 : 448];
-              data_out2_reg  <= core_data_out[447 : 416];
-              data_out3_reg  <= core_data_out[415 : 384];
-              data_out4_reg  <= core_data_out[383 : 352];
-              data_out5_reg  <= core_data_out[351 : 320];
-              data_out6_reg  <= core_data_out[319 : 288];
-              data_out7_reg  <= core_data_out[287 : 256];
-              data_out8_reg  <= core_data_out[255 : 224];
-              data_out9_reg  <= core_data_out[223 : 192];
-              data_out10_reg <= core_data_out[191 : 160];
-              data_out11_reg <= core_data_out[159 : 128];
-              data_out12_reg <= core_data_out[127 :  96];
-              data_out13_reg <= core_data_out[95  :  64];
-              data_out14_reg <= core_data_out[63  :  32];
-              data_out15_reg <= core_data_out[31  :   0];
-            end
+            data_out_reg <= core_data_out;
         end
     end // reg_update
 
@@ -412,6 +331,9 @@ module chacha(
               if ((address >= ADDR_KEY0) && (address <= ADDR_KEY7))
                 tmp_data_out = key_reg[address[2 : 0]];
 
+              if ((address >= ADDR_DATA_OUT0) && (address <= ADDR_DATA_OUT15))
+                tmp_data_out = data_out_reg[(15 - (address - ADDR_DATA_OUT0)) * 32 +: 32];
+
               case (address)
                 ADDR_CTRL:
                   begin
@@ -441,86 +363,6 @@ module chacha(
                 ADDR_IV1:
                   begin
                     tmp_data_out = iv1_reg;
-                  end
-
-                ADDR_DATA_OUT0:
-                  begin
-                    tmp_data_out = data_out0_reg;
-                  end
-
-                ADDR_DATA_OUT1:
-                  begin
-                    tmp_data_out = data_out1_reg;
-                  end
-
-                ADDR_DATA_OUT2:
-                  begin
-                    tmp_data_out = data_out2_reg;
-                  end
-
-                ADDR_DATA_OUT3:
-                  begin
-                    tmp_data_out = data_out3_reg;
-                  end
-
-                ADDR_DATA_OUT4:
-                  begin
-                    tmp_data_out = data_out4_reg;
-                  end
-
-                ADDR_DATA_OUT5:
-                  begin
-                    tmp_data_out = data_out5_reg;
-                  end
-
-                ADDR_DATA_OUT6:
-                  begin
-                    tmp_data_out = data_out6_reg;
-                  end
-
-                ADDR_DATA_OUT7:
-                  begin
-                    tmp_data_out = data_out7_reg;
-                  end
-
-                ADDR_DATA_OUT8:
-                  begin
-                    tmp_data_out = data_out8_reg;
-                  end
-
-                ADDR_DATA_OUT9:
-                  begin
-                    tmp_data_out = data_out9_reg;
-                  end
-
-                ADDR_DATA_OUT10:
-                  begin
-                    tmp_data_out = data_out10_reg;
-                  end
-
-                ADDR_DATA_OUT11:
-                  begin
-                    tmp_data_out = data_out11_reg;
-                  end
-
-                ADDR_DATA_OUT12:
-                  begin
-                    tmp_data_out = data_out12_reg;
-                  end
-
-                ADDR_DATA_OUT13:
-                  begin
-                    tmp_data_out = data_out13_reg;
-                  end
-
-                ADDR_DATA_OUT14:
-                  begin
-                    tmp_data_out = data_out14_reg;
-                  end
-
-                ADDR_DATA_OUT15:
-                  begin
-                    tmp_data_out = data_out15_reg;
                   end
 
                 default:

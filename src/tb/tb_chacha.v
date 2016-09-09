@@ -332,13 +332,13 @@ module tb_chacha();
 
       $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
       $display("data_out0_reg  = %08x, data_out1_reg   = %08x, data_out2_reg  = %08x, data_out3_reg   = %08x",
-               dut.data_out0_reg, dut.data_out1_reg, dut.data_out2_reg, dut.data_out3_reg);
+               dut.data_out_reg[511 : 480], dut.data_out_reg[479 : 448], dut.data_out_reg[447 : 416], dut.data_out_reg[415 : 384]);
       $display("data_out4_reg  = %08x, data_out5_reg   = %08x, data_out6_reg  = %08x, data_out7_reg   = %08x",
-               dut.data_out4_reg, dut.data_out5_reg, dut.data_out6_reg, dut.data_out7_reg);
+               dut.data_out_reg[383 : 352], dut.data_out_reg[351 : 320], dut.data_out_reg[319 : 288], dut.data_out_reg[287 : 256]);
       $display("data_out8_reg  = %08x, data_out9_reg   = %08x, data_out10_reg = %08x, data_out11_reg  = %08x",
-               dut.data_out8_reg, dut.data_out9_reg, dut.data_out10_reg, dut.data_out11_reg);
+               dut.data_out_reg[255 : 224], dut.data_out_reg[223 : 192], dut.data_out_reg[191 : 160], dut.data_out_reg[159 : 128]);
       $display("data_out12_reg = %08x, data_out13_reg  = %08x, data_out14_reg = %08x, data_out15_reg  = %08x",
-               dut.data_out12_reg, dut.data_out13_reg, dut.data_out14_reg, dut.data_out15_reg);
+               dut.data_out_reg[127 :  96], dut.data_out_reg[95  :  64], dut.data_out_reg[63  :  32], dut.data_out_reg[31  :   0]);
       $display("");
     end
   endtask // dump_top_state
