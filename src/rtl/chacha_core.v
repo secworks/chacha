@@ -63,12 +63,6 @@ module chacha_core(
   // Datapath quartterround states names.
   parameter QR0 = 3'h0;
   parameter QR1 = 3'h1;
-  parameter QR2 = 3'h2;
-  parameter QR3 = 3'h3;
-  parameter QR4 = 3'h4;
-  parameter QR5 = 3'h5;
-  parameter QR6 = 3'h6;
-  parameter QR7 = 3'h7;
 
   parameter NUM_ROUNDS = 4'h8;
 
@@ -208,11 +202,38 @@ module chacha_core(
   wire [31 : 0] qr0_c_prim;
   wire [31 : 0] qr0_d_prim;
 
+  reg [31 : 0]  qr1_a;
+  reg [31 : 0]  qr1_b;
+  reg [31 : 0]  qr1_c;
+  reg [31 : 0]  qr1_d;
+  wire [31 : 0] qr1_a_prim;
+  wire [31 : 0] qr1_b_prim;
+  wire [31 : 0] qr1_c_prim;
+  wire [31 : 0] qr1_d_prim;
+
+  reg [31 : 0]  qr2_a;
+  reg [31 : 0]  qr2_b;
+  reg [31 : 0]  qr2_c;
+  reg [31 : 0]  qr2_d;
+  wire [31 : 0] qr2_a_prim;
+  wire [31 : 0] qr2_b_prim;
+  wire [31 : 0] qr2_c_prim;
+  wire [31 : 0] qr2_d_prim;
+
+  reg [31 : 0]  qr3_a;
+  reg [31 : 0]  qr3_b;
+  reg [31 : 0]  qr3_c;
+  reg [31 : 0]  qr3_d;
+  wire [31 : 0] qr3_a_prim;
+  wire [31 : 0] qr3_b_prim;
+  wire [31 : 0] qr3_c_prim;
+  wire [31 : 0] qr3_d_prim;
+
   reg ready_wire;
 
 
   //----------------------------------------------------------------
-  // Instantiation of the qr module.
+  // Instantiation of the qr modules.
   //----------------------------------------------------------------
   chacha_qr qr0(
                 .a(qr0_a),
@@ -224,6 +245,42 @@ module chacha_core(
                 .b_prim(qr0_b_prim),
                 .c_prim(qr0_c_prim),
                 .d_prim(qr0_d_prim)
+               );
+
+  chacha_qr qr1(
+                .a(qr1_a),
+                .b(qr1_b),
+                .c(qr1_c),
+                .d(qr1_d),
+
+                .a_prim(qr1_a_prim),
+                .b_prim(qr1_b_prim),
+                .c_prim(qr1_c_prim),
+                .d_prim(qr1_d_prim)
+               );
+
+  chacha_qr qr2(
+                .a(qr2_a),
+                .b(qr2_b),
+                .c(qr2_c),
+                .d(qr2_d),
+
+                .a_prim(qr2_a_prim),
+                .b_prim(qr2_b_prim),
+                .c_prim(qr2_c_prim),
+                .d_prim(qr2_d_prim)
+               );
+
+  chacha_qr qr3(
+                .a(qr3_a),
+                .b(qr3_b),
+                .c(qr3_c),
+                .d(qr3_d),
+
+                .a_prim(qr3_a_prim),
+                .b_prim(qr3_b_prim),
+                .c_prim(qr3_c_prim),
+                .d_prim(qr3_d_prim)
                );
 
 
@@ -476,82 +533,105 @@ module chacha_core(
 
       else if (update_state)
         begin
-          state0_new  = qr0_a_prim;
-          state1_new  = qr0_a_prim;
-          state2_new  = qr0_a_prim;
-          state3_new  = qr0_a_prim;
-          state4_new  = qr0_b_prim;
-          state5_new  = qr0_b_prim;
-          state6_new  = qr0_b_prim;
-          state7_new  = qr0_b_prim;
-          state8_new  = qr0_c_prim;
-          state9_new  = qr0_c_prim;
-          state10_new = qr0_c_prim;
-          state11_new = qr0_c_prim;
-          state12_new = qr0_d_prim;
-          state13_new = qr0_d_prim;
-          state14_new = qr0_d_prim;
-          state15_new = qr0_d_prim;
-
           case (qr_ctr_reg)
             QR0:
               begin
+                qr0_a = state0_reg;
+                qr0_b = state4_reg;
+                qr0_c = state8_reg;
+                qr0_d = state12_reg;
+                qr1_a = state1_reg;
+                qr1_b = state5_reg;
+                qr1_c = state9_reg;
+                qr1_d = state13_reg;
+                qr2_a = state2_reg;
+                qr2_b = state6_reg;
+                qr2_c = state10_reg;
+                qr2_d = state14_reg;
+                qr3_a = state3_reg;
+                qr3_b = state7_reg;
+                qr3_c = state11_reg;
+                qr3_d = state15_reg;
+                state0_new  = qr0_a_prim;
+                state4_new  = qr0_b_prim;
+                state8_new  = qr0_c_prim;
+                state12_new = qr0_d_prim;
                 state0_we   = 1;
                 state4_we   = 1;
                 state8_we   = 1;
                 state12_we  = 1;
-              end
-
-            QR1:
-              begin
+                state1_new  = qr1_a_prim;
+                state5_new  = qr1_b_prim;
+                state9_new  = qr1_c_prim;
+                state13_new = qr1_d_prim;
                 state1_we   = 1;
                 state5_we   = 1;
                 state9_we   = 1;
                 state13_we  = 1;
-              end
-
-            QR2:
-              begin
+                state2_new  = qr2_a_prim;
+                state6_new  = qr2_b_prim;
+                state10_new = qr2_c_prim;
+                state14_new = qr2_d_prim;
                 state2_we   = 1;
                 state6_we   = 1;
                 state10_we  = 1;
                 state14_we  = 1;
-              end
-
-            QR3:
-              begin
+                state3_new  = qr3_a_prim;
+                state7_new  = qr3_b_prim;
+                state11_new = qr3_c_prim;
+                state15_new = qr3_d_prim;
                 state3_we   = 1;
                 state7_we   = 1;
                 state11_we  = 1;
                 state15_we  = 1;
               end
 
-            QR4:
+            QR1:
               begin
+                qr0_a = state0_reg;
+                qr0_b = state5_reg;
+                qr0_c = state10_reg;
+                qr0_d = state15_reg;
+                qr1_a = state1_reg;
+                qr1_b = state6_reg;
+                qr1_c = state11_reg;
+                qr1_d = state12_reg;
+                qr2_a = state2_reg;
+                qr2_b = state7_reg;
+                qr2_c = state8_reg;
+                qr2_d = state13_reg;
+                qr3_a = state3_reg;
+                qr3_b = state4_reg;
+                qr3_c = state9_reg;
+                qr3_d = state14_reg;
+                state0_new  = qr0_a_prim;
+                state5_new  = qr0_b_prim;
+                state10_new = qr0_c_prim;
+                state15_new = qr0_d_prim;
                 state0_we   = 1;
                 state5_we   = 1;
                 state10_we  = 1;
                 state15_we  = 1;
-              end
-
-            QR5:
-              begin
+                state1_new  = qr1_a_prim;
+                state6_new  = qr1_b_prim;
+                state11_new = qr1_c_prim;
+                state12_new = qr1_d_prim;
                 state1_we   = 1;
                 state6_we   = 1;
                 state11_we  = 1;
                 state12_we  = 1;
-              end
-
-            QR6:
-              begin
+                state2_new  = qr2_a_prim;
+                state7_new  = qr2_b_prim;
+                state8_new  = qr2_c_prim;
+                state13_new = qr2_d_prim;
                 state2_we   = 1;
                 state7_we   = 1;
                 state8_we   = 1;
                 state13_we  = 1;
-              end
-
-            QR7:
-              begin
+                state3_new  = qr3_a_prim;
+                state4_new  = qr3_b_prim;
+                state9_new  = qr3_c_prim;
+                state14_new = qr3_d_prim;
                 state3_we   = 1;
                 state4_we   = 1;
                 state9_we   = 1;
@@ -560,80 +640,6 @@ module chacha_core(
           endcase // case (quarterround_select)
         end // if (update_state)
     end // state_logic
-
-
-  //----------------------------------------------------------------
-  // quarterround_mux
-  // Quarterround muxes that selects operands for quarterrounds.
-  //----------------------------------------------------------------
-  always @*
-    begin : quarterround_mux
-      case (qr_ctr_reg)
-          QR0:
-            begin
-              qr0_a = state0_reg;
-              qr0_b = state4_reg;
-              qr0_c = state8_reg;
-              qr0_d = state12_reg;
-            end
-
-          QR1:
-            begin
-              qr0_a = state1_reg;
-              qr0_b = state5_reg;
-              qr0_c = state9_reg;
-              qr0_d = state13_reg;
-            end
-
-          QR2:
-            begin
-              qr0_a = state2_reg;
-              qr0_b = state6_reg;
-              qr0_c = state10_reg;
-              qr0_d = state14_reg;
-            end
-
-          QR3:
-            begin
-              qr0_a = state3_reg;
-              qr0_b = state7_reg;
-              qr0_c = state11_reg;
-              qr0_d = state15_reg;
-            end
-
-          QR4:
-            begin
-              qr0_a = state0_reg;
-              qr0_b = state5_reg;
-              qr0_c = state10_reg;
-              qr0_d = state15_reg;
-            end
-
-          QR5:
-            begin
-              qr0_a = state1_reg;
-              qr0_b = state6_reg;
-              qr0_c = state11_reg;
-              qr0_d = state12_reg;
-            end
-
-          QR6:
-            begin
-              qr0_a = state2_reg;
-              qr0_b = state7_reg;
-              qr0_c = state8_reg;
-              qr0_d = state13_reg;
-            end
-
-          QR7:
-            begin
-              qr0_a = state3_reg;
-              qr0_b = state4_reg;
-              qr0_c = state9_reg;
-              qr0_d = state14_reg;
-            end
-      endcase // case (quarterround_select)
-    end // quarterround_mux
 
 
   //----------------------------------------------------------------
@@ -929,7 +935,7 @@ module chacha_core(
           begin
             update_state = 1;
             qr_ctr_inc   = 1;
-            if (qr_ctr_reg == QR7)
+            if (qr_ctr_reg == QR1)
               begin
                 dr_ctr_inc = 1;
                 if (dr_ctr_reg == (rounds[4 : 1] - 1))
