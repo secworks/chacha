@@ -320,17 +320,25 @@ module tb_chacha();
       $display("iv0_reg = %08x, iv1_reg = %08x", dut.iv0_reg, dut.iv1_reg);
       $display("");
 
-      $display("data_in0_reg  = %08x, data_in1_reg   = %08x, data_in2_reg  = %08x, data_in3_reg   = %08x", dut.data_in0_reg, dut.data_in1_reg, dut.data_in2_reg, dut.data_in3_reg);
-      $display("data_in4_reg  = %08x, data_in5_reg   = %08x, data_in6_reg  = %08x, data_in7_reg   = %08x", dut.data_in4_reg, dut.data_in5_reg, dut.data_in6_reg, dut.data_in7_reg);
-      $display("data_in8_reg  = %08x, data_in9_reg   = %08x, data_in10_reg = %08x, data_in11_reg  = %08x", dut.data_in8_reg, dut.data_in9_reg, dut.data_in10_reg, dut.data_in11_reg);
-      $display("data_in12_reg = %08x, data_in13_reg  = %08x, data_in14_reg = %08x, data_in15_reg  = %08x", dut.data_in12_reg, dut.data_in13_reg, dut.data_in14_reg, dut.data_in15_reg);
+      $display("data_in0_reg  = %08x, data_in1_reg   = %08x, data_in2_reg  = %08x, data_in3_reg   = %08x",
+               dut.data_in_reg[00], dut.data_in_reg[01], dut.data_in_reg[02], dut.data_in_reg[03]);
+      $display("data_in4_reg  = %08x, data_in5_reg   = %08x, data_in6_reg  = %08x, data_in7_reg   = %08x",
+               dut.data_in_reg[04], dut.data_in_reg[05], dut.data_in_reg[06], dut.data_in_reg[07]);
+      $display("data_in8_reg  = %08x, data_in9_reg   = %08x, data_in10_reg = %08x, data_in11_reg  = %08x",
+               dut.data_in_reg[08], dut.data_in_reg[09], dut.data_in_reg[10], dut.data_in_reg[11]);
+      $display("data_in12_reg = %08x, data_in13_reg  = %08x, data_in14_reg = %08x, data_in15_reg  = %08x",
+               dut.data_in_reg[12], dut.data_in_reg[13], dut.data_in_reg[14], dut.data_in_reg[15]);
       $display("");
 
       $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
-      $display("data_out0_reg  = %08x, data_out1_reg   = %08x, data_out2_reg  = %08x, data_out3_reg   = %08x", dut.data_out0_reg, dut.data_out1_reg, dut.data_out2_reg, dut.data_out3_reg);
-      $display("data_out4_reg  = %08x, data_out5_reg   = %08x, data_out6_reg  = %08x, data_out7_reg   = %08x", dut.data_out4_reg, dut.data_out5_reg, dut.data_out6_reg, dut.data_out7_reg);
-      $display("data_out8_reg  = %08x, data_out9_reg   = %08x, data_out10_reg = %08x, data_out11_reg  = %08x", dut.data_out8_reg, dut.data_out9_reg, dut.data_out10_reg, dut.data_out11_reg);
-      $display("data_out12_reg = %08x, data_out13_reg  = %08x, data_out14_reg = %08x, data_out15_reg  = %08x", dut.data_out12_reg, dut.data_out13_reg, dut.data_out14_reg, dut.data_out15_reg);
+      $display("data_out0_reg  = %08x, data_out1_reg   = %08x, data_out2_reg  = %08x, data_out3_reg   = %08x",
+               dut.data_out0_reg, dut.data_out1_reg, dut.data_out2_reg, dut.data_out3_reg);
+      $display("data_out4_reg  = %08x, data_out5_reg   = %08x, data_out6_reg  = %08x, data_out7_reg   = %08x",
+               dut.data_out4_reg, dut.data_out5_reg, dut.data_out6_reg, dut.data_out7_reg);
+      $display("data_out8_reg  = %08x, data_out9_reg   = %08x, data_out10_reg = %08x, data_out11_reg  = %08x",
+               dut.data_out8_reg, dut.data_out9_reg, dut.data_out10_reg, dut.data_out11_reg);
+      $display("data_out12_reg = %08x, data_out13_reg  = %08x, data_out14_reg = %08x, data_out15_reg  = %08x",
+               dut.data_out12_reg, dut.data_out13_reg, dut.data_out14_reg, dut.data_out15_reg);
       $display("");
     end
   endtask // dump_top_state

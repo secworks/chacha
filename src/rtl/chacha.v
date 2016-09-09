@@ -73,20 +73,6 @@ module chacha(
   parameter ADDR_IV1         = 8'h21;
 
   parameter ADDR_DATA_IN0    = 8'h40;
-  parameter ADDR_DATA_IN1    = 8'h41;
-  parameter ADDR_DATA_IN2    = 8'h42;
-  parameter ADDR_DATA_IN3    = 8'h43;
-  parameter ADDR_DATA_IN4    = 8'h44;
-  parameter ADDR_DATA_IN5    = 8'h45;
-  parameter ADDR_DATA_IN6    = 8'h46;
-  parameter ADDR_DATA_IN7    = 8'h47;
-  parameter ADDR_DATA_IN8    = 8'h48;
-  parameter ADDR_DATA_IN9    = 8'h49;
-  parameter ADDR_DATA_IN10   = 8'h4a;
-  parameter ADDR_DATA_IN11   = 8'h4b;
-  parameter ADDR_DATA_IN12   = 8'h4c;
-  parameter ADDR_DATA_IN13   = 8'h4d;
-  parameter ADDR_DATA_IN14   = 8'h4e;
   parameter ADDR_DATA_IN15   = 8'h4f;
 
   parameter ADDR_DATA_OUT0   = 8'h80;
@@ -132,38 +118,8 @@ module chacha(
   reg [31 : 0] iv1_reg;
   reg          iv1_we;
 
-  reg [31 : 0] data_in0_reg;
-  reg          data_in0_we;
-  reg [31 : 0] data_in1_reg;
-  reg          data_in1_we;
-  reg [31 : 0] data_in2_reg;
-  reg          data_in2_we;
-  reg [31 : 0] data_in3_reg;
-  reg          data_in3_we;
-  reg [31 : 0] data_in4_reg;
-  reg          data_in4_we;
-  reg [31 : 0] data_in5_reg;
-  reg          data_in5_we;
-  reg [31 : 0] data_in6_reg;
-  reg          data_in6_we;
-  reg [31 : 0] data_in7_reg;
-  reg          data_in7_we;
-  reg [31 : 0] data_in8_reg;
-  reg          data_in8_we;
-  reg [31 : 0] data_in9_reg;
-  reg          data_in9_we;
-  reg [31 : 0] data_in10_reg;
-  reg          data_in10_we;
-  reg [31 : 0] data_in11_reg;
-  reg          data_in11_we;
-  reg [31 : 0] data_in12_reg;
-  reg          data_in12_we;
-  reg [31 : 0] data_in13_reg;
-  reg          data_in13_we;
-  reg [31 : 0] data_in14_reg;
-  reg          data_in14_we;
-  reg [31 : 0] data_in15_reg;
-  reg          data_in15_we;
+  reg [31 : 0] data_in_reg [0 : 15];
+  reg          data_in_we;
 
   reg [31 : 0] data_out0_reg;
   reg [31 : 0] data_out0_new;
@@ -232,10 +188,10 @@ module chacha(
 
   assign core_iv      = {iv0_reg, iv1_reg};
 
-  assign core_data_in = {data_in0_reg, data_in1_reg, data_in2_reg, data_in3_reg,
-                         data_in4_reg, data_in5_reg, data_in6_reg, data_in7_reg,
-                         data_in8_reg, data_in9_reg, data_in10_reg, data_in11_reg,
-                         data_in12_reg, data_in13_reg, data_in14_reg, data_in15_reg};
+  assign core_data_in = {data_in_reg[00], data_in_reg[01], data_in_reg[02], data_in_reg[03],
+                         data_in_reg[04], data_in_reg[05], data_in_reg[06], data_in_reg[07],
+                         data_in_reg[08], data_in_reg[09], data_in_reg[10], data_in_reg[11],
+                         data_in_reg[12], data_in_reg[13], data_in_reg[14], data_in_reg[15]};
 
   assign data_out = tmp_data_out;
 
@@ -293,22 +249,22 @@ module chacha(
           iv0_reg            <= 32'h00000000;
           iv1_reg            <= 32'h00000000;
 
-          data_in0_reg       <= 32'h00000000;
-          data_in1_reg       <= 32'h00000000;
-          data_in2_reg       <= 32'h00000000;
-          data_in3_reg       <= 32'h00000000;
-          data_in4_reg       <= 32'h00000000;
-          data_in5_reg       <= 32'h00000000;
-          data_in6_reg       <= 32'h00000000;
-          data_in7_reg       <= 32'h00000000;
-          data_in8_reg       <= 32'h00000000;
-          data_in9_reg       <= 32'h00000000;
-          data_in10_reg      <= 32'h00000000;
-          data_in11_reg      <= 32'h00000000;
-          data_in12_reg      <= 32'h00000000;
-          data_in13_reg      <= 32'h00000000;
-          data_in14_reg      <= 32'h00000000;
-          data_in15_reg      <= 32'h00000000;
+          data_in_reg[00]    <= 32'h00000000;
+          data_in_reg[01]    <= 32'h00000000;
+          data_in_reg[02]    <= 32'h00000000;
+          data_in_reg[03]    <= 32'h00000000;
+          data_in_reg[04]    <= 32'h00000000;
+          data_in_reg[05]    <= 32'h00000000;
+          data_in_reg[06]    <= 32'h00000000;
+          data_in_reg[07]    <= 32'h00000000;
+          data_in_reg[08]    <= 32'h00000000;
+          data_in_reg[09]    <= 32'h00000000;
+          data_in_reg[10]    <= 32'h00000000;
+          data_in_reg[11]    <= 32'h00000000;
+          data_in_reg[12]    <= 32'h00000000;
+          data_in_reg[13]    <= 32'h00000000;
+          data_in_reg[14]    <= 32'h00000000;
+          data_in_reg[15]    <= 32'h00000000;
 
           data_out0_reg      <= 32'h00000000;
           data_out1_reg      <= 32'h00000000;
@@ -363,84 +319,9 @@ module chacha(
               iv1_reg <= data_in;
             end
 
-          if (data_in0_we)
+          if (data_in_we)
             begin
-              data_in0_reg <= data_in;
-            end
-
-          if (data_in1_we)
-            begin
-              data_in1_reg <= data_in;
-            end
-
-          if (data_in2_we)
-            begin
-              data_in2_reg <= data_in;
-            end
-
-          if (data_in3_we)
-            begin
-              data_in3_reg <= data_in;
-            end
-
-          if (data_in4_we)
-            begin
-              data_in4_reg <= data_in;
-            end
-
-          if (data_in5_we)
-            begin
-              data_in5_reg <= data_in;
-            end
-
-          if (data_in6_we)
-            begin
-              data_in6_reg <= data_in;
-            end
-
-          if (data_in7_we)
-            begin
-              data_in7_reg <= data_in;
-            end
-
-          if (data_in8_we)
-            begin
-              data_in8_reg <= data_in;
-            end
-
-          if (data_in9_we)
-            begin
-              data_in9_reg <= data_in;
-            end
-
-          if (data_in10_we)
-            begin
-              data_in10_reg <= data_in;
-            end
-
-          if (data_in11_we)
-            begin
-              data_in11_reg <= data_in;
-            end
-
-          if (data_in12_we)
-            begin
-              data_in12_reg <= data_in;
-            end
-
-          if (data_in13_we)
-            begin
-              data_in13_reg <= data_in;
-            end
-
-          if (data_in14_we)
-            begin
-              data_in14_reg <= data_in;
-            end
-
-          if (data_in15_we)
-            begin
-              data_in15_reg <= data_in;
+              data_in_reg[address[3 : 0]] <= data_in;
             end
 
           if (core_data_out_valid)
@@ -480,22 +361,7 @@ module chacha(
       iv0_we       = 0;
       iv1_we       = 0;
 
-      data_in0_we  = 0;
-      data_in1_we  = 0;
-      data_in2_we  = 0;
-      data_in3_we  = 0;
-      data_in4_we  = 0;
-      data_in5_we  = 0;
-      data_in6_we  = 0;
-      data_in7_we  = 0;
-      data_in8_we  = 0;
-      data_in9_we  = 0;
-      data_in10_we = 0;
-      data_in11_we = 0;
-      data_in12_we = 0;
-      data_in13_we = 0;
-      data_in14_we = 0;
-      data_in15_we = 0;
+      data_in_we  = 0;
 
       tmp_data_out = 32'h00000000;
 
@@ -504,12 +370,15 @@ module chacha(
           if (write_read)
             begin
               if ((address >= ADDR_KEY0) && (address <= ADDR_KEY7))
-                key_we  = 1;
+                key_we = 1;
+
+              if ((address >= ADDR_DATA_IN0) && (address <= ADDR_DATA_IN15))
+                data_in_we = 1;
 
               case (address)
                 ADDR_CTRL:
                   begin
-                    ctrl_we  = 1;
+                    ctrl_we = 1;
                   end
 
                 ADDR_KEYLEN:
@@ -519,7 +388,7 @@ module chacha(
 
                 ADDR_ROUNDS:
                   begin
-                    rounds_we  = 1;
+                    rounds_we = 1;
                   end
 
                 ADDR_IV0:
@@ -532,90 +401,8 @@ module chacha(
                     iv1_we = 1;
                   end
 
-                ADDR_DATA_IN0:
-                  begin
-                    data_in0_we = 1;
-                  end
-
-                ADDR_DATA_IN1:
-                  begin
-                    data_in1_we = 1;
-                  end
-
-                ADDR_DATA_IN2:
-                  begin
-                    data_in2_we = 1;
-                  end
-
-                ADDR_DATA_IN3:
-                  begin
-                    data_in3_we = 1;
-                  end
-
-                ADDR_DATA_IN4:
-                  begin
-                    data_in4_we = 1;
-                  end
-
-                ADDR_DATA_IN5:
-                  begin
-                    data_in5_we = 1;
-                  end
-
-                ADDR_DATA_IN6:
-                  begin
-                    data_in6_we = 1;
-                  end
-
-                ADDR_DATA_IN7:
-                  begin
-                    data_in7_we = 1;
-                  end
-
-                ADDR_DATA_IN8:
-                  begin
-                    data_in8_we = 1;
-                  end
-
-                ADDR_DATA_IN9:
-                  begin
-                    data_in9_we = 1;
-                  end
-
-                ADDR_DATA_IN10:
-                  begin
-                    data_in10_we = 1;
-                  end
-
-                ADDR_DATA_IN11:
-                  begin
-                    data_in11_we = 1;
-                  end
-
-                ADDR_DATA_IN12:
-                  begin
-                    data_in12_we = 1;
-                  end
-
-                ADDR_DATA_IN13:
-                  begin
-                    data_in13_we = 1;
-                  end
-
-                ADDR_DATA_IN14:
-                  begin
-                    data_in14_we = 1;
-                  end
-
-                ADDR_DATA_IN15:
-                  begin
-                    data_in15_we = 1;
-                  end
-
                 default:
                   begin
-                    // Empty since default assignemnts are handled
-                    // outside of the if-mux construct.
                   end
               endcase // case (address)
             end // if (write_read)
