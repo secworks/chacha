@@ -311,8 +311,10 @@ module tb_chacha();
       $display("rounds_reg = %01x", dut.rounds_reg);
       $display("");
 
-      $display("key0_reg = %08x, key1_reg  = %08x, key2_reg = %08x, key3_reg  = %08x", dut.key0_reg, dut.key1_reg, dut.key2_reg, dut.key3_reg);
-      $display("key4_reg = %08x, key5_reg  = %08x, key6_reg = %08x, key7_reg  = %08x", dut.key4_reg, dut.key5_reg, dut.key6_reg, dut.key7_reg);
+      $display("key0_reg = %08x, key1_reg  = %08x, key2_reg = %08x, key3_reg  = %08x",
+               dut.key_reg[0], dut.key_reg[1], dut.key_reg[2], dut.key_reg[3]);
+      $display("key4_reg = %08x, key5_reg  = %08x, key6_reg = %08x, key7_reg  = %08x",
+               dut.key_reg[4], dut.key_reg[5], dut.key_reg[6], dut.key_reg[7]);
       $display("");
 
       $display("iv0_reg = %08x, iv1_reg = %08x", dut.iv0_reg, dut.iv1_reg);
