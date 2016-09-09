@@ -92,69 +92,54 @@ module chacha_core(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
-  reg [31 : 0] x0_reg;
-  reg [31 : 0] x0_new;
-  reg          x0_we;
-
-  reg [31 : 0] x1_reg;
-  reg [31 : 0] x1_new;
-  reg          x1_we;
-
-  reg [31 : 0] x2_reg;
-  reg [31 : 0] x2_new;
-  reg          x2_we;
-
-  reg [31 : 0] x3_reg;
-  reg [31 : 0] x3_new;
-  reg          x3_we;
-
-  reg [31 : 0] x4_reg;
-  reg [31 : 0] x4_new;
-  reg          x4_we;
-
-  reg [31 : 0] x5_reg;
-  reg [31 : 0] x5_new;
-  reg          x5_we;
-
-  reg [31 : 0] x6_reg;
-  reg [31 : 0] x6_new;
-  reg          x6_we;
-
-  reg [31 : 0] x7_reg;
-  reg [31 : 0] x7_new;
-  reg          x7_we;
-
-  reg [31 : 0] x8_reg;
-  reg [31 : 0] x8_new;
-  reg          x8_we;
-
-  reg [31 : 0] x9_reg;
-  reg [31 : 0] x9_new;
-  reg          x9_we;
-
-  reg [31 : 0] x10_reg;
-  reg [31 : 0] x10_new;
-  reg          x10_we;
-
-  reg [31 : 0] x11_reg;
-  reg [31 : 0] x11_new;
-  reg          x11_we;
-
-  reg [31 : 0] x12_reg;
-  reg [31 : 0] x12_new;
-  reg          x12_we;
-
-  reg [31 : 0] x13_reg;
-  reg [31 : 0] x13_new;
-  reg          x13_we;
-
-  reg [31 : 0] x14_reg;
-  reg [31 : 0] x14_new;
-  reg          x14_we;
-
-  reg [31 : 0] x15_reg;
-  reg [31 : 0] x15_new;
-  reg          x15_we;
+  reg [31 : 0] state0_reg;
+  reg [31 : 0] state0_new;
+  reg          state0_we;
+  reg [31 : 0] state1_reg;
+  reg [31 : 0] state1_new;
+  reg          state1_we;
+  reg [31 : 0] state2_reg;
+  reg [31 : 0] state2_new;
+  reg          state2_we;
+  reg [31 : 0] state3_reg;
+  reg [31 : 0] state3_new;
+  reg          state3_we;
+  reg [31 : 0] state4_reg;
+  reg [31 : 0] state4_new;
+  reg          state4_we;
+  reg [31 : 0] state5_reg;
+  reg [31 : 0] state5_new;
+  reg          state5_we;
+  reg [31 : 0] state6_reg;
+  reg [31 : 0] state6_new;
+  reg          state6_we;
+  reg [31 : 0] state7_reg;
+  reg [31 : 0] state7_new;
+  reg          state7_we;
+  reg [31 : 0] state8_reg;
+  reg [31 : 0] state8_new;
+  reg          state8_we;
+  reg [31 : 0] state9_reg;
+  reg [31 : 0] state9_new;
+  reg          state9_we;
+  reg [31 : 0] state10_reg;
+  reg [31 : 0] state10_new;
+  reg          state10_we;
+  reg [31 : 0] state11_reg;
+  reg [31 : 0] state11_new;
+  reg          state11_we;
+  reg [31 : 0] state12_reg;
+  reg [31 : 0] state12_new;
+  reg          state12_we;
+  reg [31 : 0] state13_reg;
+  reg [31 : 0] state13_new;
+  reg          state13_we;
+  reg [31 : 0] state14_reg;
+  reg [31 : 0] state14_new;
+  reg          state14_we;
+  reg [31 : 0] state15_reg;
+  reg [31 : 0] state15_new;
+  reg          state15_we;
 
   reg [511 : 0] data_out_reg;
   reg [511 : 0] data_out_new;
@@ -193,22 +178,22 @@ module chacha_core(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  reg [31 : 0] new_state_word0;
-  reg [31 : 0] new_state_word1;
-  reg [31 : 0] new_state_word2;
-  reg [31 : 0] new_state_word3;
-  reg [31 : 0] new_state_word4;
-  reg [31 : 0] new_state_word5;
-  reg [31 : 0] new_state_word6;
-  reg [31 : 0] new_state_word7;
-  reg [31 : 0] new_state_word8;
-  reg [31 : 0] new_state_word9;
-  reg [31 : 0] new_state_word10;
-  reg [31 : 0] new_state_word11;
-  reg [31 : 0] new_state_word12;
-  reg [31 : 0] new_state_word13;
-  reg [31 : 0] new_state_word14;
-  reg [31 : 0] new_state_word15;
+  reg [31 : 0] init_state_word0;
+  reg [31 : 0] init_state_word1;
+  reg [31 : 0] init_state_word2;
+  reg [31 : 0] init_state_word3;
+  reg [31 : 0] init_state_word4;
+  reg [31 : 0] init_state_word5;
+  reg [31 : 0] init_state_word6;
+  reg [31 : 0] init_state_word7;
+  reg [31 : 0] init_state_word8;
+  reg [31 : 0] init_state_word9;
+  reg [31 : 0] init_state_word10;
+  reg [31 : 0] init_state_word11;
+  reg [31 : 0] init_state_word12;
+  reg [31 : 0] init_state_word13;
+  reg [31 : 0] init_state_word14;
+  reg [31 : 0] init_state_word15;
 
   reg init_state;
   reg update_state;
@@ -260,22 +245,22 @@ module chacha_core(
     begin : reg_update
       if (!reset_n)
         begin
-          x0_reg             <= 32'h0;
-          x1_reg             <= 32'h0;
-          x2_reg             <= 32'h0;
-          x3_reg             <= 32'h0;
-          x4_reg             <= 32'h0;
-          x5_reg             <= 32'h0;
-          x6_reg             <= 32'h0;
-          x7_reg             <= 32'h0;
-          x8_reg             <= 32'h0;
-          x9_reg             <= 32'h0;
-          x10_reg            <= 32'h0;
-          x11_reg            <= 32'h0;
-          x12_reg            <= 32'h0;
-          x13_reg            <= 32'h0;
-          x14_reg            <= 32'h0;
-          x15_reg            <= 32'h0;
+          state0_reg         <= 32'h0;
+          state1_reg         <= 32'h0;
+          state2_reg         <= 32'h0;
+          state3_reg         <= 32'h0;
+          state4_reg         <= 32'h0;
+          state5_reg         <= 32'h0;
+          state6_reg         <= 32'h0;
+          state7_reg         <= 32'h0;
+          state8_reg         <= 32'h0;
+          state9_reg         <= 32'h0;
+          state10_reg        <= 32'h0;
+          state11_reg        <= 32'h0;
+          state12_reg        <= 32'h0;
+          state13_reg        <= 32'h0;
+          state14_reg        <= 32'h0;
+          state15_reg        <= 32'h0;
           data_out_reg       <= 512'h0;
           data_out_valid_reg <= 0;
           qr_ctr_reg         <= QR0;
@@ -286,53 +271,38 @@ module chacha_core(
         end
       else
         begin
-          if (x0_we)
-            x0_reg <= x0_new;
-
-          if (x1_we)
-            x1_reg <= x1_new;
-
-          if (x2_we)
-            x2_reg <= x2_new;
-
-          if (x3_we)
-            x3_reg <= x3_new;
-
-          if (x4_we)
-            x4_reg <= x4_new;
-
-          if (x5_we)
-            x5_reg <= x5_new;
-
-          if (x6_we)
-            x6_reg <= x6_new;
-
-          if (x7_we)
-            x7_reg <= x7_new;
-
-          if (x8_we)
-            x8_reg <= x8_new;
-
-          if (x9_we)
-            x9_reg <= x9_new;
-
-          if (x10_we)
-            x10_reg <= x10_new;
-
-          if (x11_we)
-            x11_reg <= x11_new;
-
-          if (x12_we)
-            x12_reg <= x12_new;
-
-          if (x13_we)
-            x13_reg <= x13_new;
-
-          if (x14_we)
-            x14_reg <= x14_new;
-
-          if (x15_we)
-            x15_reg <= x15_new;
+          if (state0_we)
+            state0_reg <= state0_new;
+          if (state1_we)
+            state1_reg <= state1_new;
+          if (state2_we)
+            state2_reg <= state2_new;
+          if (state3_we)
+            state3_reg <= state3_new;
+          if (state4_we)
+            state4_reg <= state4_new;
+          if (state5_we)
+            state5_reg <= state5_new;
+          if (state6_we)
+            state6_reg <= state6_new;
+          if (state7_we)
+            state7_reg <= state7_new;
+          if (state8_we)
+            state8_reg <= state8_new;
+          if (state9_we)
+            state9_reg <= state9_new;
+          if (state10_we)
+            state10_reg <= state10_new;
+          if (state11_we)
+            state11_reg <= state11_new;
+          if (state12_we)
+            state12_reg <= state12_new;
+          if (state13_we)
+            state13_reg <= state13_new;
+          if (state14_we)
+            state14_reg <= state14_new;
+          if (state15_we)
+            state15_reg <= state15_new;
 
           if (data_out_we)
             data_out_reg <= data_out_new;
@@ -356,6 +326,314 @@ module chacha_core(
             chacha_ctrl_reg <= chacha_ctrl_new;
         end
     end // reg_update
+
+
+  //----------------------------------------------------------------
+  // init_state_logic
+  //
+  // Calculates the initial state for a given block.
+  //----------------------------------------------------------------
+  always @*
+    begin : init_state_logic
+      reg [31 : 0] key0;
+      reg [31 : 0] key1;
+      reg [31 : 0] key2;
+      reg [31 : 0] key3;
+      reg [31 : 0] key4;
+      reg [31 : 0] key5;
+      reg [31 : 0] key6;
+      reg [31 : 0] key7;
+
+      key0 = {key[231 : 224], key[239 : 232],
+              key[247 : 240], key[255 : 248]};
+      key1 = {key[199 : 192], key[207 : 200],
+              key[215 : 208], key[223 : 216]};
+      key2 = {key[167 : 160], key[175 : 168],
+              key[183 : 176], key[191 : 184]};
+      key3 = {key[135 : 128], key[143 : 136],
+              key[151 : 144], key[159 : 152]};
+      key4 = {key[103 :  96], key[111 : 104],
+              key[119 : 112], key[127 : 120]};
+      key5 = {key[71  :  64], key[79  :  72],
+              key[87  :  80], key[95  :  88]};
+      key6 = {key[39  :  32], key[47  :  40],
+              key[55  :  48], key[63  :  56]};
+      key7 = {key[7   :   0], key[15  :   8],
+              key[23  :  16], key[31  :  24]};
+
+      init_state_word4  = key0;
+      init_state_word5  = key1;
+      init_state_word6  = key2;
+      init_state_word7  = key3;
+      init_state_word12 = block0_ctr_reg;
+      init_state_word13 = block1_ctr_reg;
+      init_state_word14 = {iv[39  :  32], iv[47  :  40],
+                          iv[55  :  48], iv[63  :  56]};
+      init_state_word15 = {iv[7   :   0], iv[15  :   8],
+                          iv[23  :  16], iv[31  :  24]};
+
+      if (keylen)
+        begin
+          // 256 bit key.
+          init_state_word0  = SIGMA0;
+          init_state_word1  = SIGMA1;
+          init_state_word2  = SIGMA2;
+          init_state_word3  = SIGMA3;
+          init_state_word8  = key4;
+          init_state_word9  = key5;
+          init_state_word10 = key6;
+          init_state_word11 = key7;
+        end
+      else
+        begin
+          // 128 bit key.
+          init_state_word0  = TAU0;
+          init_state_word1  = TAU1;
+          init_state_word2  = TAU2;
+          init_state_word3  = TAU3;
+          init_state_word8  = key0;
+          init_state_word9  = key1;
+          init_state_word10 = key2;
+          init_state_word11 = key3;
+        end
+    end
+
+
+  //----------------------------------------------------------------
+  // state_logic
+  // Logic to init and update the internal state.
+  //----------------------------------------------------------------
+  always @*
+    begin : state_logic
+      state0_new  = 32'h0;
+      state1_new  = 32'h0;
+      state2_new  = 32'h0;
+      state3_new  = 32'h0;
+      state4_new  = 32'h0;
+      state5_new  = 32'h0;
+      state6_new  = 32'h0;
+      state7_new  = 32'h0;
+      state8_new  = 32'h0;
+      state9_new  = 32'h0;
+      state10_new = 32'h0;
+      state11_new = 32'h0;
+      state12_new = 32'h0;
+      state13_new = 32'h0;
+      state14_new = 32'h0;
+      state15_new = 32'h0;
+      state0_we   = 0;
+      state1_we   = 0;
+      state2_we   = 0;
+      state3_we   = 0;
+      state4_we   = 0;
+      state5_we   = 0;
+      state6_we   = 0;
+      state7_we   = 0;
+      state8_we   = 0;
+      state9_we   = 0;
+      state10_we  = 0;
+      state11_we  = 0;
+      state12_we  = 0;
+      state13_we  = 0;
+      state14_we  = 0;
+      state15_we  = 0;
+
+      if (init_state)
+        begin
+          state0_new  = init_state_word0;
+          state1_new  = init_state_word1;
+          state2_new  = init_state_word2;
+          state3_new  = init_state_word3;
+          state4_new  = init_state_word4;
+          state5_new  = init_state_word5;
+          state6_new  = init_state_word6;
+          state7_new  = init_state_word7;
+          state8_new  = init_state_word8;
+          state9_new  = init_state_word9;
+          state10_new = init_state_word10;
+          state11_new = init_state_word11;
+          state12_new = init_state_word12;
+          state13_new = init_state_word13;
+          state14_new = init_state_word14;
+          state15_new = init_state_word15;
+          state0_we  = 1;
+          state1_we  = 1;
+          state2_we  = 1;
+          state3_we  = 1;
+          state4_we  = 1;
+          state5_we  = 1;
+          state6_we  = 1;
+          state7_we  = 1;
+          state8_we  = 1;
+          state9_we  = 1;
+          state10_we = 1;
+          state11_we = 1;
+          state12_we = 1;
+          state13_we = 1;
+          state14_we = 1;
+          state15_we = 1;
+        end // if (init_state)
+
+      else if (update_state)
+        begin
+          state0_new  = qr0_a_prim;
+          state1_new  = qr0_a_prim;
+          state2_new  = qr0_a_prim;
+          state3_new  = qr0_a_prim;
+          state4_new  = qr0_b_prim;
+          state5_new  = qr0_b_prim;
+          state6_new  = qr0_b_prim;
+          state7_new  = qr0_b_prim;
+          state8_new  = qr0_c_prim;
+          state9_new  = qr0_c_prim;
+          state10_new = qr0_c_prim;
+          state11_new = qr0_c_prim;
+          state12_new = qr0_d_prim;
+          state13_new = qr0_d_prim;
+          state14_new = qr0_d_prim;
+          state15_new = qr0_d_prim;
+
+          case (qr_ctr_reg)
+            QR0:
+              begin
+                state0_we   = 1;
+                state4_we   = 1;
+                state8_we   = 1;
+                state12_we  = 1;
+              end
+
+            QR1:
+              begin
+                state1_we   = 1;
+                state5_we   = 1;
+                state9_we   = 1;
+                state13_we  = 1;
+              end
+
+            QR2:
+              begin
+                state2_we   = 1;
+                state6_we   = 1;
+                state10_we  = 1;
+                state14_we  = 1;
+              end
+
+            QR3:
+              begin
+                state3_we   = 1;
+                state7_we   = 1;
+                state11_we  = 1;
+                state15_we  = 1;
+              end
+
+            QR4:
+              begin
+                state0_we   = 1;
+                state5_we   = 1;
+                state10_we  = 1;
+                state15_we  = 1;
+              end
+
+            QR5:
+              begin
+                state1_we   = 1;
+                state6_we   = 1;
+                state11_we  = 1;
+                state12_we  = 1;
+              end
+
+            QR6:
+              begin
+                state2_we   = 1;
+                state7_we   = 1;
+                state8_we   = 1;
+                state13_we  = 1;
+              end
+
+            QR7:
+              begin
+                state3_we   = 1;
+                state4_we   = 1;
+                state9_we   = 1;
+                state14_we  = 1;
+              end
+          endcase // case (quarterround_select)
+        end // if (update_state)
+    end // state_logic
+
+
+  //----------------------------------------------------------------
+  // quarterround_mux
+  // Quarterround muxes that selects operands for quarterrounds.
+  //----------------------------------------------------------------
+  always @*
+    begin : quarterround_mux
+      case (qr_ctr_reg)
+          QR0:
+            begin
+              qr0_a = state0_reg;
+              qr0_b = state4_reg;
+              qr0_c = state8_reg;
+              qr0_d = state12_reg;
+            end
+
+          QR1:
+            begin
+              qr0_a = state1_reg;
+              qr0_b = state5_reg;
+              qr0_c = state9_reg;
+              qr0_d = state13_reg;
+            end
+
+          QR2:
+            begin
+              qr0_a = state2_reg;
+              qr0_b = state6_reg;
+              qr0_c = state10_reg;
+              qr0_d = state14_reg;
+            end
+
+          QR3:
+            begin
+              qr0_a = state3_reg;
+              qr0_b = state7_reg;
+              qr0_c = state11_reg;
+              qr0_d = state15_reg;
+            end
+
+          QR4:
+            begin
+              qr0_a = state0_reg;
+              qr0_b = state5_reg;
+              qr0_c = state10_reg;
+              qr0_d = state15_reg;
+            end
+
+          QR5:
+            begin
+              qr0_a = state1_reg;
+              qr0_b = state6_reg;
+              qr0_c = state11_reg;
+              qr0_d = state12_reg;
+            end
+
+          QR6:
+            begin
+              qr0_a = state2_reg;
+              qr0_b = state7_reg;
+              qr0_c = state8_reg;
+              qr0_d = state13_reg;
+            end
+
+          QR7:
+            begin
+              qr0_a = state3_reg;
+              qr0_b = state4_reg;
+              qr0_c = state9_reg;
+              qr0_d = state14_reg;
+            end
+      endcase // case (quarterround_select)
+    end // quarterround_mux
 
 
   //----------------------------------------------------------------
@@ -409,22 +687,22 @@ module chacha_core(
 
       if (update_output)
         begin
-          msb_block_state0  = new_state_word0  + x0_reg;
-          msb_block_state1  = new_state_word1  + x1_reg;
-          msb_block_state2  = new_state_word2  + x2_reg;
-          msb_block_state3  = new_state_word3  + x3_reg;
-          msb_block_state4  = new_state_word4  + x4_reg;
-          msb_block_state5  = new_state_word5  + x5_reg;
-          msb_block_state6  = new_state_word6  + x6_reg;
-          msb_block_state7  = new_state_word7  + x7_reg;
-          msb_block_state8  = new_state_word8  + x8_reg;
-          msb_block_state9  = new_state_word9  + x9_reg;
-          msb_block_state10 = new_state_word10 + x10_reg;
-          msb_block_state11 = new_state_word11 + x11_reg;
-          msb_block_state12 = new_state_word12 + x12_reg;
-          msb_block_state13 = new_state_word13 + x13_reg;
-          msb_block_state14 = new_state_word14 + x14_reg;
-          msb_block_state15 = new_state_word15 + x15_reg;
+          msb_block_state0  = init_state_word0  + state0_reg;
+          msb_block_state1  = init_state_word1  + state1_reg;
+          msb_block_state2  = init_state_word2  + state2_reg;
+          msb_block_state3  = init_state_word3  + state3_reg;
+          msb_block_state4  = init_state_word4  + state4_reg;
+          msb_block_state5  = init_state_word5  + state5_reg;
+          msb_block_state6  = init_state_word6  + state6_reg;
+          msb_block_state7  = init_state_word7  + state7_reg;
+          msb_block_state8  = init_state_word8  + state8_reg;
+          msb_block_state9  = init_state_word9  + state9_reg;
+          msb_block_state10 = init_state_word10 + state10_reg;
+          msb_block_state11 = init_state_word11 + state11_reg;
+          msb_block_state12 = init_state_word12 + state12_reg;
+          msb_block_state13 = init_state_word13 + state13_reg;
+          msb_block_state14 = init_state_word14 + state14_reg;
+          msb_block_state15 = init_state_word15 + state15_reg;
 
           lsb_block_state0 = {msb_block_state0[7  :  0],
                               msb_block_state0[15 :  8],
@@ -519,317 +797,6 @@ module chacha_core(
           data_out_we   = 1;
         end // if (update_output)
     end // data_out_logic
-
-
-  //----------------------------------------------------------------
-  // init_state_logic
-  //
-  // Calculates the initial state for a given block.
-  //----------------------------------------------------------------
-  always @*
-    begin : init_state_logic
-      reg [31 : 0] key0;
-      reg [31 : 0] key1;
-      reg [31 : 0] key2;
-      reg [31 : 0] key3;
-      reg [31 : 0] key4;
-      reg [31 : 0] key5;
-      reg [31 : 0] key6;
-      reg [31 : 0] key7;
-
-      key0 = {key[231 : 224], key[239 : 232],
-              key[247 : 240], key[255 : 248]};
-      key1 = {key[199 : 192], key[207 : 200],
-              key[215 : 208], key[223 : 216]};
-      key2 = {key[167 : 160], key[175 : 168],
-              key[183 : 176], key[191 : 184]};
-      key3 = {key[135 : 128], key[143 : 136],
-              key[151 : 144], key[159 : 152]};
-      key4 = {key[103 :  96], key[111 : 104],
-              key[119 : 112], key[127 : 120]};
-      key5 = {key[71  :  64], key[79  :  72],
-              key[87  :  80], key[95  :  88]};
-      key6 = {key[39  :  32], key[47  :  40],
-              key[55  :  48], key[63  :  56]};
-      key7 = {key[7   :   0], key[15  :   8],
-              key[23  :  16], key[31  :  24]};
-
-      new_state_word4  = key0;
-      new_state_word5  = key1;
-      new_state_word6  = key2;
-      new_state_word7  = key3;
-      new_state_word12 = block0_ctr_reg;
-      new_state_word13 = block1_ctr_reg;
-      new_state_word14 = {iv[39  :  32], iv[47  :  40],
-                          iv[55  :  48], iv[63  :  56]};
-      new_state_word15 = {iv[7   :   0], iv[15  :   8],
-                          iv[23  :  16], iv[31  :  24]};
-
-      if (keylen)
-        begin
-          // 256 bit key.
-          new_state_word0  = SIGMA0;
-          new_state_word1  = SIGMA1;
-          new_state_word2  = SIGMA2;
-          new_state_word3  = SIGMA3;
-          new_state_word8  = key4;
-          new_state_word9  = key5;
-          new_state_word10 = key6;
-          new_state_word11 = key7;
-        end
-      else
-        begin
-          // 128 bit key.
-          new_state_word0  = TAU0;
-          new_state_word1  = TAU1;
-          new_state_word2  = TAU2;
-          new_state_word3  = TAU3;
-          new_state_word8  = key0;
-          new_state_word9  = key1;
-          new_state_word10 = key2;
-          new_state_word11 = key3;
-        end
-    end
-
-
-  //----------------------------------------------------------------
-  // state_logic
-  // Logic to init and update the internal state.
-  //----------------------------------------------------------------
-  always @*
-    begin : state_logic
-      x0_new  = 32'h0;
-      x1_new  = 32'h0;
-      x2_new  = 32'h0;
-      x3_new  = 32'h0;
-      x4_new  = 32'h0;
-      x5_new  = 32'h0;
-      x6_new  = 32'h0;
-      x7_new  = 32'h0;
-      x8_new  = 32'h0;
-      x9_new  = 32'h0;
-      x10_new = 32'h0;
-      x11_new = 32'h0;
-      x12_new = 32'h0;
-      x13_new = 32'h0;
-      x14_new = 32'h0;
-      x15_new = 32'h0;
-      x0_we   = 0;
-      x1_we   = 0;
-      x2_we   = 0;
-      x3_we   = 0;
-      x4_we   = 0;
-      x5_we   = 0;
-      x6_we   = 0;
-      x7_we   = 0;
-      x8_we   = 0;
-      x9_we   = 0;
-      x10_we  = 0;
-      x11_we  = 0;
-      x12_we  = 0;
-      x13_we  = 0;
-      x14_we  = 0;
-      x15_we  = 0;
-
-      if (init_state)
-        begin
-          x0_new  = new_state_word0;
-          x1_new  = new_state_word1;
-          x2_new  = new_state_word2;
-          x3_new  = new_state_word3;
-          x4_new  = new_state_word4;
-          x5_new  = new_state_word5;
-          x6_new  = new_state_word6;
-          x7_new  = new_state_word7;
-          x8_new  = new_state_word8;
-          x9_new  = new_state_word9;
-          x10_new = new_state_word10;
-          x11_new = new_state_word11;
-          x12_new = new_state_word12;
-          x13_new = new_state_word13;
-          x14_new = new_state_word14;
-          x15_new = new_state_word15;
-          x0_we  = 1;
-          x1_we  = 1;
-          x2_we  = 1;
-          x3_we  = 1;
-          x4_we  = 1;
-          x5_we  = 1;
-          x6_we  = 1;
-          x7_we  = 1;
-          x8_we  = 1;
-          x9_we  = 1;
-          x10_we = 1;
-          x11_we = 1;
-          x12_we = 1;
-          x13_we = 1;
-          x14_we = 1;
-          x15_we = 1;
-        end // if (init_state)
-
-      else if (update_state)
-        begin
-          x0_new  = qr0_a_prim;
-          x1_new  = qr0_a_prim;
-          x2_new  = qr0_a_prim;
-          x3_new  = qr0_a_prim;
-
-          x4_new  = qr0_b_prim;
-          x5_new  = qr0_b_prim;
-          x6_new  = qr0_b_prim;
-          x7_new  = qr0_b_prim;
-
-          x8_new  = qr0_c_prim;
-          x9_new  = qr0_c_prim;
-          x10_new = qr0_c_prim;
-          x11_new = qr0_c_prim;
-
-          x12_new = qr0_d_prim;
-          x13_new = qr0_d_prim;
-          x14_new = qr0_d_prim;
-          x15_new = qr0_d_prim;
-
-          case (qr_ctr_reg)
-            QR0:
-              begin
-                x0_we   = 1;
-                x4_we   = 1;
-                x8_we   = 1;
-                x12_we  = 1;
-              end
-
-            QR1:
-              begin
-                x1_we   = 1;
-                x5_we   = 1;
-                x9_we   = 1;
-                x13_we  = 1;
-              end
-
-            QR2:
-              begin
-                x2_we   = 1;
-                x6_we   = 1;
-                x10_we  = 1;
-                x14_we  = 1;
-              end
-
-            QR3:
-              begin
-                x3_we   = 1;
-                x7_we   = 1;
-                x11_we  = 1;
-                x15_we  = 1;
-              end
-
-            QR4:
-              begin
-                x0_we   = 1;
-                x5_we   = 1;
-                x10_we  = 1;
-                x15_we  = 1;
-              end
-
-            QR5:
-              begin
-                x1_we   = 1;
-                x6_we   = 1;
-                x11_we  = 1;
-                x12_we  = 1;
-              end
-
-            QR6:
-              begin
-                x2_we   = 1;
-                x7_we   = 1;
-                x8_we   = 1;
-                x13_we  = 1;
-              end
-
-            QR7:
-              begin
-                x3_we   = 1;
-                x4_we   = 1;
-                x9_we   = 1;
-                x14_we  = 1;
-              end
-          endcase // case (quarterround_select)
-        end // if (update_state)
-    end // state_logic
-
-
-  //----------------------------------------------------------------
-  // quarterround_mux
-  // Quarterround muxes that selects operands for quarterrounds.
-  //----------------------------------------------------------------
-  always @*
-    begin : quarterround_mux
-      case (qr_ctr_reg)
-          QR0:
-            begin
-              qr0_a = x0_reg;
-              qr0_b = x4_reg;
-              qr0_c = x8_reg;
-              qr0_d = x12_reg;
-            end
-
-          QR1:
-            begin
-              qr0_a = x1_reg;
-              qr0_b = x5_reg;
-              qr0_c = x9_reg;
-              qr0_d = x13_reg;
-            end
-
-          QR2:
-            begin
-              qr0_a = x2_reg;
-              qr0_b = x6_reg;
-              qr0_c = x10_reg;
-              qr0_d = x14_reg;
-            end
-
-          QR3:
-            begin
-              qr0_a = x3_reg;
-              qr0_b = x7_reg;
-              qr0_c = x11_reg;
-              qr0_d = x15_reg;
-            end
-
-          QR4:
-            begin
-              qr0_a = x0_reg;
-              qr0_b = x5_reg;
-              qr0_c = x10_reg;
-              qr0_d = x15_reg;
-            end
-
-          QR5:
-            begin
-              qr0_a = x1_reg;
-              qr0_b = x6_reg;
-              qr0_c = x11_reg;
-              qr0_d = x12_reg;
-            end
-
-          QR6:
-            begin
-              qr0_a = x2_reg;
-              qr0_b = x7_reg;
-              qr0_c = x8_reg;
-              qr0_d = x13_reg;
-            end
-
-          QR7:
-            begin
-              qr0_a = x3_reg;
-              qr0_b = x4_reg;
-              qr0_c = x9_reg;
-              qr0_d = x14_reg;
-            end
-      endcase // case (quarterround_select)
-    end // quarterround_mux
 
 
   //----------------------------------------------------------------

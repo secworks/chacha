@@ -97,7 +97,6 @@ module tb_chacha_core();
   reg            display_ctrl_and_ctrs;
   reg            display_qround;
   reg            display_state;
-  reg            display_x_state;
 
 
   //----------------------------------------------------------------
@@ -171,31 +170,39 @@ module tb_chacha_core();
       // Display the internal state register.
       if (display_state)
         begin
-//          $display("Internal state:");
-//          $display("0x%064x", dut.state_reg);
-//          $display("");
-        end
-
-      // Display the round processing state register X.
-      if (display_x_state)
-        begin
           $display("Round state X:");
-          $display("x0_reg   = 0x%08x, x0_new   = 0x%08x, x0_we  = 0x%01x", dut.x0_reg,  dut.x0_new,  dut.x0_we);
-          $display("x1_reg   = 0x%08x, x1_new   = 0x%08x, x1_we  = 0x%01x", dut.x1_reg,  dut.x1_new,  dut.x1_we);
-          $display("x2_reg   = 0x%08x, x2_new   = 0x%08x, x2_we  = 0x%01x", dut.x2_reg,  dut.x2_new,  dut.x2_we);
-          $display("x3_reg   = 0x%08x, x3_new   = 0x%08x, x3_we  = 0x%01x", dut.x3_reg,  dut.x3_new,  dut.x3_we);
-          $display("x4_reg   = 0x%08x, x4_new   = 0x%08x, x4_we  = 0x%01x", dut.x4_reg,  dut.x4_new,  dut.x4_we);
-          $display("x5_reg   = 0x%08x, x5_new   = 0x%08x, x5_we  = 0x%01x", dut.x5_reg,  dut.x5_new,  dut.x5_we);
-          $display("x6_reg   = 0x%08x, x6_new   = 0x%08x, x6_we  = 0x%01x", dut.x6_reg,  dut.x6_new,  dut.x6_we);
-          $display("x7_reg   = 0x%08x, x7_new   = 0x%08x, x7_we  = 0x%01x", dut.x7_reg,  dut.x7_new,  dut.x7_we);
-          $display("x8_reg   = 0x%08x, x8_new   = 0x%08x, x8_we  = 0x%01x", dut.x8_reg,  dut.x8_new,  dut.x8_we);
-          $display("x9_reg   = 0x%08x, x9_new   = 0x%08x, x9_we  = 0x%01x", dut.x9_reg,  dut.x9_new,  dut.x9_we);
-          $display("x10_reg  = 0x%08x, x10_new  = 0x%08x, x10_we = 0x%01x", dut.x10_reg, dut.x10_new, dut.x10_we);
-          $display("x11_reg  = 0x%08x, x11_new  = 0x%08x, x11_we = 0x%01x", dut.x11_reg, dut.x11_new, dut.x11_we);
-          $display("x12_reg  = 0x%08x, x12_new  = 0x%08x, x12_we = 0x%01x", dut.x12_reg, dut.x12_new, dut.x12_we);
-          $display("x13_reg  = 0x%08x, x13_new  = 0x%08x, x13_we = 0x%01x", dut.x13_reg, dut.x13_new, dut.x13_we);
-          $display("x14_reg  = 0x%08x, x14_new  = 0x%08x, x14_we = 0x%01x", dut.x14_reg, dut.x14_new, dut.x14_we);
-          $display("x15_reg  = 0x%08x, x15_new  = 0x%08x, x15_we = 0x%01x", dut.x15_reg, dut.x15_new, dut.x15_we);
+          $display("state0_reg   = 0x%08x, state0_new   = 0x%08x, state0_we  = 0x%01x",
+                   dut.state0_reg,  dut.state0_new,  dut.state0_we);
+          $display("state1_reg   = 0x%08x, state1_new   = 0x%08x, state1_we  = 0x%01x",
+                   dut.state1_reg,  dut.state1_new,  dut.state1_we);
+          $display("state2_reg   = 0x%08x, state2_new   = 0x%08x, state2_we  = 0x%01x",
+                   dut.state2_reg,  dut.state2_new,  dut.state2_we);
+          $display("state3_reg   = 0x%08x, state3_new   = 0x%08x, state3_we  = 0x%01x",
+                   dut.state3_reg,  dut.state3_new,  dut.state3_we);
+          $display("state4_reg   = 0x%08x, state4_new   = 0x%08x, state4_we  = 0x%01x",
+                   dut.state4_reg,  dut.state4_new,  dut.state4_we);
+          $display("state5_reg   = 0x%08x, state5_new   = 0x%08x, state5_we  = 0x%01x",
+                   dut.state5_reg,  dut.state5_new,  dut.state5_we);
+          $display("state6_reg   = 0x%08x, state6_new   = 0x%08x, state6_we  = 0x%01x",
+                   dut.state6_reg,  dut.state6_new,  dut.state6_we);
+          $display("state7_reg   = 0x%08x, state7_new   = 0x%08x, state7_we  = 0x%01x",
+                   dut.state7_reg,  dut.state7_new,  dut.state7_we);
+          $display("state8_reg   = 0x%08x, state8_new   = 0x%08x, state8_we  = 0x%01x",
+                   dut.state8_reg,  dut.state8_new,  dut.state8_we);
+          $display("state9_reg   = 0x%08x, state9_new   = 0x%08x, state9_we  = 0x%01x",
+                   dut.state9_reg,  dut.state9_new,  dut.state9_we);
+          $display("state10_reg  = 0x%08x, state10_new  = 0x%08x, state10_we = 0x%01x",
+                   dut.state10_reg, dut.state10_new, dut.state10_we);
+          $display("state11_reg  = 0x%08x, state11_new  = 0x%08x, state11_we = 0x%01x",
+                   dut.state11_reg, dut.state11_new, dut.state11_we);
+          $display("state12_reg  = 0x%08x, state12_new  = 0x%08x, state12_we = 0x%01x",
+                   dut.state12_reg, dut.state12_new, dut.state12_we);
+          $display("state13_reg  = 0x%08x, state13_new  = 0x%08x, state13_we = 0x%01x",
+                   dut.state13_reg, dut.state13_new, dut.state13_we);
+          $display("state14_reg  = 0x%08x, state14_new  = 0x%08x, state14_we = 0x%01x",
+                   dut.state14_reg, dut.state14_new, dut.state14_we);
+          $display("state15_reg  = 0x%08x, state15_new  = 0x%08x, state15_we = 0x%01x",
+                   dut.state15_reg, dut.state15_new, dut.state15_we);
           $display("");
         end
 
@@ -219,14 +226,14 @@ module tb_chacha_core();
       $display("Internal state:");
       $display("---------------");
       $display("Round state X::");
-      $display("x0_reg  = %08x, x1_reg  = %08x", dut.x0_reg, dut.x1_reg);
-      $display("x2_reg  = %08x, x3_reg  = %08x", dut.x2_reg, dut.x3_reg);
-      $display("x4_reg  = %08x, x5_reg  = %08x", dut.x4_reg, dut.x5_reg);
-      $display("x6_reg  = %08x, x7_reg  = %08x", dut.x6_reg, dut.x7_reg);
-      $display("x8_reg  = %08x, x9_reg  = %08x", dut.x8_reg, dut.x9_reg);
-      $display("x10_reg = %08x, x11_reg = %08x", dut.x10_reg, dut.x11_reg);
-      $display("x12_reg = %08x, x13_reg = %08x", dut.x12_reg, dut.x13_reg);
-      $display("x14_reg = %08x, x15_reg = %08x", dut.x14_reg, dut.x15_reg);
+      $display("state0_reg  = %08x, state1_reg  = %08x, state2_reg  = %08x, state3_reg  = %08x",
+               dut.state0_reg,  dut.state1_reg, dut.state2_reg,  dut.state3_reg);
+      $display("state4_reg  = %08x, state5_reg  = %08x, state6_reg  = %08x, state7_reg  = %08x",
+               dut.state4_reg,  dut.state5_reg, dut.state6_reg,  dut.state7_reg);
+      $display("state8_reg  = %08x, state9_reg  = %08x, state10_reg = %08x, state11_reg = %08x",
+               dut.state8_reg,  dut.state9_reg, dut.state10_reg, dut.state11_reg);
+      $display("state12_reg = %08x, state13_reg = %08x, state14_reg = %08x, state15_reg = %08x",
+               dut.state12_reg, dut.state13_reg, dut.state14_reg, dut.state15_reg);
       $display("");
 
       $display("rounds = %01x", dut.rounds);
@@ -494,7 +501,6 @@ module tb_chacha_core();
       display_cycle_ctr     = cycles;
       display_ctrl_and_ctrs = ctrl_ctr;
       display_state         = state;
-      display_x_state       = x_state;
       display_qround        = qround;
     end
   endtask // set_display_prefs
