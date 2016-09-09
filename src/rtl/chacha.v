@@ -36,18 +36,13 @@
 //======================================================================
 
 module chacha(
-              // Clock and reset.
               input wire           clk,
               input wire           reset_n,
-
-              // Control.
               input wire           cs,
-              input wire           write_read,
-
-              // Data ports.
-              input wire  [7 : 0]  address,
-              input wire  [31 : 0] data_in,
-              output wire [31 : 0] data_out
+              input wire           we,
+              input wire [7 : 0]   addr,
+              input wire [31 : 0]  write_data,
+              output wire [31 : 0] read_data
              );
 
   //----------------------------------------------------------------
@@ -132,7 +127,7 @@ module chacha(
   wire [511 : 0] core_data_out;
   wire           core_data_out_valid;
 
-  reg [31 : 0]   tmp_data_out;
+  reg [31 : 0]   tmp_read_data;
 
 
   //----------------------------------------------------------------
@@ -156,7 +151,7 @@ module chacha(
                          data_in_reg[08], data_in_reg[09], data_in_reg[10], data_in_reg[11],
                          data_in_reg[12], data_in_reg[13], data_in_reg[14], data_in_reg[15]};
 
-  assign data_out = tmp_data_out;
+  assign data_out = tmp_read_data;
 
 
   //----------------------------------------------------------------
@@ -213,27 +208,27 @@ module chacha(
 
           if (ctrl_we)
             begin
-              init_reg <= data_in[CTRL_INIT_BIT];
-              next_reg <= data_in[CTRL_NEXT_BIT];
+              init_reg <= write_data[CTRL_INIT_BIT];
+              next_reg <= write_data[CTRL_NEXT_BIT];
             end
 
           if (keylen_we)
-            keylen_reg <= data_in[KEYLEN_BIT];
+            keylen_reg <= write_data[KEYLEN_BIT];
 
           if (rounds_we)
-            rounds_reg <= data_in[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
+            rounds_reg <= write_data[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
 
           if (key_we)
-            key_reg[address[2 : 0]] <= data_in;
+            key_reg[addr[2 : 0]] <= write_data;
 
           if (iv0_we)
-            iv0_reg <= data_in;
+            iv0_reg <= write_data;
 
           if (iv1_we)
-            iv1_reg <= data_in;
+            iv1_reg <= write_data;
 
           if (data_in_we)
-            data_in_reg[address[3 : 0]] <= data_in;
+            data_in_reg[addr[3 : 0]] <= write_data;
 
           if (core_data_out_valid)
             data_out_reg <= core_data_out;
@@ -246,26 +241,26 @@ module chacha(
   //----------------------------------------------------------------
   always @*
     begin : addr_decoder
-      ctrl_we      = 0;
-      keylen_we    = 0;
-      rounds_we    = 0;
-      key_we       = 0;
-      iv0_we       = 0;
-      iv1_we       = 0;
-      data_in_we   = 0;
-      tmp_data_out = 32'h0;
+      ctrl_we       = 0;
+      keylen_we     = 0;
+      rounds_we     = 0;
+      key_we        = 0;
+      iv0_we        = 0;
+      iv1_we        = 0;
+      data_in_we    = 0;
+      tmp_read_data = 32'h0;
 
       if (cs)
         begin
-          if (write_read)
+          if (we)
             begin
-              if ((address >= ADDR_KEY0) && (address <= ADDR_KEY7))
+              if ((addr >= ADDR_KEY0) && (addr <= ADDR_KEY7))
                 key_we = 1;
 
-              if ((address >= ADDR_DATA_IN0) && (address <= ADDR_DATA_IN15))
+              if ((addr >= ADDR_DATA_IN0) && (addr <= ADDR_DATA_IN15))
                 data_in_we = 1;
 
-              case (address)
+              case (addr)
                 ADDR_CTRL: ctrl_we = 1;
                 ADDR_KEYLEN: keylen_we = 1;
                 ADDR_ROUNDS: rounds_we = 1;
@@ -280,22 +275,22 @@ module chacha(
 
           else
             begin
-              if ((address >= ADDR_KEY0) && (address <= ADDR_KEY7))
-                tmp_data_out = key_reg[address[2 : 0]];
+              if ((addr >= ADDR_KEY0) && (addr <= ADDR_KEY7))
+                tmp_read_data = key_reg[addr[2 : 0]];
 
-              if ((address >= ADDR_DATA_OUT0) && (address <= ADDR_DATA_OUT15))
-                tmp_data_out = data_out_reg[(15 - (address - ADDR_DATA_OUT0)) * 32 +: 32];
+              if ((addr >= ADDR_DATA_OUT0) && (addr <= ADDR_DATA_OUT15))
+                tmp_read_data = data_out_reg[(15 - (addr - ADDR_DATA_OUT0)) * 32 +: 32];
 
-              case (address)
-                ADDR_NAME0:   tmp_data_out = CORE_NAME0;
-                ADDR_NAME1:   tmp_data_out = CORE_NAME1;
-                ADDR_VERSION: tmp_data_out = CORE_VERSION;
-                ADDR_CTRL:    tmp_data_out = {30'h0, next_reg, init_reg};
-                ADDR_STATUS:  tmp_data_out = {30'h0, data_out_valid_reg, ready_reg};
-                ADDR_KEYLEN:  tmp_data_out = {31'h0, keylen_reg};
-                ADDR_ROUNDS:  tmp_data_out = {27'h0, rounds_reg};
-                ADDR_IV0:     tmp_data_out = iv0_reg;
-                ADDR_IV1:     tmp_data_out = iv1_reg;
+              case (addr)
+                ADDR_NAME0:   tmp_read_data = CORE_NAME0;
+                ADDR_NAME1:   tmp_read_data = CORE_NAME1;
+                ADDR_VERSION: tmp_read_data = CORE_VERSION;
+                ADDR_CTRL:    tmp_read_data = {30'h0, next_reg, init_reg};
+                ADDR_STATUS:  tmp_read_data = {30'h0, data_out_valid_reg, ready_reg};
+                ADDR_KEYLEN:  tmp_read_data = {31'h0, keylen_reg};
+                ADDR_ROUNDS:  tmp_read_data = {27'h0, rounds_reg};
+                ADDR_IV0:     tmp_read_data = iv0_reg;
+                ADDR_IV1:     tmp_read_data = iv1_reg;
 
                 default:
                   begin

@@ -156,18 +156,13 @@ module tb_chacha();
   // Chacha device under test.
   //----------------------------------------------------------------
   chacha dut(
-             // Clock and reset.
              .clk(tb_clk),
              .reset_n(tb_reset_n),
-
-             // Control.
              .cs(tb_cs),
-             .write_read(tb_write_read),
-
-             // Data ports.
-             .address(tb_address),
-             .data_in(tb_data_in),
-             .data_out(tb_data_out)
+             .we(tb_write_read),
+             .addr(tb_address),
+             .write_data(tb_data_in),
+             .read_data(tb_data_out)
             );
 
 
@@ -202,13 +197,13 @@ module tb_chacha();
 
           if (dut.cs)
             begin
-              if (dut.write_read)
+              if (dut.we)
                 begin
-                  $display("*** Write acess: addr 0x%02x = 0x%08x", dut.address, dut.data_in);
+                  $display("*** Write acess: addr 0x%02x = 0x%08x", dut.addr, dut.write_data);
                 end
               else
                 begin
-                  $display("*** Read acess: addr 0x%02x = 0x%08x", dut.address, dut.data_out);
+                  $display("*** Read acess: addr 0x%02x = 0x%08x", dut.addr, dut.read_data);
                 end
             end
         end
