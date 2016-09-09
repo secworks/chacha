@@ -246,9 +246,7 @@ module chacha_core(
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
   assign data_out = data_out_reg;
-
   assign data_out_valid = data_out_valid_reg;
-
   assign ready = ready_wire;
 
 
@@ -562,7 +560,6 @@ module chacha_core(
       new_state_word7  = key3;
       new_state_word12 = block0_ctr_reg;
       new_state_word13 = block1_ctr_reg;
-
       new_state_word14 = {iv[39  :  32], iv[47  :  40],
                           iv[55  :  48], iv[63  :  56]};
       new_state_word15 = {iv[7   :   0], iv[15  :   8],
