@@ -628,23 +628,22 @@ module chacha(
               case (address)
                 ADDR_CTRL:
                   begin
-                    tmp_data_out = {28'h0000000, 2'b00, next_reg, init_reg};
+                    tmp_data_out = {30'h0, next_reg, init_reg};
                   end
 
                 ADDR_STATUS:
                   begin
-                    tmp_data_out = {28'h0000000, 2'b00,
-                                    {data_out_valid_reg, ready_reg}};
+                    tmp_data_out = {30'h0, data_out_valid_reg, ready_reg};
                   end
 
                 ADDR_KEYLEN:
                   begin
-                    tmp_data_out = {28'h0000000, 3'b000, keylen_reg};
+                    tmp_data_out = {31'h0, keylen_reg};
                   end
 
                 ADDR_ROUNDS:
                   begin
-                    tmp_data_out = {24'h000000, 3'b000, rounds_reg};
+                    tmp_data_out = {27'h0, rounds_reg};
                   end
 
                 ADDR_IV0:
@@ -739,8 +738,6 @@ module chacha(
 
                 default:
                   begin
-                    // Empty since default assignemnts are handled
-                    // outside of the if-mux construct.
                   end
               endcase // case (address)
             end
