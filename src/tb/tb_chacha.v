@@ -76,16 +76,20 @@ module tb_chacha();
   localparam ENABLE  = 1;
 
   // API for the dut.
-  localparam ADDR_CTRL        = 8'h00;
+  localparam ADDR_NAME0       = 8'h00;
+  localparam ADDR_NAME1       = 8'h01;
+  localparam ADDR_VERSION     = 8'h02;
+
+  localparam ADDR_CTRL        = 8'h08;
   localparam CTRL_INIT_BIT    = 0;
   localparam CTRL_NEXT_BIT    = 1;
 
-  localparam ADDR_STATUS      = 8'h01;
+  localparam ADDR_STATUS      = 8'h09;
   localparam STATUS_READY_BIT = 0;
 
-  localparam ADDR_KEYLEN      = 8'h08;
+  localparam ADDR_KEYLEN      = 8'h0a;
   localparam KEYLEN_BIT       = 0;
-  localparam ADDR_ROUNDS      = 8'h09;
+  localparam ADDR_ROUNDS      = 8'h0b;
   localparam ROUNDS_HIGH_BIT  = 4;
   localparam ROUNDS_LOW_BIT   = 0;
 
@@ -102,20 +106,6 @@ module tb_chacha();
   localparam ADDR_IV1         = 8'h21;
 
   localparam ADDR_DATA_IN0    = 8'h40;
-  localparam ADDR_DATA_IN1    = 8'h41;
-  localparam ADDR_DATA_IN2    = 8'h42;
-  localparam ADDR_DATA_IN3    = 8'h43;
-  localparam ADDR_DATA_IN4    = 8'h44;
-  localparam ADDR_DATA_IN5    = 8'h45;
-  localparam ADDR_DATA_IN6    = 8'h46;
-  localparam ADDR_DATA_IN7    = 8'h47;
-  localparam ADDR_DATA_IN8    = 8'h48;
-  localparam ADDR_DATA_IN9    = 8'h49;
-  localparam ADDR_DATA_IN10   = 8'h4a;
-  localparam ADDR_DATA_IN11   = 8'h4b;
-  localparam ADDR_DATA_IN12   = 8'h4c;
-  localparam ADDR_DATA_IN13   = 8'h4d;
-  localparam ADDR_DATA_IN14   = 8'h4e;
   localparam ADDR_DATA_IN15   = 8'h4f;
 
   localparam ADDR_DATA_OUT0   = 8'h80;
@@ -591,6 +581,33 @@ module tb_chacha();
 
 
   //----------------------------------------------------------------
+  // check_name_version()
+  //
+  // Read the name and version from the DUT.
+  //----------------------------------------------------------------
+  task check_name_version;
+    reg [31 : 0] name0;
+    reg [31 : 0] name1;
+    reg [31 : 0] version;
+    begin
+
+      read_reg(ADDR_NAME0);
+      name0 = read_data;
+      read_reg(ADDR_NAME1);
+      name1 = read_data;
+      read_reg(ADDR_VERSION);
+      version = read_data;
+
+      $display("DUT name: %c%c%c%c%c%c%c%c",
+               name0[31 : 24], name0[23 : 16], name0[15 : 8], name0[7 : 0],
+               name1[31 : 24], name1[23 : 16], name1[15 : 8], name1[7 : 0]);
+      $display("DUT version: %c%c%c%c",
+               version[31 : 24], version[23 : 16], version[15 : 8], version[7 : 0]);
+    end
+  endtask // check_name_version
+
+
+  //----------------------------------------------------------------
   // run_two_blocks_test_vector()
   //
   // Runs a test case with two blocks based on the given
@@ -719,6 +736,9 @@ module tb_chacha();
 
       $display("State at init after reset:");
       dump_top_state();
+
+      // Check name and version.
+      check_name_version();
 
       $display("TC1-1: All zero inputs. 128 bit key, 8 rounds.");
       run_test_vector(TC1, ONE,

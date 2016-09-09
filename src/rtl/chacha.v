@@ -53,16 +53,20 @@ module chacha(
   //----------------------------------------------------------------
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
-  localparam ADDR_CTRL        = 8'h00;
+  localparam ADDR_NAME0       = 8'h00;
+  localparam ADDR_NAME1       = 8'h01;
+  localparam ADDR_VERSION     = 8'h02;
+
+  localparam ADDR_CTRL        = 8'h08;
   localparam CTRL_INIT_BIT    = 0;
   localparam CTRL_NEXT_BIT    = 1;
 
-  localparam ADDR_STATUS      = 8'h01;
+  localparam ADDR_STATUS      = 8'h09;
   localparam STATUS_READY_BIT = 0;
 
-  localparam ADDR_KEYLEN      = 8'h08;
+  localparam ADDR_KEYLEN      = 8'h0a;
   localparam KEYLEN_BIT       = 0;
-  localparam ADDR_ROUNDS      = 8'h09;
+  localparam ADDR_ROUNDS      = 8'h0b;
   localparam ROUNDS_HIGH_BIT  = 4;
   localparam ROUNDS_LOW_BIT   = 0;
 
@@ -77,6 +81,10 @@ module chacha(
 
   localparam ADDR_DATA_OUT0   = 8'h80;
   localparam ADDR_DATA_OUT15  = 8'h8f;
+
+  localparam CORE_NAME0          = 32'h63686163; // "chac"
+  localparam CORE_NAME1          = 32'h68612020; // "ha  "
+  localparam CORE_VERSION        = 32'h302e3830; // "0.80"
 
 
   //----------------------------------------------------------------
@@ -279,12 +287,15 @@ module chacha(
                 tmp_data_out = data_out_reg[(15 - (address - ADDR_DATA_OUT0)) * 32 +: 32];
 
               case (address)
-                ADDR_CTRL:   tmp_data_out = {30'h0, next_reg, init_reg};
-                ADDR_STATUS: tmp_data_out = {30'h0, data_out_valid_reg, ready_reg};
-                ADDR_KEYLEN: tmp_data_out = {31'h0, keylen_reg};
-                ADDR_ROUNDS: tmp_data_out = {27'h0, rounds_reg};
-                ADDR_IV0:    tmp_data_out = iv0_reg;
-                ADDR_IV1:    tmp_data_out = iv1_reg;
+                ADDR_NAME0:   tmp_data_out = CORE_NAME0;
+                ADDR_NAME1:   tmp_data_out = CORE_NAME1;
+                ADDR_VERSION: tmp_data_out = CORE_VERSION;
+                ADDR_CTRL:    tmp_data_out = {30'h0, next_reg, init_reg};
+                ADDR_STATUS:  tmp_data_out = {30'h0, data_out_valid_reg, ready_reg};
+                ADDR_KEYLEN:  tmp_data_out = {31'h0, keylen_reg};
+                ADDR_ROUNDS:  tmp_data_out = {27'h0, rounds_reg};
+                ADDR_IV0:     tmp_data_out = iv0_reg;
+                ADDR_IV1:     tmp_data_out = iv1_reg;
 
                 default:
                   begin
