@@ -88,52 +88,37 @@ module chacha_core(
   //----------------------------------------------------------------
   reg [31 : 0] state0_reg;
   reg [31 : 0] state0_new;
-  reg          state0_we;
   reg [31 : 0] state1_reg;
   reg [31 : 0] state1_new;
-  reg          state1_we;
   reg [31 : 0] state2_reg;
   reg [31 : 0] state2_new;
-  reg          state2_we;
   reg [31 : 0] state3_reg;
   reg [31 : 0] state3_new;
-  reg          state3_we;
   reg [31 : 0] state4_reg;
   reg [31 : 0] state4_new;
-  reg          state4_we;
   reg [31 : 0] state5_reg;
   reg [31 : 0] state5_new;
-  reg          state5_we;
   reg [31 : 0] state6_reg;
   reg [31 : 0] state6_new;
-  reg          state6_we;
   reg [31 : 0] state7_reg;
   reg [31 : 0] state7_new;
-  reg          state7_we;
   reg [31 : 0] state8_reg;
   reg [31 : 0] state8_new;
-  reg          state8_we;
   reg [31 : 0] state9_reg;
   reg [31 : 0] state9_new;
-  reg          state9_we;
   reg [31 : 0] state10_reg;
   reg [31 : 0] state10_new;
-  reg          state10_we;
   reg [31 : 0] state11_reg;
   reg [31 : 0] state11_new;
-  reg          state11_we;
   reg [31 : 0] state12_reg;
   reg [31 : 0] state12_new;
-  reg          state12_we;
   reg [31 : 0] state13_reg;
   reg [31 : 0] state13_new;
-  reg          state13_we;
   reg [31 : 0] state14_reg;
   reg [31 : 0] state14_new;
-  reg          state14_we;
   reg [31 : 0] state15_reg;
   reg [31 : 0] state15_new;
-  reg          state15_we;
+  reg          state_we;
 
   reg [511 : 0] data_out_reg;
   reg [511 : 0] data_out_new;
@@ -328,38 +313,25 @@ module chacha_core(
         end
       else
         begin
-          if (state0_we)
-            state0_reg <= state0_new;
-          if (state1_we)
-            state1_reg <= state1_new;
-          if (state2_we)
-            state2_reg <= state2_new;
-          if (state3_we)
-            state3_reg <= state3_new;
-          if (state4_we)
-            state4_reg <= state4_new;
-          if (state5_we)
-            state5_reg <= state5_new;
-          if (state6_we)
-            state6_reg <= state6_new;
-          if (state7_we)
-            state7_reg <= state7_new;
-          if (state8_we)
-            state8_reg <= state8_new;
-          if (state9_we)
-            state9_reg <= state9_new;
-          if (state10_we)
-            state10_reg <= state10_new;
-          if (state11_we)
-            state11_reg <= state11_new;
-          if (state12_we)
-            state12_reg <= state12_new;
-          if (state13_we)
-            state13_reg <= state13_new;
-          if (state14_we)
-            state14_reg <= state14_new;
-          if (state15_we)
-            state15_reg <= state15_new;
+          if (state_we)
+            begin
+              state0_reg  <= state0_new;
+              state1_reg  <= state1_new;
+              state2_reg  <= state1_new;
+              state3_reg  <= state1_new;
+              state4_reg  <= state1_new;
+              state5_reg  <= state1_new;
+              state6_reg  <= state1_new;
+              state7_reg  <= state1_new;
+              state8_reg  <= state1_new;
+              state9_reg  <= state1_new;
+              state10_reg <= state1_new;
+              state11_reg <= state1_new;
+              state12_reg <= state1_new;
+              state13_reg <= state1_new;
+              state14_reg <= state1_new;
+              state15_reg <= state1_new;
+            end
 
           if (data_out_we)
             data_out_reg <= data_out_new;
@@ -478,22 +450,7 @@ module chacha_core(
       state13_new = 32'h0;
       state14_new = 32'h0;
       state15_new = 32'h0;
-      state0_we   = 0;
-      state1_we   = 0;
-      state2_we   = 0;
-      state3_we   = 0;
-      state4_we   = 0;
-      state5_we   = 0;
-      state6_we   = 0;
-      state7_we   = 0;
-      state8_we   = 0;
-      state9_we   = 0;
-      state10_we  = 0;
-      state11_we  = 0;
-      state12_we  = 0;
-      state13_we  = 0;
-      state14_we  = 0;
-      state15_we  = 0;
+      state_we    = 0;
 
       if (init_state)
         begin
@@ -513,22 +470,7 @@ module chacha_core(
           state13_new = init_state_word13;
           state14_new = init_state_word14;
           state15_new = init_state_word15;
-          state0_we  = 1;
-          state1_we  = 1;
-          state2_we  = 1;
-          state3_we  = 1;
-          state4_we  = 1;
-          state5_we  = 1;
-          state6_we  = 1;
-          state7_we  = 1;
-          state8_we  = 1;
-          state9_we  = 1;
-          state10_we = 1;
-          state11_we = 1;
-          state12_we = 1;
-          state13_we = 1;
-          state14_we = 1;
-          state15_we = 1;
+          state_we   = 1;
         end // if (init_state)
 
       else if (update_state)
@@ -556,34 +498,19 @@ module chacha_core(
                 state4_new  = qr0_b_prim;
                 state8_new  = qr0_c_prim;
                 state12_new = qr0_d_prim;
-                state0_we   = 1;
-                state4_we   = 1;
-                state8_we   = 1;
-                state12_we  = 1;
                 state1_new  = qr1_a_prim;
                 state5_new  = qr1_b_prim;
                 state9_new  = qr1_c_prim;
                 state13_new = qr1_d_prim;
-                state1_we   = 1;
-                state5_we   = 1;
-                state9_we   = 1;
-                state13_we  = 1;
                 state2_new  = qr2_a_prim;
                 state6_new  = qr2_b_prim;
                 state10_new = qr2_c_prim;
                 state14_new = qr2_d_prim;
-                state2_we   = 1;
-                state6_we   = 1;
-                state10_we  = 1;
-                state14_we  = 1;
                 state3_new  = qr3_a_prim;
                 state7_new  = qr3_b_prim;
                 state11_new = qr3_c_prim;
                 state15_new = qr3_d_prim;
-                state3_we   = 1;
-                state7_we   = 1;
-                state11_we  = 1;
-                state15_we  = 1;
+                state_we    = 1;
               end
 
             QR1:
@@ -608,34 +535,19 @@ module chacha_core(
                 state5_new  = qr0_b_prim;
                 state10_new = qr0_c_prim;
                 state15_new = qr0_d_prim;
-                state0_we   = 1;
-                state5_we   = 1;
-                state10_we  = 1;
-                state15_we  = 1;
                 state1_new  = qr1_a_prim;
                 state6_new  = qr1_b_prim;
                 state11_new = qr1_c_prim;
                 state12_new = qr1_d_prim;
-                state1_we   = 1;
-                state6_we   = 1;
-                state11_we  = 1;
-                state12_we  = 1;
                 state2_new  = qr2_a_prim;
                 state7_new  = qr2_b_prim;
                 state8_new  = qr2_c_prim;
                 state13_new = qr2_d_prim;
-                state2_we   = 1;
-                state7_we   = 1;
-                state8_we   = 1;
-                state13_we  = 1;
                 state3_new  = qr3_a_prim;
                 state4_new  = qr3_b_prim;
                 state9_new  = qr3_c_prim;
                 state14_new = qr3_d_prim;
-                state3_we   = 1;
-                state4_we   = 1;
-                state9_we   = 1;
-                state14_we  = 1;
+                state_we    = 1;
               end
           endcase // case (quarterround_select)
         end // if (update_state)

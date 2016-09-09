@@ -171,38 +171,23 @@ module tb_chacha_core();
       if (display_state)
         begin
           $display("Round state X:");
-          $display("state0_reg   = 0x%08x, state0_new   = 0x%08x, state0_we  = 0x%01x",
-                   dut.state0_reg,  dut.state0_new,  dut.state0_we);
-          $display("state1_reg   = 0x%08x, state1_new   = 0x%08x, state1_we  = 0x%01x",
-                   dut.state1_reg,  dut.state1_new,  dut.state1_we);
-          $display("state2_reg   = 0x%08x, state2_new   = 0x%08x, state2_we  = 0x%01x",
-                   dut.state2_reg,  dut.state2_new,  dut.state2_we);
-          $display("state3_reg   = 0x%08x, state3_new   = 0x%08x, state3_we  = 0x%01x",
-                   dut.state3_reg,  dut.state3_new,  dut.state3_we);
-          $display("state4_reg   = 0x%08x, state4_new   = 0x%08x, state4_we  = 0x%01x",
-                   dut.state4_reg,  dut.state4_new,  dut.state4_we);
-          $display("state5_reg   = 0x%08x, state5_new   = 0x%08x, state5_we  = 0x%01x",
-                   dut.state5_reg,  dut.state5_new,  dut.state5_we);
-          $display("state6_reg   = 0x%08x, state6_new   = 0x%08x, state6_we  = 0x%01x",
-                   dut.state6_reg,  dut.state6_new,  dut.state6_we);
-          $display("state7_reg   = 0x%08x, state7_new   = 0x%08x, state7_we  = 0x%01x",
-                   dut.state7_reg,  dut.state7_new,  dut.state7_we);
-          $display("state8_reg   = 0x%08x, state8_new   = 0x%08x, state8_we  = 0x%01x",
-                   dut.state8_reg,  dut.state8_new,  dut.state8_we);
-          $display("state9_reg   = 0x%08x, state9_new   = 0x%08x, state9_we  = 0x%01x",
-                   dut.state9_reg,  dut.state9_new,  dut.state9_we);
-          $display("state10_reg  = 0x%08x, state10_new  = 0x%08x, state10_we = 0x%01x",
-                   dut.state10_reg, dut.state10_new, dut.state10_we);
-          $display("state11_reg  = 0x%08x, state11_new  = 0x%08x, state11_we = 0x%01x",
-                   dut.state11_reg, dut.state11_new, dut.state11_we);
-          $display("state12_reg  = 0x%08x, state12_new  = 0x%08x, state12_we = 0x%01x",
-                   dut.state12_reg, dut.state12_new, dut.state12_we);
-          $display("state13_reg  = 0x%08x, state13_new  = 0x%08x, state13_we = 0x%01x",
-                   dut.state13_reg, dut.state13_new, dut.state13_we);
-          $display("state14_reg  = 0x%08x, state14_new  = 0x%08x, state14_we = 0x%01x",
-                   dut.state14_reg, dut.state14_new, dut.state14_we);
-          $display("state15_reg  = 0x%08x, state15_new  = 0x%08x, state15_we = 0x%01x",
-                   dut.state15_reg, dut.state15_new, dut.state15_we);
+          $display("state0_reg  = 0x%08x, state0_new  = 0x%08x", dut.state0_reg,  dut.state0_new);
+          $display("state1_reg  = 0x%08x, state1_new  = 0x%08x", dut.state1_reg,  dut.state1_new);
+          $display("state2_reg  = 0x%08x, state2_new  = 0x%08x", dut.state2_reg,  dut.state2_new);
+          $display("state3_reg  = 0x%08x, state3_new  = 0x%08x", dut.state3_reg,  dut.state3_new);
+          $display("state4_reg  = 0x%08x, state4_new  = 0x%08x", dut.state4_reg,  dut.state4_new);
+          $display("state5_reg  = 0x%08x, state5_new  = 0x%08x", dut.state5_reg,  dut.state5_new);
+          $display("state6_reg  = 0x%08x, state6_new  = 0x%08x", dut.state6_reg,  dut.state6_new);
+          $display("state7_reg  = 0x%08x, state7_new  = 0x%08x", dut.state7_reg,  dut.state7_new);
+          $display("state8_reg  = 0x%08x, state8_new  = 0x%08x", dut.state8_reg,  dut.state8_new);
+          $display("state9_reg  = 0x%08x, state9_new  = 0x%08x", dut.state9_reg,  dut.state9_new);
+          $display("state10_reg = 0x%08x, state10_new = 0x%08x", dut.state10_reg, dut.state10_new);
+          $display("state11_reg = 0x%08x, state11_new = 0x%08x", dut.state11_reg, dut.state11_new);
+          $display("state12_reg = 0x%08x, state12_new = 0x%08x", dut.state12_reg, dut.state12_new);
+          $display("state13_reg = 0x%08x, state13_new = 0x%08x", dut.state13_reg, dut.state13_new);
+          $display("state14_reg = 0x%08x, state14_new = 0x%08x", dut.state14_reg, dut.state14_new);
+          $display("state15_reg = 0x%08x, state15_new = 0x%08x", dut.state15_reg, dut.state15_new);
+          $display("state_we    = 0x%01x", dut.state_we);
           $display("");
         end
 
