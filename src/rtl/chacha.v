@@ -157,19 +157,14 @@ module chacha(
   chacha_core core (
                     .clk(clk),
                     .reset_n(reset_n),
-
                     .init(core_init),
                     .next(core_next),
-
                     .key(core_key),
                     .keylen(core_keylen),
                     .iv(core_iv),
                     .rounds(core_rounds),
-
                     .data_in(core_data_in),
-
                     .ready(core_ready),
-
                     .data_out(core_data_out),
                     .data_out_valid(core_data_out_valid)
                    );
@@ -182,7 +177,9 @@ module chacha(
   // active low reset. All registers have write enable.
   //----------------------------------------------------------------
   always @ (posedge clk)
-    begin
+    begin : reg_update
+     integer i;
+
       if (!reset_n)
         begin
           init_reg           <= 0;
@@ -191,37 +188,15 @@ module chacha(
           keylen_reg         <= 0;
           rounds_reg         <= 5'h0;
           data_out_valid_reg <= 0;
-
-          key_reg[0]         <= 32'h0;
-          key_reg[1]         <= 32'h0;
-          key_reg[2]         <= 32'h0;
-          key_reg[3]         <= 32'h0;
-          key_reg[4]         <= 32'h0;
-          key_reg[5]         <= 32'h0;
-          key_reg[6]         <= 32'h0;
-          key_reg[7]         <= 32'h0;
-
           iv0_reg            <= 32'h0;
           iv1_reg            <= 32'h0;
-
-          data_in_reg[00]    <= 32'h0;
-          data_in_reg[01]    <= 32'h0;
-          data_in_reg[02]    <= 32'h0;
-          data_in_reg[03]    <= 32'h0;
-          data_in_reg[04]    <= 32'h0;
-          data_in_reg[05]    <= 32'h0;
-          data_in_reg[06]    <= 32'h0;
-          data_in_reg[07]    <= 32'h0;
-          data_in_reg[08]    <= 32'h0;
-          data_in_reg[09]    <= 32'h0;
-          data_in_reg[10]    <= 32'h0;
-          data_in_reg[11]    <= 32'h0;
-          data_in_reg[12]    <= 32'h0;
-          data_in_reg[13]    <= 32'h0;
-          data_in_reg[14]    <= 32'h0;
-          data_in_reg[15]    <= 32'h0;
-
           data_out_reg       <= 512'h0;
+
+          for (i = 0 ; i < 8 ; i = i + 1)
+            key_reg[i] <= 32'h0;
+
+          for (i = 0 ; i < 16 ; i = i + 1)
+            data_in_reg[i] <= 32'h0;
         end
       else
         begin
@@ -235,27 +210,19 @@ module chacha(
             end
 
           if (keylen_we)
-            begin
-              keylen_reg <= data_in[KEYLEN_BIT];
-            end
+            keylen_reg <= data_in[KEYLEN_BIT];
 
           if (rounds_we)
-            begin
-              rounds_reg <= data_in[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
-            end
+            rounds_reg <= data_in[ROUNDS_HIGH_BIT : ROUNDS_LOW_BIT];
 
           if (key_we)
             key_reg[address[2 : 0]] <= data_in;
 
           if (iv0_we)
-            begin
-              iv0_reg <= data_in;
-            end
+            iv0_reg <= data_in;
 
           if (iv1_we)
-            begin
-              iv1_reg <= data_in;
-            end
+            iv1_reg <= data_in;
 
           if (data_in_we)
             data_in_reg[address[3 : 0]] <= data_in;
@@ -274,14 +241,10 @@ module chacha(
       ctrl_we      = 0;
       keylen_we    = 0;
       rounds_we    = 0;
-
       key_we       = 0;
-
       iv0_we       = 0;
       iv1_we       = 0;
-
-      data_in_we  = 0;
-
+      data_in_we   = 0;
       tmp_data_out = 32'h0;
 
       if (cs)
@@ -295,30 +258,11 @@ module chacha(
                 data_in_we = 1;
 
               case (address)
-                ADDR_CTRL:
-                  begin
-                    ctrl_we = 1;
-                  end
-
-                ADDR_KEYLEN:
-                  begin
-                    keylen_we = 1;
-                  end
-
-                ADDR_ROUNDS:
-                  begin
-                    rounds_we = 1;
-                  end
-
-                ADDR_IV0:
-                  begin
-                    iv0_we = 1;
-                  end
-
-                ADDR_IV1:
-                  begin
-                    iv1_we = 1;
-                  end
+                ADDR_CTRL: ctrl_we = 1;
+                ADDR_KEYLEN: keylen_we = 1;
+                ADDR_ROUNDS: rounds_we = 1;
+                ADDR_IV0:    iv0_we = 1;
+                ADDR_IV1:    iv1_we = 1;
 
                 default:
                   begin
@@ -335,35 +279,12 @@ module chacha(
                 tmp_data_out = data_out_reg[(15 - (address - ADDR_DATA_OUT0)) * 32 +: 32];
 
               case (address)
-                ADDR_CTRL:
-                  begin
-                    tmp_data_out = {30'h0, next_reg, init_reg};
-                  end
-
-                ADDR_STATUS:
-                  begin
-                    tmp_data_out = {30'h0, data_out_valid_reg, ready_reg};
-                  end
-
-                ADDR_KEYLEN:
-                  begin
-                    tmp_data_out = {31'h0, keylen_reg};
-                  end
-
-                ADDR_ROUNDS:
-                  begin
-                    tmp_data_out = {27'h0, rounds_reg};
-                  end
-
-                ADDR_IV0:
-                  begin
-                    tmp_data_out = iv0_reg;
-                  end
-
-                ADDR_IV1:
-                  begin
-                    tmp_data_out = iv1_reg;
-                  end
+                ADDR_CTRL:   tmp_data_out = {30'h0, next_reg, init_reg};
+                ADDR_STATUS: tmp_data_out = {30'h0, data_out_valid_reg, ready_reg};
+                ADDR_KEYLEN: tmp_data_out = {31'h0, keylen_reg};
+                ADDR_ROUNDS: tmp_data_out = {27'h0, rounds_reg};
+                ADDR_IV0:    tmp_data_out = iv0_reg;
+                ADDR_IV1:    tmp_data_out = iv1_reg;
 
                 default:
                   begin
