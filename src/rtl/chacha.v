@@ -53,44 +53,44 @@ module chacha(
   //----------------------------------------------------------------
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
-  parameter ADDR_CTRL        = 8'h00;
-  parameter CTRL_INIT_BIT    = 0;
-  parameter CTRL_NEXT_BIT    = 1;
+  localparam ADDR_CTRL        = 8'h00;
+  localparam CTRL_INIT_BIT    = 0;
+  localparam CTRL_NEXT_BIT    = 1;
 
-  parameter ADDR_STATUS      = 8'h01;
-  parameter STATUS_READY_BIT = 0;
+  localparam ADDR_STATUS      = 8'h01;
+  localparam STATUS_READY_BIT = 0;
 
-  parameter ADDR_KEYLEN      = 8'h08;
-  parameter KEYLEN_BIT       = 0;
-  parameter ADDR_ROUNDS      = 8'h09;
-  parameter ROUNDS_HIGH_BIT  = 4;
-  parameter ROUNDS_LOW_BIT   = 0;
+  localparam ADDR_KEYLEN      = 8'h08;
+  localparam KEYLEN_BIT       = 0;
+  localparam ADDR_ROUNDS      = 8'h09;
+  localparam ROUNDS_HIGH_BIT  = 4;
+  localparam ROUNDS_LOW_BIT   = 0;
 
-  parameter ADDR_KEY0        = 8'h10;
-  parameter ADDR_KEY7        = 8'h17;
+  localparam ADDR_KEY0        = 8'h10;
+  localparam ADDR_KEY7        = 8'h17;
 
-  parameter ADDR_IV0         = 8'h20;
-  parameter ADDR_IV1         = 8'h21;
+  localparam ADDR_IV0         = 8'h20;
+  localparam ADDR_IV1         = 8'h21;
 
-  parameter ADDR_DATA_IN0    = 8'h40;
-  parameter ADDR_DATA_IN15   = 8'h4f;
+  localparam ADDR_DATA_IN0    = 8'h40;
+  localparam ADDR_DATA_IN15   = 8'h4f;
 
-  parameter ADDR_DATA_OUT0   = 8'h80;
-  parameter ADDR_DATA_OUT1   = 8'h81;
-  parameter ADDR_DATA_OUT2   = 8'h82;
-  parameter ADDR_DATA_OUT3   = 8'h83;
-  parameter ADDR_DATA_OUT4   = 8'h84;
-  parameter ADDR_DATA_OUT5   = 8'h85;
-  parameter ADDR_DATA_OUT6   = 8'h86;
-  parameter ADDR_DATA_OUT7   = 8'h87;
-  parameter ADDR_DATA_OUT8   = 8'h88;
-  parameter ADDR_DATA_OUT9   = 8'h89;
-  parameter ADDR_DATA_OUT10  = 8'h8a;
-  parameter ADDR_DATA_OUT11  = 8'h8b;
-  parameter ADDR_DATA_OUT12  = 8'h8c;
-  parameter ADDR_DATA_OUT13  = 8'h8d;
-  parameter ADDR_DATA_OUT14  = 8'h8e;
-  parameter ADDR_DATA_OUT15  = 8'h8f;
+  localparam ADDR_DATA_OUT0   = 8'h80;
+  localparam ADDR_DATA_OUT1   = 8'h81;
+  localparam ADDR_DATA_OUT2   = 8'h82;
+  localparam ADDR_DATA_OUT3   = 8'h83;
+  localparam ADDR_DATA_OUT4   = 8'h84;
+  localparam ADDR_DATA_OUT5   = 8'h85;
+  localparam ADDR_DATA_OUT6   = 8'h86;
+  localparam ADDR_DATA_OUT7   = 8'h87;
+  localparam ADDR_DATA_OUT8   = 8'h88;
+  localparam ADDR_DATA_OUT9   = 8'h89;
+  localparam ADDR_DATA_OUT10  = 8'h8a;
+  localparam ADDR_DATA_OUT11  = 8'h8b;
+  localparam ADDR_DATA_OUT12  = 8'h8c;
+  localparam ADDR_DATA_OUT13  = 8'h8d;
+  localparam ADDR_DATA_OUT14  = 8'h8e;
+  localparam ADDR_DATA_OUT15  = 8'h8f;
 
 
   //----------------------------------------------------------------
