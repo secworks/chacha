@@ -302,7 +302,7 @@ module tb_chacha();
                dut.key_reg[4], dut.key_reg[5], dut.key_reg[6], dut.key_reg[7]);
       $display("");
 
-      $display("iv0_reg = %08x, iv1_reg = %08x", dut.iv0_reg, dut.iv1_reg);
+      $display("iv0_reg = %08x, iv1_reg = %08x", dut.iv_reg[0], dut.iv_reg[1]);
       $display("");
 
       $display("data_in0_reg  = %08x, data_in1_reg   = %08x, data_in2_reg  = %08x, data_in3_reg   = %08x",

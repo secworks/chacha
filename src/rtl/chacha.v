@@ -102,10 +102,8 @@ module chacha(
   reg [31 : 0] key_reg [0 : 7];
   reg          key_we;
 
-  reg [31 : 0] iv0_reg;
-  reg          iv0_we;
-  reg [31 : 0] iv1_reg;
-  reg          iv1_we;
+  reg [31 : 0] iv_reg[0 : 1];
+  reg          iv_we;
 
   reg [31 : 0] data_in_reg [0 : 15];
   reg          data_in_we;
@@ -144,7 +142,7 @@ module chacha(
   assign core_key     = {key_reg[0], key_reg[1], key_reg[2], key_reg[3],
                          key_reg[4], key_reg[5], key_reg[6], key_reg[7]};
 
-  assign core_iv      = {iv0_reg, iv1_reg};
+  assign core_iv      = {iv_reg[0], iv_reg[1]};
 
   assign core_data_in = {data_in_reg[00], data_in_reg[01], data_in_reg[02], data_in_reg[03],
                          data_in_reg[04], data_in_reg[05], data_in_reg[06], data_in_reg[07],
@@ -191,8 +189,8 @@ module chacha(
           keylen_reg         <= 0;
           rounds_reg         <= 5'h0;
           data_out_valid_reg <= 0;
-          iv0_reg            <= 32'h0;
-          iv1_reg            <= 32'h0;
+          iv_reg[0]          <= 32'h0;
+          iv_reg[1]          <= 32'h0;
           data_out_reg       <= 512'h0;
 
           for (i = 0 ; i < 8 ; i = i + 1)
@@ -221,11 +219,8 @@ module chacha(
           if (key_we)
             key_reg[addr[2 : 0]] <= write_data;
 
-          if (iv0_we)
-            iv0_reg <= write_data;
-
-          if (iv1_we)
-            iv1_reg <= write_data;
+          if (iv_we)
+            iv_reg[addr[0]] <= write_data;
 
           if (data_in_we)
             data_in_reg[addr[3 : 0]] <= write_data;
@@ -245,8 +240,7 @@ module chacha(
       keylen_we     = 0;
       rounds_we     = 0;
       key_we        = 0;
-      iv0_we        = 0;
-      iv1_we        = 0;
+      iv_we         = 0;
       data_in_we    = 0;
       tmp_read_data = 32'h0;
 
@@ -257,6 +251,9 @@ module chacha(
               if ((addr >= ADDR_KEY0) && (addr <= ADDR_KEY7))
                 key_we = 1;
 
+              if ((addr >= ADDR_IV0) && (addr <= ADDR_IV1))
+                iv_we = 1;
+
               if ((addr >= ADDR_DATA_IN0) && (addr <= ADDR_DATA_IN15))
                 data_in_we = 1;
 
@@ -264,8 +261,6 @@ module chacha(
                 ADDR_CTRL: ctrl_we = 1;
                 ADDR_KEYLEN: keylen_we = 1;
                 ADDR_ROUNDS: rounds_we = 1;
-                ADDR_IV0:    iv0_we = 1;
-                ADDR_IV1:    iv1_we = 1;
 
                 default:
                   begin
@@ -289,8 +284,8 @@ module chacha(
                 ADDR_STATUS:  tmp_read_data = {30'h0, data_out_valid_reg, ready_reg};
                 ADDR_KEYLEN:  tmp_read_data = {31'h0, keylen_reg};
                 ADDR_ROUNDS:  tmp_read_data = {27'h0, rounds_reg};
-                ADDR_IV0:     tmp_read_data = iv0_reg;
-                ADDR_IV1:     tmp_read_data = iv1_reg;
+                ADDR_IV0:     tmp_read_data = iv_reg[0];
+                ADDR_IV1:     tmp_read_data = iv_reg[1];
 
                 default:
                   begin
