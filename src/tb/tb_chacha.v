@@ -350,7 +350,7 @@ module tb_chacha();
       $display("x14_reg = %08x, x15_reg = %08x", dut.core.x14_reg, dut.core.x15_reg);
       $display("");
 
-      $display("rounds = %01x", dut.core.rounds_new);
+      $display("rounds = %01x", dut.core.rounds);
       $display("qr_ctr_reg = %01x, dr_ctr_reg  = %01x", dut.core.qr_ctr_reg, dut.core.dr_ctr_reg);
       $display("block0_ctr_reg = %08x, block1_ctr_reg = %08x", dut.core.block0_ctr_reg, dut.core.block1_ctr_reg);
 
@@ -359,7 +359,7 @@ module tb_chacha();
       $display("chacha_ctrl_reg = %02x", dut.core.chacha_ctrl_reg);
       $display("");
 
-      $display("data_in_reg = %064x", dut.core.data_in_reg);
+      $display("data_in = %064x", dut.core.data_in);
       $display("data_out_valid_reg = %01x", dut.core.data_out_valid_reg);
       $display("");
 

@@ -92,9 +92,6 @@ module chacha_core(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
-  reg keylen_reg;
-  reg keylen_new;
-
   reg [31 : 0] state0_reg;
   reg [31 : 0] state0_new;
   reg [31 : 0] state1_reg;
@@ -193,9 +190,6 @@ module chacha_core(
   reg [31 : 0] x15_new;
   reg          x15_we;
 
-  reg [511 : 0] data_in_reg;
-  reg           data_in_we;
-
   reg [511 : 0] data_out_reg;
   reg [511 : 0] data_out_new;
   reg           data_out_we;
@@ -245,9 +239,6 @@ module chacha_core(
   wire [31 : 0] iv0_new;
   wire [31 : 0] iv1_new;
 
-  wire [3 : 0] rounds_new;
-
-  reg sample_params;
   reg init_state;
   reg update_state;
   reg update_output;
@@ -311,8 +302,6 @@ module chacha_core(
   assign iv1_new = {iv[7   :   0], iv[15  :   8],
                     iv[23  :  16], iv[31  :  24]};
 
-  assign rounds_new = rounds[4 : 1];
-
 
   //----------------------------------------------------------------
   // reg_update
@@ -356,7 +345,6 @@ module chacha_core(
           x13_reg            <= 32'h0;
           x14_reg            <= 32'h0;
           x15_reg            <= 32'h0;
-          data_in_reg        <= 512'h0;
           data_out_reg       <= 512'h0;
           data_out_valid_reg <= 0;
           qr_ctr_reg         <= QR0;
@@ -367,16 +355,6 @@ module chacha_core(
         end
       else
         begin
-          if (sample_params)
-            begin
-              keylen_reg <= keylen_new;
-            end
-
-          if (data_in_we)
-            begin
-              data_in_reg <= data_in;
-            end
-
           if (state_we)
             begin
               state0_reg  <= state0_new;
@@ -626,29 +604,10 @@ module chacha_core(
                              lsb_block_state12, lsb_block_state13,
                              lsb_block_state14, lsb_block_state15};
 
-          data_out_new = data_in_reg ^ lsb_block_state;
+          data_out_new = data_in ^ lsb_block_state;
           data_out_we   = 1;
         end // if (update_output)
     end // data_out_logic
-
-
-  //----------------------------------------------------------------
-  // sample_parameters
-  // Logic (wires) that convert parameter input to appropriate
-  // format for processing.
-  //----------------------------------------------------------------
-  always @*
-    begin : sample_parameters
-      keylen_new = 1'b0;
-
-      if (sample_params)
-        begin
-
-          // Div by two since we count double rounds.
-
-          keylen_new = keylen;
-        end
-    end
 
 
   //----------------------------------------------------------------
@@ -755,7 +714,7 @@ module chacha_core(
           new_state_word14 = iv0_new;
           new_state_word15 = iv1_new;
 
-          if (keylen_reg)
+          if (keylen)
             begin
               // 256 bit key.
               new_state_word0  = SIGMA0;
@@ -1087,7 +1046,6 @@ module chacha_core(
     begin : chacha_ctrl_fsm
       init_state         = 0;
       update_state       = 0;
-      sample_params      = 0;
       update_output      = 0;
 
       qr_ctr_inc         = 0;
@@ -1098,8 +1056,6 @@ module chacha_core(
 
       block_ctr_inc      = 0;
       block_ctr_rst      = 0;
-
-      data_in_we         = 0;
 
       ready_wire         = 0;
 
@@ -1116,8 +1072,6 @@ module chacha_core(
             ready_wire = 1;
             if (init)
               begin
-                data_in_we      = 1;
-                sample_params   = 1;
                 block_ctr_rst   = 1;
                 chacha_ctrl_new = CTRL_INIT;
                 chacha_ctrl_we  = 1;
@@ -1142,7 +1096,7 @@ module chacha_core(
             if (qr_ctr_reg == QR7)
               begin
                 dr_ctr_inc = 1;
-                if (dr_ctr_reg == (rounds_new - 1))
+                if (dr_ctr_reg == (rounds[4 : 1] - 1))
                   begin
                     chacha_ctrl_new = CTRL_FINALIZE;
                     chacha_ctrl_we  = 1;
@@ -1168,8 +1122,6 @@ module chacha_core(
               begin
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
-                data_in_we         = 1;
-                sample_params      = 1;
                 block_ctr_rst      = 1;
                 chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
@@ -1178,7 +1130,6 @@ module chacha_core(
               begin
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
-                data_in_we         = 1;
                 block_ctr_inc      = 1;
                 chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
