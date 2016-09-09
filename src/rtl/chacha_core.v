@@ -95,11 +95,6 @@ module chacha_core(
   reg keylen_reg;
   reg keylen_new;
 
-  reg [31 : 0] iv0_reg;
-  reg [31 : 0] iv0_new;
-  reg [31 : 0] iv1_reg;
-  reg [31 : 0] iv1_new;
-
   reg [31 : 0] state0_reg;
   reg [31 : 0] state0_new;
   reg [31 : 0] state1_reg;
@@ -250,6 +245,9 @@ module chacha_core(
   wire [31 : 0] key6_new;
   wire [31 : 0] key7_new;
 
+  wire [31 : 0] iv0_new;
+  wire [31 : 0] iv1_new;
+
   reg sample_params;
   reg init_state;
   reg update_state;
@@ -309,6 +307,10 @@ module chacha_core(
   assign key7_new = {key[7   :   0], key[15  :   8],
                      key[23  :  16], key[31  :  24]};
 
+  assign iv0_new = {iv[39  :  32], iv[47  :  40],
+                    iv[55  :  48], iv[63  :  56]};
+  assign iv1_new = {iv[7   :   0], iv[15  :   8],
+                    iv[23  :  16], iv[31  :  24]};
 
   //----------------------------------------------------------------
   // reg_update
@@ -320,8 +322,6 @@ module chacha_core(
     begin : reg_update
       if (!reset_n)
         begin
-          iv0_reg            <= 32'h0;
-          iv1_reg            <= 32'h0;
           state0_reg         <= 32'h0;
           state1_reg         <= 32'h0;
           state2_reg         <= 32'h0;
@@ -368,8 +368,6 @@ module chacha_core(
         begin
           if (sample_params)
             begin
-              iv0_reg    <= iv0_new;
-              iv1_reg    <= iv1_new;
               rounds_reg <= rounds_new;
               keylen_reg <= keylen_new;
             end
@@ -641,18 +639,11 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : sample_parameters
-      iv0_new    = 32'h0;
-      iv1_new    = 32'h0;
       rounds_new = 4'h0;
       keylen_new = 1'b0;
 
       if (sample_params)
         begin
-
-          iv0_new = {iv[39  :  32], iv[47  :  40],
-                     iv[55  :  48], iv[63  :  56]};
-          iv1_new = {iv[7   :   0], iv[15  :   8],
-                     iv[23  :  16], iv[31  :  24]};
 
           // Div by two since we count double rounds.
           rounds_new = rounds[4 : 1];
@@ -763,8 +754,8 @@ module chacha_core(
           new_state_word12 = block0_ctr_reg;
           new_state_word13 = block1_ctr_reg;
 
-          new_state_word14 = iv0_reg;
-          new_state_word15 = iv1_reg;
+          new_state_word14 = iv0_new;
+          new_state_word15 = iv1_new;
 
           if (keylen_reg)
             begin
