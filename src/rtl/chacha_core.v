@@ -400,119 +400,73 @@ module chacha_core(
             end
 
           if (x0_we)
-            begin
-              x0_reg <= x0_new;
-            end
+            x0_reg <= x0_new;
 
           if (x1_we)
-            begin
-              x1_reg <= x1_new;
-            end
+            x1_reg <= x1_new;
 
           if (x2_we)
-            begin
-              x2_reg <= x2_new;
-            end
+            x2_reg <= x2_new;
 
           if (x3_we)
-            begin
-              x3_reg <= x3_new;
-            end
+            x3_reg <= x3_new;
 
           if (x4_we)
-            begin
-              x4_reg <= x4_new;
-            end
+            x4_reg <= x4_new;
 
           if (x5_we)
-            begin
-              x5_reg <= x5_new;
-            end
+            x5_reg <= x5_new;
 
           if (x6_we)
-            begin
-              x6_reg <= x6_new;
-            end
+            x6_reg <= x6_new;
 
           if (x7_we)
-            begin
-              x7_reg <= x7_new;
-            end
+            x7_reg <= x7_new;
 
           if (x8_we)
-            begin
-              x8_reg <= x8_new;
-            end
+            x8_reg <= x8_new;
 
           if (x9_we)
-            begin
-              x9_reg <= x9_new;
-            end
+            x9_reg <= x9_new;
 
           if (x10_we)
-            begin
-              x10_reg <= x10_new;
-            end
+            x10_reg <= x10_new;
 
           if (x11_we)
-            begin
-              x11_reg <= x11_new;
-            end
+            x11_reg <= x11_new;
 
           if (x12_we)
-            begin
-              x12_reg <= x12_new;
-            end
+            x12_reg <= x12_new;
 
           if (x13_we)
-            begin
-              x13_reg <= x13_new;
-            end
+            x13_reg <= x13_new;
 
           if (x14_we)
-            begin
-              x14_reg <= x14_new;
-            end
+            x14_reg <= x14_new;
 
           if (x15_we)
-            begin
-              x15_reg <= x15_new;
-            end
+            x15_reg <= x15_new;
 
           if (data_out_we)
-            begin
-              data_out_reg <= data_out_new;
-            end
+            data_out_reg <= data_out_new;
 
           if (data_out_valid_we)
-            begin
-              data_out_valid_reg <= data_out_valid_new;
-            end
+            data_out_valid_reg <= data_out_valid_new;
 
           if (qr_ctr_we)
-            begin
-              qr_ctr_reg <= qr_ctr_new;
-            end
+            qr_ctr_reg <= qr_ctr_new;
 
           if (dr_ctr_we)
-            begin
-              dr_ctr_reg <= dr_ctr_new;
-            end
+            dr_ctr_reg <= dr_ctr_new;
 
           if (block0_ctr_we)
-            begin
-              block0_ctr_reg <= block0_ctr_new;
-            end
+            block0_ctr_reg <= block0_ctr_new;
 
           if (block1_ctr_we)
-            begin
-              block1_ctr_reg <= block1_ctr_new;
-            end
+            block1_ctr_reg <= block1_ctr_new;
 
           if (chacha_ctrl_we)
-            begin
-              chacha_ctrl_reg <= chacha_ctrl_new;
-            end
+            chacha_ctrl_reg <= chacha_ctrl_new;
         end
     end // reg_update
 
