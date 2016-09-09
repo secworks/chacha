@@ -193,9 +193,6 @@ module chacha_core(
   reg [31 : 0] x15_new;
   reg          x15_we;
 
-  reg [3 : 0] rounds_reg;
-  reg [3 : 0] rounds_new;
-
   reg [511 : 0] data_in_reg;
   reg           data_in_we;
 
@@ -247,6 +244,8 @@ module chacha_core(
 
   wire [31 : 0] iv0_new;
   wire [31 : 0] iv1_new;
+
+  wire [3 : 0] rounds_new;
 
   reg sample_params;
   reg init_state;
@@ -312,6 +311,9 @@ module chacha_core(
   assign iv1_new = {iv[7   :   0], iv[15  :   8],
                     iv[23  :  16], iv[31  :  24]};
 
+  assign rounds_new = rounds[4 : 1];
+
+
   //----------------------------------------------------------------
   // reg_update
   // Update functionality for all registers in the core.
@@ -356,7 +358,6 @@ module chacha_core(
           x15_reg            <= 32'h0;
           data_in_reg        <= 512'h0;
           data_out_reg       <= 512'h0;
-          rounds_reg         <= 4'h0;
           data_out_valid_reg <= 0;
           qr_ctr_reg         <= QR0;
           dr_ctr_reg         <= 0;
@@ -368,7 +369,6 @@ module chacha_core(
         begin
           if (sample_params)
             begin
-              rounds_reg <= rounds_new;
               keylen_reg <= keylen_new;
             end
 
@@ -639,14 +639,12 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : sample_parameters
-      rounds_new = 4'h0;
       keylen_new = 1'b0;
 
       if (sample_params)
         begin
 
           // Div by two since we count double rounds.
-          rounds_new = rounds[4 : 1];
 
           keylen_new = keylen;
         end
@@ -1144,7 +1142,7 @@ module chacha_core(
             if (qr_ctr_reg == QR7)
               begin
                 dr_ctr_inc = 1;
-                if (dr_ctr_reg == (rounds_reg - 1))
+                if (dr_ctr_reg == (rounds_new - 1))
                   begin
                     chacha_ctrl_new = CTRL_FINALIZE;
                     chacha_ctrl_we  = 1;
