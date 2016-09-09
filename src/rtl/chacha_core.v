@@ -92,40 +92,6 @@ module chacha_core(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
-  reg [31 : 0] state0_reg;
-  reg [31 : 0] state0_new;
-  reg [31 : 0] state1_reg;
-  reg [31 : 0] state1_new;
-  reg [31 : 0] state2_reg;
-  reg [31 : 0] state2_new;
-  reg [31 : 0] state3_reg;
-  reg [31 : 0] state3_new;
-  reg [31 : 0] state4_reg;
-  reg [31 : 0] state4_new;
-  reg [31 : 0] state5_reg;
-  reg [31 : 0] state5_new;
-  reg [31 : 0] state6_reg;
-  reg [31 : 0] state6_new;
-  reg [31 : 0] state7_reg;
-  reg [31 : 0] state7_new;
-  reg [31 : 0] state8_reg;
-  reg [31 : 0] state8_new;
-  reg [31 : 0] state9_reg;
-  reg [31 : 0] state9_new;
-  reg [31 : 0] state10_reg;
-  reg [31 : 0] state10_new;
-  reg [31 : 0] state11_reg;
-  reg [31 : 0] state11_new;
-  reg [31 : 0] state12_reg;
-  reg [31 : 0] state12_new;
-  reg [31 : 0] state13_reg;
-  reg [31 : 0] state13_new;
-  reg [31 : 0] state14_reg;
-  reg [31 : 0] state14_new;
-  reg [31 : 0] state15_reg;
-  reg [31 : 0] state15_new;
-  reg state_we;
-
   reg [31 : 0] x0_reg;
   reg [31 : 0] x0_new;
   reg          x0_we;
@@ -227,6 +193,23 @@ module chacha_core(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
+  reg [31 : 0] new_state_word0;
+  reg [31 : 0] new_state_word1;
+  reg [31 : 0] new_state_word2;
+  reg [31 : 0] new_state_word3;
+  reg [31 : 0] new_state_word4;
+  reg [31 : 0] new_state_word5;
+  reg [31 : 0] new_state_word6;
+  reg [31 : 0] new_state_word7;
+  reg [31 : 0] new_state_word8;
+  reg [31 : 0] new_state_word9;
+  reg [31 : 0] new_state_word10;
+  reg [31 : 0] new_state_word11;
+  reg [31 : 0] new_state_word12;
+  reg [31 : 0] new_state_word13;
+  reg [31 : 0] new_state_word14;
+  reg [31 : 0] new_state_word15;
+
   wire [31 : 0] key0_new;
   wire [31 : 0] key1_new;
   wire [31 : 0] key2_new;
@@ -313,22 +296,6 @@ module chacha_core(
     begin : reg_update
       if (!reset_n)
         begin
-          state0_reg         <= 32'h0;
-          state1_reg         <= 32'h0;
-          state2_reg         <= 32'h0;
-          state3_reg         <= 32'h0;
-          state4_reg         <= 32'h0;
-          state5_reg         <= 32'h0;
-          state6_reg         <= 32'h0;
-          state7_reg         <= 32'h0;
-          state8_reg         <= 32'h0;
-          state9_reg         <= 32'h0;
-          state10_reg        <= 32'h0;
-          state11_reg        <= 32'h0;
-          state12_reg        <= 32'h0;
-          state13_reg        <= 32'h0;
-          state14_reg        <= 32'h0;
-          state15_reg        <= 32'h0;
           x0_reg             <= 32'h0;
           x1_reg             <= 32'h0;
           x2_reg             <= 32'h0;
@@ -355,26 +322,6 @@ module chacha_core(
         end
       else
         begin
-          if (state_we)
-            begin
-              state0_reg  <= state0_new;
-              state1_reg  <= state1_new;
-              state2_reg  <= state2_new;
-              state3_reg  <= state3_new;
-              state4_reg  <= state4_new;
-              state5_reg  <= state5_new;
-              state6_reg  <= state6_new;
-              state7_reg  <= state7_new;
-              state8_reg  <= state8_new;
-              state9_reg  <= state9_new;
-              state10_reg <= state10_new;
-              state11_reg <= state11_new;
-              state12_reg <= state12_new;
-              state13_reg <= state13_new;
-              state14_reg <= state14_new;
-              state15_reg <= state15_new;
-            end
-
           if (x0_we)
             x0_reg <= x0_new;
 
@@ -498,22 +445,22 @@ module chacha_core(
 
       if (update_output)
         begin
-          msb_block_state0  = state0_reg  + x0_reg;
-          msb_block_state1  = state1_reg  + x1_reg;
-          msb_block_state2  = state2_reg  + x2_reg;
-          msb_block_state3  = state3_reg  + x3_reg;
-          msb_block_state4  = state4_reg  + x4_reg;
-          msb_block_state5  = state5_reg  + x5_reg;
-          msb_block_state6  = state6_reg  + x6_reg;
-          msb_block_state7  = state7_reg  + x7_reg;
-          msb_block_state8  = state8_reg  + x8_reg;
-          msb_block_state9  = state9_reg  + x9_reg;
-          msb_block_state10 = state10_reg + x10_reg;
-          msb_block_state11 = state11_reg + x11_reg;
-          msb_block_state12 = state12_reg + x12_reg;
-          msb_block_state13 = state13_reg + x13_reg;
-          msb_block_state14 = state14_reg + x14_reg;
-          msb_block_state15 = state15_reg + x15_reg;
+          msb_block_state0  = new_state_word0  + x0_reg;
+          msb_block_state1  = new_state_word1  + x1_reg;
+          msb_block_state2  = new_state_word2  + x2_reg;
+          msb_block_state3  = new_state_word3  + x3_reg;
+          msb_block_state4  = new_state_word4  + x4_reg;
+          msb_block_state5  = new_state_word5  + x5_reg;
+          msb_block_state6  = new_state_word6  + x6_reg;
+          msb_block_state7  = new_state_word7  + x7_reg;
+          msb_block_state8  = new_state_word8  + x8_reg;
+          msb_block_state9  = new_state_word9  + x9_reg;
+          msb_block_state10 = new_state_word10 + x10_reg;
+          msb_block_state11 = new_state_word11 + x11_reg;
+          msb_block_state12 = new_state_word12 + x12_reg;
+          msb_block_state13 = new_state_word13 + x13_reg;
+          msb_block_state14 = new_state_word14 + x14_reg;
+          msb_block_state15 = new_state_word15 + x15_reg;
 
           lsb_block_state0 = {msb_block_state0[7  :  0],
                               msb_block_state0[15 :  8],
@@ -611,45 +558,56 @@ module chacha_core(
 
 
   //----------------------------------------------------------------
+  // init_state_logic
+  //
+  // Calculates the initial state for a given block.
+  //----------------------------------------------------------------
+  always @*
+    begin : init_state_logic
+      new_state_word4  = key0_new;
+      new_state_word5  = key1_new;
+      new_state_word6  = key2_new;
+      new_state_word7  = key3_new;
+
+      new_state_word12 = block0_ctr_reg;
+      new_state_word13 = block1_ctr_reg;
+
+      new_state_word14 = iv0_new;
+      new_state_word15 = iv1_new;
+
+      if (keylen)
+        begin
+          // 256 bit key.
+          new_state_word0  = SIGMA0;
+          new_state_word1  = SIGMA1;
+          new_state_word2  = SIGMA2;
+          new_state_word3  = SIGMA3;
+          new_state_word8  = key4_new;
+          new_state_word9  = key5_new;
+          new_state_word10 = key6_new;
+          new_state_word11 = key7_new;
+        end
+      else
+        begin
+          // 128 bit key.
+          new_state_word0  = TAU0;
+          new_state_word1  = TAU1;
+          new_state_word2  = TAU2;
+          new_state_word3  = TAU3;
+          new_state_word8  = key0_new;
+          new_state_word9  = key1_new;
+          new_state_word10 = key2_new;
+          new_state_word11 = key3_new;
+        end
+    end
+
+
+  //----------------------------------------------------------------
   // state_logic
   // Logic to init and update the internal state.
   //----------------------------------------------------------------
   always @*
     begin : state_logic
-      reg [31 : 0] new_state_word0;
-      reg [31 : 0] new_state_word1;
-      reg [31 : 0] new_state_word2;
-      reg [31 : 0] new_state_word3;
-      reg [31 : 0] new_state_word4;
-      reg [31 : 0] new_state_word5;
-      reg [31 : 0] new_state_word6;
-      reg [31 : 0] new_state_word7;
-      reg [31 : 0] new_state_word8;
-      reg [31 : 0] new_state_word9;
-      reg [31 : 0] new_state_word10;
-      reg [31 : 0] new_state_word11;
-      reg [31 : 0] new_state_word12;
-      reg [31 : 0] new_state_word13;
-      reg [31 : 0] new_state_word14;
-      reg [31 : 0] new_state_word15;
-
-      new_state_word0  = 32'h0;
-      new_state_word1  = 32'h0;
-      new_state_word2  = 32'h0;
-      new_state_word3  = 32'h0;
-      new_state_word4  = 32'h0;
-      new_state_word5  = 32'h0;
-      new_state_word6  = 32'h0;
-      new_state_word7  = 32'h0;
-      new_state_word8  = 32'h0;
-      new_state_word9  = 32'h0;
-      new_state_word10 = 32'h0;
-      new_state_word11 = 32'h0;
-      new_state_word12 = 32'h0;
-      new_state_word13 = 32'h0;
-      new_state_word14 = 32'h0;
-      new_state_word15 = 32'h0;
-
       x0_new  = 32'h0;
       x1_new  = 32'h0;
       x2_new  = 32'h0;
@@ -683,62 +641,8 @@ module chacha_core(
       x14_we  = 0;
       x15_we  = 0;
 
-      state0_new  = 32'h0;
-      state1_new  = 32'h0;
-      state2_new  = 32'h0;
-      state3_new  = 32'h0;
-      state4_new  = 32'h0;
-      state5_new  = 32'h0;
-      state6_new  = 32'h0;
-      state7_new  = 32'h0;
-      state8_new  = 32'h0;
-      state9_new  = 32'h0;
-      state10_new = 32'h0;
-      state11_new = 32'h0;
-      state12_new = 32'h0;
-      state13_new = 32'h0;
-      state14_new = 32'h0;
-      state15_new = 32'h0;
-      state_we = 0;
-
       if (init_state)
         begin
-          new_state_word4  = key0_new;
-          new_state_word5  = key1_new;
-          new_state_word6  = key2_new;
-          new_state_word7  = key3_new;
-
-          new_state_word12 = block0_ctr_reg;
-          new_state_word13 = block1_ctr_reg;
-
-          new_state_word14 = iv0_new;
-          new_state_word15 = iv1_new;
-
-          if (keylen)
-            begin
-              // 256 bit key.
-              new_state_word0  = SIGMA0;
-              new_state_word1  = SIGMA1;
-              new_state_word2  = SIGMA2;
-              new_state_word3  = SIGMA3;
-              new_state_word8  = key4_new;
-              new_state_word9  = key5_new;
-              new_state_word10 = key6_new;
-              new_state_word11 = key7_new;
-            end
-          else
-            begin
-              // 128 bit key.
-              new_state_word0  = TAU0;
-              new_state_word1  = TAU1;
-              new_state_word2  = TAU2;
-              new_state_word3  = TAU3;
-              new_state_word8  = key0_new;
-              new_state_word9  = key1_new;
-              new_state_word10 = key2_new;
-              new_state_word11 = key3_new;
-            end
-
           x0_new  = new_state_word0;
           x1_new  = new_state_word1;
           x2_new  = new_state_word2;
@@ -771,24 +675,6 @@ module chacha_core(
           x13_we = 1;
           x14_we = 1;
           x15_we = 1;
-
-          state0_new  = new_state_word0;
-          state1_new  = new_state_word1;
-          state2_new  = new_state_word2;
-          state3_new  = new_state_word3;
-          state4_new  = new_state_word4;
-          state5_new  = new_state_word5;
-          state6_new  = new_state_word6;
-          state7_new  = new_state_word7;
-          state8_new  = new_state_word8;
-          state9_new  = new_state_word9;
-          state10_new = new_state_word10;
-          state11_new = new_state_word11;
-          state12_new = new_state_word12;
-          state13_new = new_state_word13;
-          state14_new = new_state_word14;
-          state15_new = new_state_word15;
-          state_we = 1;
         end // if (init_state)
 
       else if (update_state)
@@ -1047,24 +933,17 @@ module chacha_core(
       init_state         = 0;
       update_state       = 0;
       update_output      = 0;
-
       qr_ctr_inc         = 0;
       qr_ctr_rst         = 0;
-
       dr_ctr_inc         = 0;
       dr_ctr_rst         = 0;
-
       block_ctr_inc      = 0;
       block_ctr_rst      = 0;
-
       ready_wire         = 0;
-
       data_out_valid_new = 0;
       data_out_valid_we  = 0;
-
       chacha_ctrl_new    = CTRL_IDLE;
       chacha_ctrl_we     = 0;
-
 
       case (chacha_ctrl_reg)
         CTRL_IDLE:
