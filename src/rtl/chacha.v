@@ -189,37 +189,37 @@ module chacha(
           next_reg           <= 0;
           ready_reg          <= 0;
           keylen_reg         <= 0;
-          rounds_reg         <= 5'b00000;
+          rounds_reg         <= 5'h0;
           data_out_valid_reg <= 0;
 
-          key_reg[0]         <= 32'h00000000;
-          key_reg[1]         <= 32'h00000000;
-          key_reg[2]         <= 32'h00000000;
-          key_reg[3]         <= 32'h00000000;
-          key_reg[4]         <= 32'h00000000;
-          key_reg[5]         <= 32'h00000000;
-          key_reg[6]         <= 32'h00000000;
-          key_reg[7]         <= 32'h00000000;
+          key_reg[0]         <= 32'h0;
+          key_reg[1]         <= 32'h0;
+          key_reg[2]         <= 32'h0;
+          key_reg[3]         <= 32'h0;
+          key_reg[4]         <= 32'h0;
+          key_reg[5]         <= 32'h0;
+          key_reg[6]         <= 32'h0;
+          key_reg[7]         <= 32'h0;
 
-          iv0_reg            <= 32'h00000000;
-          iv1_reg            <= 32'h00000000;
+          iv0_reg            <= 32'h0;
+          iv1_reg            <= 32'h0;
 
-          data_in_reg[00]    <= 32'h00000000;
-          data_in_reg[01]    <= 32'h00000000;
-          data_in_reg[02]    <= 32'h00000000;
-          data_in_reg[03]    <= 32'h00000000;
-          data_in_reg[04]    <= 32'h00000000;
-          data_in_reg[05]    <= 32'h00000000;
-          data_in_reg[06]    <= 32'h00000000;
-          data_in_reg[07]    <= 32'h00000000;
-          data_in_reg[08]    <= 32'h00000000;
-          data_in_reg[09]    <= 32'h00000000;
-          data_in_reg[10]    <= 32'h00000000;
-          data_in_reg[11]    <= 32'h00000000;
-          data_in_reg[12]    <= 32'h00000000;
-          data_in_reg[13]    <= 32'h00000000;
-          data_in_reg[14]    <= 32'h00000000;
-          data_in_reg[15]    <= 32'h00000000;
+          data_in_reg[00]    <= 32'h0;
+          data_in_reg[01]    <= 32'h0;
+          data_in_reg[02]    <= 32'h0;
+          data_in_reg[03]    <= 32'h0;
+          data_in_reg[04]    <= 32'h0;
+          data_in_reg[05]    <= 32'h0;
+          data_in_reg[06]    <= 32'h0;
+          data_in_reg[07]    <= 32'h0;
+          data_in_reg[08]    <= 32'h0;
+          data_in_reg[09]    <= 32'h0;
+          data_in_reg[10]    <= 32'h0;
+          data_in_reg[11]    <= 32'h0;
+          data_in_reg[12]    <= 32'h0;
+          data_in_reg[13]    <= 32'h0;
+          data_in_reg[14]    <= 32'h0;
+          data_in_reg[15]    <= 32'h0;
 
           data_out_reg       <= 512'h0;
         end
@@ -282,7 +282,7 @@ module chacha(
 
       data_in_we  = 0;
 
-      tmp_data_out = 32'h00000000;
+      tmp_data_out = 32'h0;
 
       if (cs)
         begin
