@@ -210,18 +210,6 @@ module chacha_core(
   reg [31 : 0] new_state_word14;
   reg [31 : 0] new_state_word15;
 
-  wire [31 : 0] key0_new;
-  wire [31 : 0] key1_new;
-  wire [31 : 0] key2_new;
-  wire [31 : 0] key3_new;
-  wire [31 : 0] key4_new;
-  wire [31 : 0] key5_new;
-  wire [31 : 0] key6_new;
-  wire [31 : 0] key7_new;
-
-  wire [31 : 0] iv0_new;
-  wire [31 : 0] iv1_new;
-
   reg init_state;
   reg update_state;
   reg update_output;
@@ -262,28 +250,6 @@ module chacha_core(
   assign data_out_valid = data_out_valid_reg;
 
   assign ready = ready_wire;
-
-  assign key0_new = {key[231 : 224], key[239 : 232],
-                     key[247 : 240], key[255 : 248]};
-  assign key1_new = {key[199 : 192], key[207 : 200],
-                     key[215 : 208], key[223 : 216]};
-  assign key2_new = {key[167 : 160], key[175 : 168],
-                     key[183 : 176], key[191 : 184]};
-  assign key3_new = {key[135 : 128], key[143 : 136],
-                     key[151 : 144], key[159 : 152]};
-  assign key4_new = {key[103 :  96], key[111 : 104],
-                     key[119 : 112], key[127 : 120]};
-  assign key5_new = {key[71  :  64], key[79  :  72],
-                     key[87  :  80], key[95  :  88]};
-  assign key6_new = {key[39  :  32], key[47  :  40],
-                     key[55  :  48], key[63  :  56]};
-  assign key7_new = {key[7   :   0], key[15  :   8],
-                     key[23  :  16], key[31  :  24]};
-
-  assign iv0_new = {iv[39  :  32], iv[47  :  40],
-                    iv[55  :  48], iv[63  :  56]};
-  assign iv1_new = {iv[7   :   0], iv[15  :   8],
-                    iv[23  :  16], iv[31  :  24]};
 
 
   //----------------------------------------------------------------
@@ -564,16 +530,43 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : init_state_logic
-      new_state_word4  = key0_new;
-      new_state_word5  = key1_new;
-      new_state_word6  = key2_new;
-      new_state_word7  = key3_new;
+      reg [31 : 0] key0;
+      reg [31 : 0] key1;
+      reg [31 : 0] key2;
+      reg [31 : 0] key3;
+      reg [31 : 0] key4;
+      reg [31 : 0] key5;
+      reg [31 : 0] key6;
+      reg [31 : 0] key7;
 
+      key0 = {key[231 : 224], key[239 : 232],
+              key[247 : 240], key[255 : 248]};
+      key1 = {key[199 : 192], key[207 : 200],
+              key[215 : 208], key[223 : 216]};
+      key2 = {key[167 : 160], key[175 : 168],
+              key[183 : 176], key[191 : 184]};
+      key3 = {key[135 : 128], key[143 : 136],
+              key[151 : 144], key[159 : 152]};
+      key4 = {key[103 :  96], key[111 : 104],
+              key[119 : 112], key[127 : 120]};
+      key5 = {key[71  :  64], key[79  :  72],
+              key[87  :  80], key[95  :  88]};
+      key6 = {key[39  :  32], key[47  :  40],
+              key[55  :  48], key[63  :  56]};
+      key7 = {key[7   :   0], key[15  :   8],
+              key[23  :  16], key[31  :  24]};
+
+      new_state_word4  = key0;
+      new_state_word5  = key1;
+      new_state_word6  = key2;
+      new_state_word7  = key3;
       new_state_word12 = block0_ctr_reg;
       new_state_word13 = block1_ctr_reg;
 
-      new_state_word14 = iv0_new;
-      new_state_word15 = iv1_new;
+      new_state_word14 = {iv[39  :  32], iv[47  :  40],
+                          iv[55  :  48], iv[63  :  56]};
+      new_state_word15 = {iv[7   :   0], iv[15  :   8],
+                          iv[23  :  16], iv[31  :  24]};
 
       if (keylen)
         begin
@@ -582,10 +575,10 @@ module chacha_core(
           new_state_word1  = SIGMA1;
           new_state_word2  = SIGMA2;
           new_state_word3  = SIGMA3;
-          new_state_word8  = key4_new;
-          new_state_word9  = key5_new;
-          new_state_word10 = key6_new;
-          new_state_word11 = key7_new;
+          new_state_word8  = key4;
+          new_state_word9  = key5;
+          new_state_word10 = key6;
+          new_state_word11 = key7;
         end
       else
         begin
@@ -594,10 +587,10 @@ module chacha_core(
           new_state_word1  = TAU1;
           new_state_word2  = TAU2;
           new_state_word3  = TAU3;
-          new_state_word8  = key0_new;
-          new_state_word9  = key1_new;
-          new_state_word10 = key2_new;
-          new_state_word11 = key3_new;
+          new_state_word8  = key0;
+          new_state_word9  = key1;
+          new_state_word10 = key2;
+          new_state_word11 = key3;
         end
     end
 
