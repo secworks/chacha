@@ -19,7 +19,7 @@ updated for each data block.
 
 
 ## Performance ##
-The core now has four separate quarterround modules, whicg means that
+The core now has four separate quarterround modules, which means that
 one round takes one cycle.
 
 
