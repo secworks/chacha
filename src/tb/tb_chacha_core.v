@@ -35,17 +35,13 @@
 //
 //======================================================================
 
-//------------------------------------------------------------------
-// Simulator directives.
-//------------------------------------------------------------------
-`timescale 1ns/10ps
-
 module tb_chacha_core();
 
   //----------------------------------------------------------------
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   parameter CLK_HALF_PERIOD = 2;
+  parameter CLK_PERIOD = 2 * CLK_HALF_PERIOD;
 
   parameter TC1  = 1;
   parameter TC2  = 2;
@@ -77,7 +73,7 @@ module tb_chacha_core();
   parameter DISABLE = 0;
   parameter ENABLE  = 1;
 
-  parameter DEFAULT_CTR_INIT = 64'h0000000000000000;
+  localparam DEFAULT_CTR_INIT = 64'h0;
 
 
   //----------------------------------------------------------------
@@ -104,7 +100,6 @@ module tb_chacha_core();
   reg            display_ctrl_and_ctrs;
   reg            display_qround;
   reg            display_state;
-  reg            display_x_state;
 
 
   //----------------------------------------------------------------
@@ -179,32 +174,24 @@ module tb_chacha_core();
       // Display the internal state register.
       if (display_state)
         begin
-//          $display("Internal state:");
-//          $display("0x%064x", dut.state_reg);
-//          $display("");
-        end
-
-      // Display the round processing state register X.
-      if (display_x_state)
-        begin
           $display("Round state X:");
-          $display("x0_reg   = 0x%08x, x0_new   = 0x%08x", dut.x0_reg,  dut.x0_new);
-          $display("x1_reg   = 0x%08x, x1_new   = 0x%08x", dut.x1_reg,  dut.x1_new);
-          $display("x2_reg   = 0x%08x, x2_new   = 0x%08x", dut.x2_reg,  dut.x2_new);
-          $display("x3_reg   = 0x%08x, x3_new   = 0x%08x", dut.x3_reg,  dut.x3_new);
-          $display("x4_reg   = 0x%08x, x4_new   = 0x%08x", dut.x4_reg,  dut.x4_new);
-          $display("x5_reg   = 0x%08x, x5_new   = 0x%08x", dut.x5_reg,  dut.x5_new);
-          $display("x6_reg   = 0x%08x, x6_new   = 0x%08x", dut.x6_reg,  dut.x6_new);
-          $display("x7_reg   = 0x%08x, x7_new   = 0x%08x", dut.x7_reg,  dut.x7_new);
-          $display("x8_reg   = 0x%08x, x8_new   = 0x%08x", dut.x8_reg,  dut.x8_new);
-          $display("x9_reg   = 0x%08x, x9_new   = 0x%08x", dut.x9_reg,  dut.x9_new);
-          $display("x10_reg  = 0x%08x, x10_new  = 0x%08x", dut.x10_reg, dut.x10_new);
-          $display("x11_reg  = 0x%08x, x11_new  = 0x%08x", dut.x11_reg, dut.x11_new);
-          $display("x12_reg  = 0x%08x, x12_new  = 0x%08x", dut.x12_reg, dut.x12_new);
-          $display("x13_reg  = 0x%08x, x13_new  = 0x%08x", dut.x13_reg, dut.x13_new);
-          $display("x14_reg  = 0x%08x, x14_new  = 0x%08x", dut.x14_reg, dut.x14_new);
-          $display("x15_reg  = 0x%08x, x15_new  = 0x%08x", dut.x15_reg, dut.x15_new);
-          $display("x_we     = 0x%01x", dut.x_we);
+          $display("state0_reg  = 0x%08x, state0_new  = 0x%08x", dut.state_reg[00], dut.state_new[00]);
+          $display("state1_reg  = 0x%08x, state1_new  = 0x%08x", dut.state_reg[01], dut.state_new[01]);
+          $display("state2_reg  = 0x%08x, state2_new  = 0x%08x", dut.state_reg[02], dut.state_new[02]);
+          $display("state3_reg  = 0x%08x, state3_new  = 0x%08x", dut.state_reg[03], dut.state_new[03]);
+          $display("state4_reg  = 0x%08x, state4_new  = 0x%08x", dut.state_reg[04], dut.state_new[04]);
+          $display("state5_reg  = 0x%08x, state5_new  = 0x%08x", dut.state_reg[05], dut.state_new[05]);
+          $display("state6_reg  = 0x%08x, state6_new  = 0x%08x", dut.state_reg[06], dut.state_new[06]);
+          $display("state7_reg  = 0x%08x, state7_new  = 0x%08x", dut.state_reg[07], dut.state_new[07]);
+          $display("state8_reg  = 0x%08x, state8_new  = 0x%08x", dut.state_reg[08], dut.state_new[08]);
+          $display("state9_reg  = 0x%08x, state9_new  = 0x%08x", dut.state_reg[09], dut.state_new[09]);
+          $display("state10_reg = 0x%08x, state10_new = 0x%08x", dut.state_reg[10], dut.state_new[10]);
+          $display("state11_reg = 0x%08x, state11_new = 0x%08x", dut.state_reg[11], dut.state_new[11]);
+          $display("state12_reg = 0x%08x, state12_new = 0x%08x", dut.state_reg[12], dut.state_new[12]);
+          $display("state13_reg = 0x%08x, state13_new = 0x%08x", dut.state_reg[13], dut.state_new[13]);
+          $display("state14_reg = 0x%08x, state14_new = 0x%08x", dut.state_reg[14], dut.state_new[14]);
+          $display("state15_reg = 0x%08x, state15_new = 0x%08x", dut.state_reg[15], dut.state_new[15]);
+          $display("state_we    = 0x%01x", dut.state_we);
           $display("");
         end
 
@@ -215,7 +202,6 @@ module tb_chacha_core();
           $display("qr0_a_prim = %08x, qr0_b_prim = %08x, qr0_c_prim = %08x, qr0_d_prim = %08x", dut.qr0_a_prim, dut.qr0_b_prim, dut.qr0_c_prim, dut.qr0_d_prim);
           $display("");
         end
-
     end // dut_monitor
 
 
@@ -223,26 +209,23 @@ module tb_chacha_core();
   // dump_state()
   // Dump the internal CHACHA state to std out.
   //----------------------------------------------------------------
-  task dump_state();
+  task dump_state;
     begin
       $display("");
       $display("Internal state:");
       $display("---------------");
-//      $display("0x%064x", dut.state_reg);
-//      $display("");
-
       $display("Round state X::");
-      $display("x0_reg  = %08x, x1_reg  = %08x", dut.x0_reg, dut.x1_reg);
-      $display("x2_reg  = %08x, x3_reg  = %08x", dut.x2_reg, dut.x3_reg);
-      $display("x4_reg  = %08x, x5_reg  = %08x", dut.x4_reg, dut.x5_reg);
-      $display("x6_reg  = %08x, x7_reg  = %08x", dut.x6_reg, dut.x7_reg);
-      $display("x8_reg  = %08x, x9_reg  = %08x", dut.x8_reg, dut.x9_reg);
-      $display("x10_reg = %08x, x11_reg = %08x", dut.x10_reg, dut.x11_reg);
-      $display("x12_reg = %08x, x13_reg = %08x", dut.x12_reg, dut.x13_reg);
-      $display("x14_reg = %08x, x15_reg = %08x", dut.x14_reg, dut.x15_reg);
+      $display("state0_reg  = %08x, state1_reg  = %08x, state2_reg  = %08x, state3_reg  = %08x",
+               dut.state_reg[00],  dut.state_reg[01], dut.state_reg[02],  dut.state_reg[03]);
+      $display("state4_reg  = %08x, state5_reg  = %08x, state6_reg  = %08x, state7_reg  = %08x",
+               dut.state_reg[04],  dut.state_reg[05], dut.state_reg[06],  dut.state_reg[07]);
+      $display("state8_reg  = %08x, state9_reg  = %08x, state10_reg = %08x, state11_reg = %08x",
+               dut.state_reg[08],  dut.state_reg[09], dut.state_reg[10],  dut.state_reg[11]);
+      $display("state12_reg = %08x, state13_reg = %08x, state14_reg = %08x, state15_reg = %08x",
+               dut.state_reg[12],  dut.state_reg[13], dut.state_reg[14],  dut.state_reg[15]);
       $display("");
 
-      $display("rounds_reg = %01x", dut.rounds_reg);
+      $display("rounds = %01x", dut.rounds);
       $display("qr_ctr_reg = %01x, dr_ctr_reg  = %01x", dut.qr_ctr_reg, dut.dr_ctr_reg);
       $display("block0_ctr_reg = %08x, block1_ctr_reg = %08x", dut.block0_ctr_reg, dut.block1_ctr_reg);
 
@@ -251,10 +234,7 @@ module tb_chacha_core();
       $display("chacha_ctrl_reg = %02x", dut.chacha_ctrl_reg);
       $display("");
 
-      $display("data_in_reg[255 : 192] = %016x", dut.data_in_reg[255 : 192]);
-      $display("data_in_reg[191 : 128] = %016x", dut.data_in_reg[191 : 128]);
-      $display("data_in_reg[127 : 064] = %016x", dut.data_in_reg[127 : 064]);
-      $display("data_in_reg[063 : 000] = %016x", dut.data_in_reg[063 : 000]);
+      $display("data_in = %064x", dut.data_in);
       $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
       $display("");
 
@@ -269,7 +249,7 @@ module tb_chacha_core();
   // dump_inout()
   // Dump the status for input and output ports.
   //----------------------------------------------------------------
-  task dump_inout();
+  task dump_inout;
     begin
       $display("");
       $display("State for input and output ports:");
@@ -311,7 +291,7 @@ module tb_chacha_core();
       dut.qr0_b = b;
       dut.qr0_c = c;
       dut.qr0_d = d;
-      #(2 * CLK_HALF_PERIOD);
+      #(CLK_PERIOD);
 
       $display("a0 = 0x%08x, a1 = 0x%08x", dut.qr0.qr.a0, dut.qr0.qr.a1);
       $display("b0 = 0x%08x, b1 = 0x%08x", dut.qr0.qr.b0, dut.qr0.qr.b1);
@@ -334,7 +314,7 @@ module tb_chacha_core();
   // Run some simple test on the qr logic.
   // Note: Not self testing. No expected value used.
   //----------------------------------------------------------------
-  task qr_tests();
+  task qr_tests;
     begin
       $display("*** Test of Quarterround:");
       $display("");
@@ -392,15 +372,15 @@ module tb_chacha_core();
   //
   // Cycles the reset signal on the dut.
   //----------------------------------------------------------------
-  task cycle_reset();
+  task cycle_reset;
     begin
       tb_reset_n = 0;
-      #(2 * CLK_HALF_PERIOD);
+      #(CLK_PERIOD);
 
       @(negedge tb_clk)
 
       tb_reset_n = 1;
-      #(2 * CLK_HALF_PERIOD);
+      #(CLK_PERIOD);
     end
   endtask // cycle_reset
 
@@ -428,7 +408,7 @@ module tb_chacha_core();
       set_core_key_iv_rounds(key, key_length, iv, rounds);
       set_core_init(1);
 
-      #(2 * CLK_HALF_PERIOD);
+      #(CLK_PERIOD);
       set_core_init(0);
       dump_state();
 
@@ -459,11 +439,11 @@ module tb_chacha_core();
   //
   // Display the accumulated test results.
   //----------------------------------------------------------------
-  task display_test_result();
+  task display_test_result;
     begin
       if (error_ctr == 0)
         begin
-          $display("*** All %d test cases completed successfully", tc_ctr);
+          $display("*** All test cases completed successfully");
         end
       else
         begin
@@ -478,7 +458,7 @@ module tb_chacha_core();
   //
   // Set the input to the DUT to defined values.
   //----------------------------------------------------------------
-  task init_dut();
+  task init_dut;
     begin
       cycle_ctr         = 0;
       tb_clk            = 0;
@@ -492,7 +472,7 @@ module tb_chacha_core();
 
       tb_core_init      = 0;
       tb_core_next      = 0;
-      tb_core_data_in   = 512'h00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000;
+      tb_core_data_in   = 512'h0;
     end
   endtask // init_dut
 
@@ -513,7 +493,6 @@ module tb_chacha_core();
       display_cycle_ctr     = cycles;
       display_ctrl_and_ctrs = ctrl_ctr;
       display_state         = state;
-      display_x_state       = x_state;
       display_qround        = qround;
     end
   endtask // set_display_prefs
@@ -536,64 +515,64 @@ module tb_chacha_core();
       $display("");
       dump_state();
 
-      #(4 * CLK_HALF_PERIOD);
+      #(2 * CLK_PERIOD);
       @(negedge tb_clk)
       tb_reset_n = 1;
-      #(2 * CLK_HALF_PERIOD);
+      #(CLK_PERIOD);
       $display("*** State after release of reset:");
       $display("");
       dump_state();
 
       $display("TC1-1: All zero inputs. 128 bit key, 8 rounds.");
       run_test_case(TC1, ONE,
-                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    256'h0,
                     KEY_128_BITS,
-                    64'h0000000000000000,
+                    64'h0,
                     EIGHT_ROUNDS,
                     512'he28a5fa4a67f8c5defed3e6fb7303486aa8427d31419a729572d777953491120b64ab8e72b8deb85cd6aea7cb6089a101824beeb08814a428aab1fa2c816081b);
 
 
      $display("TC1-2: All zero inputs. 128 bit key, 12 rounds.");
       run_test_case(TC1, TWO,
-                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    256'h0,
                     KEY_128_BITS,
-                    64'h0000000000000000,
+                    64'h0,
                     TWELWE_ROUNDS,
                     512'he1047ba9476bf8ff312c01b4345a7d8ca5792b0ad467313f1dc412b5fdce32410dea8b68bd774c36a920f092a04d3f95274fbeff97bc8491fcef37f85970b450);
 
 
      $display("TC1-3: All zero inputs. 128 bit key, 20 rounds.");
       run_test_case(TC1, THREE,
-                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    256'h0,
                     KEY_128_BITS,
-                    64'h0000000000000000,
+                    64'h0,
                     TWENTY_ROUNDS,
                     512'h89670952608364fd00b2f90936f031c8e756e15dba04b8493d00429259b20f46cc04f111246b6c2ce066be3bfb32d9aa0fddfbc12123d4b9e44f34dca05a103f);
 
 
       $display("TC1-4: All zero inputs. 256 bit key, 8 rounds.");
       run_test_case(TC1, FOUR,
-                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    256'h0,
                     KEY_256_BITS,
-                    64'h0000000000000000,
+                    64'h0,
                     EIGHT_ROUNDS,
                     512'h3e00ef2f895f40d67f5bb8e81f09a5a12c840ec3ce9a7f3b181be188ef711a1e984ce172b9216f419f445367456d5619314a42a3da86b001387bfdb80e0cfe42);
 
 
       $display("TC1-5: All zero inputs. 256 bit key, 12 rounds.");
       run_test_case(TC1, FIVE,
-                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    256'h0,
                     KEY_256_BITS,
-                    64'h0000000000000000,
+                    64'h0,
                     TWELWE_ROUNDS,
                     512'h9bf49a6a0755f953811fce125f2683d50429c3bb49e074147e0089a52eae155f0564f879d27ae3c02ce82834acfa8c793a629f2ca0de6919610be82f411326be);
 
 
       $display("TC1-6: All zero inputs. 256 bit key, 20 rounds.");
       run_test_case(TC1, SIX,
-                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    256'h0,
                     KEY_256_BITS,
-                    64'h0000000000000000,
+                    64'h0,
                     TWENTY_ROUNDS,
                     512'h76b8e0ada0f13d90405d6ae55386bd28bdd219b8a08ded1aa836efcc8b770dc7da41597c5157488d7724e03fb8d84a376a43b8f41518a11cc387b669b2ee6586);
 
@@ -602,7 +581,7 @@ module tb_chacha_core();
       run_test_case(TC2, ONE,
                     256'h0100000000000000000000000000000000000000000000000000000000000000,
                     KEY_128_BITS,
-                    64'h0000000000000000,
+                    64'h0,
                     EIGHT_ROUNDS,
                     512'h03a7669888605a0765e8357475e58673f94fc8161da76c2a3aa2f3caf9fe5449e0fcf38eb882656af83d430d410927d55c972ac4c92ab9da3713e19f761eaa14);
 
@@ -611,14 +590,14 @@ module tb_chacha_core();
       run_test_case(TC2, ONE,
                     256'h0100000000000000000000000000000000000000000000000000000000000000,
                     KEY_256_BITS,
-                    64'h0000000000000000,
+                    64'h0,
                     EIGHT_ROUNDS,
                     512'hcf5ee9a0494aa9613e05d5ed725b804b12f4a465ee635acc3a311de8740489ea289d04f43c7518db56eb4433e498a1238cd8464d3763ddbb9222ee3bd8fae3c8);
 
 
       $display("TC3-1: All zero key, one bit in IV set. 128 bit key, 8 rounds.");
       run_test_case(TC3, ONE,
-                    256'h0000000000000000000000000000000000000000000000000000000000000000,
+                    256'h0,
                     KEY_128_BITS,
                     64'h0100000000000000,
                     EIGHT_ROUNDS,

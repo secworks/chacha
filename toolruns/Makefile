@@ -18,14 +18,14 @@ TOP_TB_SRC=../src/tb/tb_chacha.v
 CC=iverilog
 
 
-all: top core
+all: top.sim core.sim
 
 
-top: $(TOP_TB_SRC) $(TOP_SRC)
+top.sim: $(TOP_TB_SRC) $(TOP_SRC)
 	$(CC) -o top.sim $(TOP_TB_SRC) $(TOP_SRC)
 
 
-core: $(CORE_TB_SRC) $(CORE_SRC)
+core.sim: $(CORE_TB_SRC) $(CORE_SRC)
 	$(CC) -o core.sim $(CORE_SRC) $(CORE_TB_SRC)
 
 
@@ -54,4 +54,3 @@ clean:
 #===================================================================
 # EOF Makefile
 #===================================================================
-
