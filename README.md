@@ -19,10 +19,8 @@ updated for each data block.
 
 
 ## Performance ##
-Each quarterround takes one cycle which means that the mininum latency
-will be 4*rounds. When the core is functionally correct we will add two
-more version with 2 and 4 parallel quarterrounds respectively. The four
-quarterounds version will achieve 1 cycle/round.
+The core now has four separate quarterround modules, whicg means that
+one round takes one cycle.
 
 
 ## Implementation ##
@@ -54,6 +52,25 @@ Implementation results using the Altera Quartus 13 design tool.
 
 
 ## Status ##
+
+(2016-09-10)
+As part of developing an implementation of RFC 7539, the ChaCha core has
+seen quite extensive cleanup and optimization. Things like:
+- Updated interface to match what has become the standard interface for
+  my core.
+- Updated API that matches what is used in other cores and esp the
+  Cryptech project.
+- The number of QR modules has increased to four, which means that the
+  performance has basically quadrupled.
+- The double set of states has been decreased to a sigle set of state
+  registers.
+- The core does no longer sample all inputs. Instead it expects the
+  higher level module to provide stable key, iv and data in
+  registers. This matches what is being used in the top level module.
+
+The implementation result will have to be updated to include all these
+changes.
+
 
 (2014-11-07)
 - Added implementation results for Xilinx Spartan-6.
