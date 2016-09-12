@@ -91,15 +91,11 @@ module chacha(
   reg next_reg;
   reg ctrl_we;
 
-  reg ready_reg;
-
   reg keylen_reg;
   reg keylen_we;
 
   reg [4 : 0] rounds_reg;
   reg         rounds_we;
-
-  reg data_out_valid_reg;
 
   reg [31 : 0] key_reg [0 : 7];
   reg          key_we;
@@ -109,8 +105,6 @@ module chacha(
 
   reg [31 : 0] data_in_reg [0 : 15];
   reg          data_in_we;
-
-  reg [511 : 0] data_out_reg;
 
 
   //----------------------------------------------------------------
@@ -188,13 +182,10 @@ module chacha(
         begin
           init_reg           <= 0;
           next_reg           <= 0;
-          ready_reg          <= 0;
           keylen_reg         <= 0;
           rounds_reg         <= 5'h0;
-          data_out_valid_reg <= 0;
           iv_reg[0]          <= 32'h0;
           iv_reg[1]          <= 32'h0;
-          data_out_reg       <= 512'h0;
 
           for (i = 0 ; i < 8 ; i = i + 1)
             key_reg[i] <= 32'h0;
@@ -204,9 +195,6 @@ module chacha(
         end
       else
         begin
-          ready_reg          <= core_ready;
-          data_out_valid_reg <= core_data_out_valid;
-
           if (ctrl_we)
             begin
               init_reg <= write_data[CTRL_INIT_BIT];
@@ -227,9 +215,6 @@ module chacha(
 
           if (data_in_we)
             data_in_reg[addr[3 : 0]] <= write_data;
-
-          if (core_data_out_valid)
-            data_out_reg <= core_data_out;
         end
     end // reg_update
 
@@ -277,14 +262,14 @@ module chacha(
                 tmp_read_data = key_reg[addr[2 : 0]];
 
               if ((addr >= ADDR_DATA_OUT0) && (addr <= ADDR_DATA_OUT15))
-                tmp_read_data = data_out_reg[(15 - (addr - ADDR_DATA_OUT0)) * 32 +: 32];
+                tmp_read_data = core_data_out[(15 - (addr - ADDR_DATA_OUT0)) * 32 +: 32];
 
               case (addr)
                 ADDR_NAME0:   tmp_read_data = CORE_NAME0;
                 ADDR_NAME1:   tmp_read_data = CORE_NAME1;
                 ADDR_VERSION: tmp_read_data = CORE_VERSION;
                 ADDR_CTRL:    tmp_read_data = {30'h0, next_reg, init_reg};
-                ADDR_STATUS:  tmp_read_data = {30'h0, data_out_valid_reg, ready_reg};
+                ADDR_STATUS:  tmp_read_data = {30'h0, core_data_out_valid, core_ready};
                 ADDR_KEYLEN:  tmp_read_data = {31'h0, keylen_reg};
                 ADDR_ROUNDS:  tmp_read_data = {27'h0, rounds_reg};
                 ADDR_IV0:     tmp_read_data = iv_reg[0];
