@@ -40,9 +40,9 @@ module tb_chacha();
   //----------------------------------------------------------------
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
-  localparam DEBUG = 0;
+  localparam DEBUG = 1;
 
-  localparam CLK_HALF_PERIOD = 2;
+  localparam CLK_HALF_PERIOD = 1;
   localparam CLK_PERIOD = 2 * CLK_HALF_PERIOD;
 
   localparam TC1  = 1;
@@ -251,7 +251,7 @@ module tb_chacha();
       tb_cs         = 1;
       tb_write_read = 0;
       tb_address    = addr;
-      #(2 * CLK_HALF_PERIOD);
+      #(CLK_PERIOD);
       tb_cs         = 0;
       tb_write_read = 0;
       tb_address    = 8'h00;
@@ -586,19 +586,20 @@ module tb_chacha();
     reg [31 : 0] name1;
     reg [31 : 0] version;
     begin
-
+      $display("*** Trying to read name and version from core.");
       read_reg(ADDR_NAME0);
-      name0 = read_data;
+      name0 = tb_data_out;
       read_reg(ADDR_NAME1);
-      name1 = read_data;
+      name1 = tb_data_out;
       read_reg(ADDR_VERSION);
-      version = read_data;
+      version = tb_data_out;
 
       $display("DUT name: %c%c%c%c%c%c%c%c",
                name0[31 : 24], name0[23 : 16], name0[15 : 8], name0[7 : 0],
                name1[31 : 24], name1[23 : 16], name1[15 : 8], name1[7 : 0]);
       $display("DUT version: %c%c%c%c",
                version[31 : 24], version[23 : 16], version[15 : 8], version[7 : 0]);
+      $display("");
     end
   endtask // check_name_version
 
