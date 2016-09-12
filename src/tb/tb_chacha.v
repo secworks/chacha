@@ -271,7 +271,7 @@ module tb_chacha();
       tb_write_read = 1;
       tb_address    = addr;
       tb_data_in    = data;
-      #(2 * CLK_HALF_PERIOD);
+      #(CLK_PERIOD);
       tb_cs         = 0;
       tb_write_read = 0;
       tb_address    = 8'h00;
@@ -481,7 +481,7 @@ module tb_chacha();
   task start_init_block;
     begin
       write_reg(ADDR_CTRL, 32'h00000001);
-      #(4 * CLK_HALF_PERIOD);
+      #(2 * CLK_PERIOD);
       write_reg(ADDR_CTRL, 32'h00000000);
     end
   endtask // start_init_block
@@ -499,14 +499,14 @@ module tb_chacha();
   task start_next_block;
     begin
       write_reg(ADDR_CTRL, 32'h00000002);
-      #(4 * CLK_HALF_PERIOD);
+      #(2 * CLK_PERIOD);
       write_reg(ADDR_CTRL, 32'h00000000);
 
       if (DEBUG)
         begin
           $display("Debug of next state.");
           dump_core_state();
-          #(4 * CLK_HALF_PERIOD);
+          #(2 * CLK_PERIOD);
           dump_core_state();
         end
     end
