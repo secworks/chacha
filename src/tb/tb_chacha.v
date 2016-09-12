@@ -292,7 +292,6 @@ module tb_chacha();
       $display("------------------");
       $display("init_reg   = %01x", dut.init_reg);
       $display("next_reg   = %01x", dut.next_reg);
-      $display("ready_reg  = %01x", dut.ready_reg);
       $display("keylen_reg = %01x", dut.keylen_reg);
       $display("rounds_reg = %01x", dut.rounds_reg);
       $display("");
@@ -316,15 +315,19 @@ module tb_chacha();
                dut.data_in_reg[12], dut.data_in_reg[13], dut.data_in_reg[14], dut.data_in_reg[15]);
       $display("");
 
-      $display("data_out_valid_reg = %01x", dut.data_out_valid_reg);
-      $display("data_out0_reg  = %08x, data_out1_reg   = %08x, data_out2_reg  = %08x, data_out3_reg   = %08x",
-               dut.data_out_reg[511 : 480], dut.data_out_reg[479 : 448], dut.data_out_reg[447 : 416], dut.data_out_reg[415 : 384]);
-      $display("data_out4_reg  = %08x, data_out5_reg   = %08x, data_out6_reg  = %08x, data_out7_reg   = %08x",
-               dut.data_out_reg[383 : 352], dut.data_out_reg[351 : 320], dut.data_out_reg[319 : 288], dut.data_out_reg[287 : 256]);
-      $display("data_out8_reg  = %08x, data_out9_reg   = %08x, data_out10_reg = %08x, data_out11_reg  = %08x",
-               dut.data_out_reg[255 : 224], dut.data_out_reg[223 : 192], dut.data_out_reg[191 : 160], dut.data_out_reg[159 : 128]);
-      $display("data_out12_reg = %08x, data_out13_reg  = %08x, data_out14_reg = %08x, data_out15_reg  = %08x",
-               dut.data_out_reg[127 :  96], dut.data_out_reg[95  :  64], dut.data_out_reg[63  :  32], dut.data_out_reg[31  :   0]);
+      $display("ready = 0x%01x, data_out_valid = %01x", dut.core_ready, dut.core_data_out_valid);
+      $display("data_out00 = %08x, data_out01 = %08x, data_out02 = %08x, data_out03 = %08x",
+               dut.core_data_out[511 : 480], dut.core_data_out[479 : 448],
+               dut.core_data_out[447 : 416], dut.core_data_out[415 : 384]);
+      $display("data_out04 = %08x, data_out05 = %08x, data_out06 = %08x, data_out07 = %08x",
+               dut.core_data_out[383 : 352], dut.core_data_out[351 : 320],
+               dut.core_data_out[319 : 288], dut.core_data_out[287 : 256]);
+      $display("data_out08 = %08x, data_out09 = %08x, data_out10 = %08x, data_out11 = %08x",
+               dut.core_data_out[255 : 224], dut.core_data_out[223 : 192],
+               dut.core_data_out[191 : 160], dut.core_data_out[159 : 128]);
+      $display("data_out12 = %08x, data_out13 = %08x, data_out14 = %08x, data_out15 = %08x",
+               dut.core_data_out[127 :  96], dut.core_data_out[95  :  64],
+               dut.core_data_out[63  :  32], dut.core_data_out[31  :   0]);
       $display("");
     end
   endtask // dump_top_state
@@ -698,6 +701,7 @@ module tb_chacha();
 
       start_init_block();
       wait_ready();
+      dump_top_state();
       extract_data();
 
       if (extracted_data != expected)
