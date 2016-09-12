@@ -151,7 +151,7 @@ module chacha(
                          data_in_reg[08], data_in_reg[09], data_in_reg[10], data_in_reg[11],
                          data_in_reg[12], data_in_reg[13], data_in_reg[14], data_in_reg[15]};
 
-  assign data_out = tmp_read_data;
+  assign read_data = tmp_read_data;
 
 
   //----------------------------------------------------------------
@@ -184,7 +184,6 @@ module chacha(
   always @ (posedge clk)
     begin : reg_update
      integer i;
-
       if (!reset_n)
         begin
           init_reg           <= 0;
