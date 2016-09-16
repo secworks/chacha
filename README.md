@@ -24,21 +24,23 @@ one round takes one cycle.
 
 
 ## Implementation ##
-Implementation results using the Altera Quartus 13 design tool.
+Implementation results using the Altera Quartus Prime 15.1 design tool.
 
-### Cyclone IV GX ###
-- 6233 LEs
-- 3677 registers
-- 56.1 MHz
+### Cyclone IV E ###
+- 4748 LEs
+- 1940 registers
+- 55 MHz
 - 11 cycles latency
 
 
 ### Cyclone V GX ###
-- 2631 ALMs for logic
-- 3677 registers
-- 54.3 MHz
+- 1939 ALMs for logic
+- 1940 registers
+- 60 MHz
 - 11 cycles latency
 
+
+Implementation results using Xilinx ISE 14.7.
 
 ### Xilinx Spartan-6 ###
 - xc6slx75-3fgg676
@@ -63,7 +65,8 @@ Implementation results using the Altera Quartus 13 design tool.
 (2016-09-16)
 Even more cleanup has been done. Have found several bugs that effected
 performance and size of the design. There are still a few cleanups that
-could be done, but the core is now more compact and yet much faster.
+could be done, but the core is now much more compact, esp in terms of
+registers and yet much faster.
 
 
 (2016-09-10)
