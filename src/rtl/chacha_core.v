@@ -386,7 +386,40 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : state_logic
+      state_new[00] = 32'h0;
+      state_new[01] = 32'h0;
+      state_new[02] = 32'h0;
+      state_new[03] = 32'h0;
+      state_new[04] = 32'h0;
+      state_new[05] = 32'h0;
+      state_new[06] = 32'h0;
+      state_new[07] = 32'h0;
+      state_new[08] = 32'h0;
+      state_new[09] = 32'h0;
+      state_new[10] = 32'h0;
+      state_new[11] = 32'h0;
+      state_new[12] = 32'h0;
+      state_new[13] = 32'h0;
+      state_new[14] = 32'h0;
+      state_new[15] = 32'h0;
       state_we    = 0;
+
+      qr0_a = 32'h0;
+      qr0_b = 32'h0;
+      qr0_c = 32'h0;
+      qr0_d = 32'h0;
+      qr1_a = 32'h0;
+      qr1_b = 32'h0;
+      qr1_c = 32'h0;
+      qr1_d = 32'h0;
+      qr2_a = 32'h0;
+      qr2_b = 32'h0;
+      qr2_c = 32'h0;
+      qr2_d = 32'h0;
+      qr3_a = 32'h0;
+      qr3_b = 32'h0;
+      qr3_c = 32'h0;
+      qr3_d = 32'h0;
 
       if (init_state)
         begin
