@@ -253,7 +253,7 @@ module chacha_core(
   // reg_update
   //
   // Update functionality for all registers in the core.
-  // All registers are positive edge triggered with asynchronous
+  // All registers are positive edge triggered with synchronous
   // active low reset. All registers have write enable.
   //----------------------------------------------------------------
   always @ (posedge clk)
