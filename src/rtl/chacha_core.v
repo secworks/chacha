@@ -62,8 +62,8 @@ module chacha_core(
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   // Datapath quartterround states names.
-  localparam QR0 = 3'h0;
-  localparam QR1 = 3'h1;
+  localparam QR0 = 0;
+  localparam QR1 = 1;
 
   localparam NUM_ROUNDS = 4'h8;
 
@@ -99,8 +99,8 @@ module chacha_core(
   reg  data_out_valid_new;
   reg  data_out_valid_we;
 
-  reg [2 : 0] qr_ctr_reg;
-  reg [2 : 0] qr_ctr_new;
+  reg         qr_ctr_reg;
+  reg         qr_ctr_new;
   reg         qr_ctr_we;
   reg         qr_ctr_inc;
   reg         qr_ctr_rst;
