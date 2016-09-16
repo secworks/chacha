@@ -151,6 +151,7 @@ module tb_chacha();
 
   reg display_cycle_ctr;
   reg display_read_write;
+  reg display_ctrl_state;
 
 
   //----------------------------------------------------------------
@@ -193,6 +194,10 @@ module tb_chacha();
           $display("cycle = %016x:", cycle_ctr);
         end
 
+      if (display_ctrl_state)
+          $display("cotr ctrl state: 0x%02x", dut.core.chacha_ctrl_reg);
+
+
       if (display_read_write)
         begin
 
@@ -213,22 +218,6 @@ module tb_chacha();
 
 
   //----------------------------------------------------------------
-  // set_display_prefs()
-  //
-  // Set the different monitor displays we want to see during
-  // simulation.
-  //----------------------------------------------------------------
-  task set_display_prefs(
-                         input cycles,
-                         input read_write);
-    begin
-      display_cycle_ctr  = cycles;
-      display_read_write = read_write;
-    end
-  endtask // set_display_prefs
-
-
-  //----------------------------------------------------------------
   // reset_dut
   //----------------------------------------------------------------
   task reset_dut;
@@ -238,6 +227,30 @@ module tb_chacha();
       tb_reset_n = 1;
     end
   endtask // reset_dut
+
+
+  //----------------------------------------------------------------
+  // init_sim()
+  //
+  // Set the input to the DUT to defined values.
+  //----------------------------------------------------------------
+  task init_sim;
+    begin
+      cycle_ctr     = 0;
+      error_ctr     = 0;
+      tc_ctr        = 0;
+      tb_clk        = 0;
+      tb_reset_n    = 0;
+      tb_cs         = 0;
+      tb_write_read = 0;
+      tb_address    = 8'h00;
+      tb_data_in    = 32'h00000000;
+
+      display_cycle_ctr  = 0;
+      display_read_write = 0;
+      display_ctrl_state = 0;
+    end
+  endtask // init_sim
 
 
   //----------------------------------------------------------------
@@ -391,26 +404,6 @@ module tb_chacha();
         end
     end
   endtask // display_test_result
-
-
-  //----------------------------------------------------------------
-  // init_dut()
-  //
-  // Set the input to the DUT to defined values.
-  //----------------------------------------------------------------
-  task init_dut;
-    begin
-      cycle_ctr     = 0;
-      error_ctr     = 0;
-      tc_ctr        = 0;
-      tb_clk        = 0;
-      tb_reset_n    = 0;
-      tb_cs         = 0;
-      tb_write_read = 0;
-      tb_address    = 8'h00;
-      tb_data_in    = 32'h00000000;
-    end
-  endtask // init_dut
 
 
   //----------------------------------------------------------------
@@ -626,7 +619,6 @@ module tb_chacha();
       $display("***TC%2d-%2d started", major, minor);
       $display("***-----------------");
       write_parameters(key, key_length, iv, rounds);
-
       start_init_block();
       wait_ready();
       extract_data();
@@ -731,8 +723,7 @@ module tb_chacha();
   initial
     begin : chacha_test
       $display("   -- Testbench for chacha started --");
-      init_dut();
-      set_display_prefs(0, 0);
+      init_sim();
       reset_dut();
 
       $display("State at init after reset:");
