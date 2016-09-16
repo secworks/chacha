@@ -283,7 +283,7 @@ module chacha_core(
                 state_reg[i] <= state_new[i];
             end
 
-          if (data_out_we)
+          if (update_output)
             data_out_reg <= data_out_new;
 
           if (data_out_valid_we)
@@ -535,121 +535,113 @@ module chacha_core(
 
       reg [511 : 0] lsb_block_state;
 
-      lsb_block_state = 512'h0;
-      data_out_new = 512'h0;
-      data_out_we = 0;
+      msb_block_state0  = init_state_word0  + state_reg[00];
+      msb_block_state1  = init_state_word1  + state_reg[01];
+      msb_block_state2  = init_state_word2  + state_reg[02];
+      msb_block_state3  = init_state_word3  + state_reg[03];
+      msb_block_state4  = init_state_word4  + state_reg[04];
+      msb_block_state5  = init_state_word5  + state_reg[05];
+      msb_block_state6  = init_state_word6  + state_reg[06];
+      msb_block_state7  = init_state_word7  + state_reg[07];
+      msb_block_state8  = init_state_word8  + state_reg[08];
+      msb_block_state9  = init_state_word9  + state_reg[09];
+      msb_block_state10 = init_state_word10 + state_reg[10];
+      msb_block_state11 = init_state_word11 + state_reg[11];
+      msb_block_state12 = init_state_word12 + state_reg[12];
+      msb_block_state13 = init_state_word13 + state_reg[13];
+      msb_block_state14 = init_state_word14 + state_reg[14];
+      msb_block_state15 = init_state_word15 + state_reg[15];
 
-      if (update_output)
-        begin
-          msb_block_state0  = init_state_word0  + state_reg[00];
-          msb_block_state1  = init_state_word1  + state_reg[01];
-          msb_block_state2  = init_state_word2  + state_reg[02];
-          msb_block_state3  = init_state_word3  + state_reg[03];
-          msb_block_state4  = init_state_word4  + state_reg[04];
-          msb_block_state5  = init_state_word5  + state_reg[05];
-          msb_block_state6  = init_state_word6  + state_reg[06];
-          msb_block_state7  = init_state_word7  + state_reg[07];
-          msb_block_state8  = init_state_word8  + state_reg[08];
-          msb_block_state9  = init_state_word9  + state_reg[09];
-          msb_block_state10 = init_state_word10 + state_reg[10];
-          msb_block_state11 = init_state_word11 + state_reg[11];
-          msb_block_state12 = init_state_word12 + state_reg[12];
-          msb_block_state13 = init_state_word13 + state_reg[13];
-          msb_block_state14 = init_state_word14 + state_reg[14];
-          msb_block_state15 = init_state_word15 + state_reg[15];
+      lsb_block_state0 = {msb_block_state0[7  :  0],
+                          msb_block_state0[15 :  8],
+                          msb_block_state0[23 : 16],
+                          msb_block_state0[31 : 24]};
 
-          lsb_block_state0 = {msb_block_state0[7  :  0],
-                              msb_block_state0[15 :  8],
-                              msb_block_state0[23 : 16],
-                              msb_block_state0[31 : 24]};
+      lsb_block_state1 = {msb_block_state1[7  :  0],
+                          msb_block_state1[15 :  8],
+                          msb_block_state1[23 : 16],
+                          msb_block_state1[31 : 24]};
 
-          lsb_block_state1 = {msb_block_state1[7  :  0],
-                              msb_block_state1[15 :  8],
-                              msb_block_state1[23 : 16],
-                              msb_block_state1[31 : 24]};
+      lsb_block_state2 = {msb_block_state2[7  :  0],
+                          msb_block_state2[15 :  8],
+                          msb_block_state2[23 : 16],
+                          msb_block_state2[31 : 24]};
 
-          lsb_block_state2 = {msb_block_state2[7  :  0],
-                              msb_block_state2[15 :  8],
-                              msb_block_state2[23 : 16],
-                              msb_block_state2[31 : 24]};
+      lsb_block_state3 = {msb_block_state3[7  :  0],
+                          msb_block_state3[15 :  8],
+                          msb_block_state3[23 : 16],
+                          msb_block_state3[31 : 24]};
 
-          lsb_block_state3 = {msb_block_state3[7  :  0],
-                              msb_block_state3[15 :  8],
-                              msb_block_state3[23 : 16],
-                              msb_block_state3[31 : 24]};
+      lsb_block_state4 = {msb_block_state4[7  :  0],
+                          msb_block_state4[15 :  8],
+                          msb_block_state4[23 : 16],
+                          msb_block_state4[31 : 24]};
 
-          lsb_block_state4 = {msb_block_state4[7  :  0],
-                              msb_block_state4[15 :  8],
-                              msb_block_state4[23 : 16],
-                              msb_block_state4[31 : 24]};
+      lsb_block_state5 = {msb_block_state5[7  :  0],
+                          msb_block_state5[15 :  8],
+                          msb_block_state5[23 : 16],
+                          msb_block_state5[31 : 24]};
 
-          lsb_block_state5 = {msb_block_state5[7  :  0],
-                              msb_block_state5[15 :  8],
-                              msb_block_state5[23 : 16],
-                              msb_block_state5[31 : 24]};
+      lsb_block_state6 = {msb_block_state6[7  :  0],
+                          msb_block_state6[15 :  8],
+                          msb_block_state6[23 : 16],
+                          msb_block_state6[31 : 24]};
 
-          lsb_block_state6 = {msb_block_state6[7  :  0],
-                              msb_block_state6[15 :  8],
-                              msb_block_state6[23 : 16],
-                              msb_block_state6[31 : 24]};
+      lsb_block_state7 = {msb_block_state7[7  :  0],
+                          msb_block_state7[15 :  8],
+                          msb_block_state7[23 : 16],
+                          msb_block_state7[31 : 24]};
 
-          lsb_block_state7 = {msb_block_state7[7  :  0],
-                              msb_block_state7[15 :  8],
-                              msb_block_state7[23 : 16],
-                              msb_block_state7[31 : 24]};
+      lsb_block_state8 = {msb_block_state8[7  :  0],
+                          msb_block_state8[15 :  8],
+                          msb_block_state8[23 : 16],
+                          msb_block_state8[31 : 24]};
 
-          lsb_block_state8 = {msb_block_state8[7  :  0],
-                              msb_block_state8[15 :  8],
-                              msb_block_state8[23 : 16],
-                              msb_block_state8[31 : 24]};
+      lsb_block_state9 = {msb_block_state9[7  :  0],
+                          msb_block_state9[15 :  8],
+                          msb_block_state9[23 : 16],
+                          msb_block_state9[31 : 24]};
 
-          lsb_block_state9 = {msb_block_state9[7  :  0],
-                              msb_block_state9[15 :  8],
-                              msb_block_state9[23 : 16],
-                              msb_block_state9[31 : 24]};
+      lsb_block_state10 = {msb_block_state10[7  :  0],
+                           msb_block_state10[15 :  8],
+                           msb_block_state10[23 : 16],
+                           msb_block_state10[31 : 24]};
 
-          lsb_block_state10 = {msb_block_state10[7  :  0],
-                               msb_block_state10[15 :  8],
-                               msb_block_state10[23 : 16],
-                               msb_block_state10[31 : 24]};
+      lsb_block_state11 = {msb_block_state11[7  :  0],
+                           msb_block_state11[15 :  8],
+                           msb_block_state11[23 : 16],
+                           msb_block_state11[31 : 24]};
 
-          lsb_block_state11 = {msb_block_state11[7  :  0],
-                               msb_block_state11[15 :  8],
-                               msb_block_state11[23 : 16],
-                               msb_block_state11[31 : 24]};
+      lsb_block_state12 = {msb_block_state12[7  :  0],
+                           msb_block_state12[15 :  8],
+                           msb_block_state12[23 : 16],
+                           msb_block_state12[31 : 24]};
 
-          lsb_block_state12 = {msb_block_state12[7  :  0],
-                               msb_block_state12[15 :  8],
-                               msb_block_state12[23 : 16],
-                               msb_block_state12[31 : 24]};
+      lsb_block_state13 = {msb_block_state13[7  :  0],
+                           msb_block_state13[15 :  8],
+                           msb_block_state13[23 : 16],
+                           msb_block_state13[31 : 24]};
 
-          lsb_block_state13 = {msb_block_state13[7  :  0],
-                               msb_block_state13[15 :  8],
-                               msb_block_state13[23 : 16],
-                               msb_block_state13[31 : 24]};
+      lsb_block_state14 = {msb_block_state14[7  :  0],
+                           msb_block_state14[15 :  8],
+                           msb_block_state14[23 : 16],
+                           msb_block_state14[31 : 24]};
 
-          lsb_block_state14 = {msb_block_state14[7  :  0],
-                               msb_block_state14[15 :  8],
-                               msb_block_state14[23 : 16],
-                               msb_block_state14[31 : 24]};
+      lsb_block_state15 = {msb_block_state15[7  :  0],
+                           msb_block_state15[15 :  8],
+                           msb_block_state15[23 : 16],
+                           msb_block_state15[31 : 24]};
 
-          lsb_block_state15 = {msb_block_state15[7  :  0],
-                               msb_block_state15[15 :  8],
-                               msb_block_state15[23 : 16],
-                               msb_block_state15[31 : 24]};
+      lsb_block_state = {lsb_block_state0,  lsb_block_state1,
+                         lsb_block_state2,  lsb_block_state3,
+                         lsb_block_state4,  lsb_block_state5,
+                         lsb_block_state6,  lsb_block_state7,
+                         lsb_block_state8,  lsb_block_state9,
+                         lsb_block_state10, lsb_block_state11,
+                         lsb_block_state12, lsb_block_state13,
+                         lsb_block_state14, lsb_block_state15};
 
-          lsb_block_state = {lsb_block_state0,  lsb_block_state1,
-                             lsb_block_state2,  lsb_block_state3,
-                             lsb_block_state4,  lsb_block_state5,
-                             lsb_block_state6,  lsb_block_state7,
-                             lsb_block_state8,  lsb_block_state9,
-                             lsb_block_state10, lsb_block_state11,
-                             lsb_block_state12, lsb_block_state13,
-                             lsb_block_state14, lsb_block_state15};
-
-          data_out_new = data_in ^ lsb_block_state;
-          data_out_we   = 1;
-        end // if (update_output)
+      data_out_new = data_in ^ lsb_block_state;
     end // data_out_logic
 
 
