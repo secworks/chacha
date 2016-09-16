@@ -31,7 +31,6 @@ Implementation results using the Altera Quartus 13 design tool.
 - 3677 registers
 - 56.1 MHz
 - 11 cycles latency
-- 2.6 Gbps performance
 
 
 ### Cyclone V GX ###
@@ -39,19 +38,33 @@ Implementation results using the Altera Quartus 13 design tool.
 - 3677 registers
 - 54.3 MHz
 - 11 cycles latency
-- 2.5 Gbps performance
 
 
 ### Xilinx Spartan-6 ###
-- xc6slx45-3csg324
-- 3386 LUTs
-- 1433 Slices
-- 67 MHz
+- xc6slx75-3fgg676
+- 3843 slice LUTs
+- 1049 slices
+- 1994 registers
+- 83 MHz
 - 11 cycles latency
-- 3.1 Gbps performance
+
+
+### Xilinx Artix-7 ###
+- xc7a200t-3fbg484
+- 3837 slice LUTs
+- 1076 slices
+- 1949 registers
+- 100 MHz
+- 11 cycles latency
 
 
 ## Status ##
+
+(2016-09-16)
+Even more cleanup has been done. Have found several bugs that effected
+performance and size of the design. There are still a few cleanups that
+could be done, but the core is now more compact and yet much faster.
+
 
 (2016-09-10)
 As part of developing an implementation of RFC 7539, the ChaCha core has
