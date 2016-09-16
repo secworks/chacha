@@ -195,10 +195,22 @@ module tb_chacha();
         end
 
       if (display_core_state)
+        begin
           $display("core ctrl: 0x%02x, core_qr_ctr: 0x%02x, core_dr_ctr: 0x%02x, init: 0x%01x, next: 0x%01x, core_ready: 0x%02x",
                    dut.core.chacha_ctrl_reg, dut.core.qr_ctr_reg,
                    dut.core.dr_ctr_reg, dut.core.init,
                    dut.core.next, dut.core.ready_reg);
+
+          $display("state0_reg  = 0x%08x, state1_reg  = 0x%08x, state2_reg  = 0x%08x, state3_reg  = 0x%08x",
+                   dut.core.state_reg[00], dut.core.state_reg[01], dut.core.state_reg[02], dut.core.state_reg[03]);
+          $display("state4_reg  = 0x%08x, state5_reg  = 0x%08x, state6_reg  = 0x%08x, state7_reg  = 0x%08x",
+                   dut.core.state_reg[04], dut.core.state_reg[05], dut.core.state_reg[06], dut.core.state_reg[07]);
+          $display("state8_reg  = 0x%08x, state9_reg  = 0x%08x, state10_reg = 0x%08x, state11_reg = 0x%08x",
+                   dut.core.state_reg[08], dut.core.state_reg[09], dut.core.state_reg[10], dut.core.state_reg[11]);
+          $display("state12_reg = 0x%08x, state13_reg = 0x%08x, state14_reg = 0x%08x, state15_reg = 0x%08x",
+                   dut.core.state_reg[12], dut.core.state_reg[13], dut.core.state_reg[14], dut.core.state_reg[15]);
+          $display("");
+        end
 
       if (display_read_write)
         begin
@@ -245,12 +257,12 @@ module tb_chacha();
       tb_reset_n    = 0;
       tb_cs         = 0;
       tb_write_read = 0;
-      tb_address    = 8'h00;
-      tb_data_in    = 32'h00000000;
+      tb_address    = 8'h0;
+      tb_data_in    = 32'h0;
 
-      display_cycle_ctr  = 0;
+      display_cycle_ctr  = 1;
       display_read_write = 0;
-      display_core_state = 1;
+      display_core_state = 0;
     end
   endtask // init_sim
 
@@ -694,7 +706,9 @@ module tb_chacha();
       write_parameters(key, key_length, iv, rounds);
 
       start_init_block();
+      $display("*** Started.");
       wait_ready();
+      $display("*** Ready seen.");
       dump_top_state();
       extract_data();
 
