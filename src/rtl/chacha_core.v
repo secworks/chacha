@@ -93,7 +93,6 @@ module chacha_core(
 
   reg [511 : 0] data_out_reg;
   reg [511 : 0] data_out_new;
-  reg           data_out_we;
 
   reg  data_out_valid_reg;
   reg  data_out_valid_new;
