@@ -260,7 +260,7 @@ module tb_chacha();
       tb_address    = 8'h0;
       tb_data_in    = 32'h0;
 
-      display_cycle_ctr  = 1;
+      display_cycle_ctr  = 0;
       display_read_write = 0;
       display_core_state = 0;
     end
@@ -281,8 +281,8 @@ module tb_chacha();
       #(CLK_PERIOD);
       tb_cs         = 0;
       tb_write_read = 0;
-      tb_address    = 8'h00;
-      tb_data_in    = 32'h00000000;
+      tb_address    = 8'h0;
+      tb_data_in    = 32'h0;
     end
   endtask // read_reg
 
@@ -301,8 +301,8 @@ module tb_chacha();
       #(CLK_PERIOD);
       tb_cs         = 0;
       tb_write_read = 0;
-      tb_address    = 8'h00;
-      tb_data_in    = 32'h00000000;
+      tb_address    = 8'h0;
+      tb_data_in    = 32'h0;
     end
   endtask // write_reg
 

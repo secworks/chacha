@@ -174,7 +174,7 @@ module tb_chacha_core();
       // Display the internal state register.
       if (display_state)
         begin
-          $display("Round state X:");
+          $display("Round state:");
           $display("state0_reg  = 0x%08x, state0_new  = 0x%08x", dut.state_reg[00], dut.state_new[00]);
           $display("state1_reg  = 0x%08x, state1_new  = 0x%08x", dut.state_reg[01], dut.state_new[01]);
           $display("state2_reg  = 0x%08x, state2_new  = 0x%08x", dut.state_reg[02], dut.state_new[02]);
@@ -214,7 +214,7 @@ module tb_chacha_core();
       $display("");
       $display("Internal state:");
       $display("---------------");
-      $display("Round state X::");
+      $display("Round state:");
       $display("state0_reg  = %08x, state1_reg  = %08x, state2_reg  = %08x, state3_reg  = %08x",
                dut.state_reg[00],  dut.state_reg[01], dut.state_reg[02],  dut.state_reg[03]);
       $display("state4_reg  = %08x, state5_reg  = %08x, state6_reg  = %08x, state7_reg  = %08x",
