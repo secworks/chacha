@@ -151,7 +151,7 @@ module tb_chacha();
 
   reg display_cycle_ctr;
   reg display_read_write;
-  reg display_ctrl_state;
+  reg display_core_state;
 
 
   //----------------------------------------------------------------
@@ -194,9 +194,11 @@ module tb_chacha();
           $display("cycle = %016x:", cycle_ctr);
         end
 
-      if (display_ctrl_state)
-          $display("cotr ctrl state: 0x%02x", dut.core.chacha_ctrl_reg);
-
+      if (display_core_state)
+          $display("core ctrl: 0x%02x, core_qr_ctr: 0x%02x, core_dr_ctr: 0x%02x, init: 0x%01x, next: 0x%01x, core_ready: 0x%02x",
+                   dut.core.chacha_ctrl_reg, dut.core.qr_ctr_reg,
+                   dut.core.dr_ctr_reg, dut.core.init,
+                   dut.core.next, dut.core.ready_reg);
 
       if (display_read_write)
         begin
@@ -248,7 +250,7 @@ module tb_chacha();
 
       display_cycle_ctr  = 0;
       display_read_write = 0;
-      display_ctrl_state = 0;
+      display_core_state = 1;
     end
   endtask // init_sim
 
