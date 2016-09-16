@@ -62,26 +62,26 @@ module chacha_core(
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
   // Datapath quartterround states names.
-  parameter QR0 = 3'h0;
-  parameter QR1 = 3'h1;
+  localparam QR0 = 3'h0;
+  localparam QR1 = 3'h1;
 
-  parameter NUM_ROUNDS = 4'h8;
+  localparam NUM_ROUNDS = 4'h8;
 
-  parameter TAU0 = 32'h61707865;
-  parameter TAU1 = 32'h3120646e;
-  parameter TAU2 = 32'h79622d36;
-  parameter TAU3 = 32'h6b206574;
+  localparam TAU0 = 32'h61707865;
+  localparam TAU1 = 32'h3120646e;
+  localparam TAU2 = 32'h79622d36;
+  localparam TAU3 = 32'h6b206574;
 
-  parameter SIGMA0 = 32'h61707865;
-  parameter SIGMA1 = 32'h3320646e;
-  parameter SIGMA2 = 32'h79622d32;
-  parameter SIGMA3 = 32'h6b206574;
+  localparam SIGMA0 = 32'h61707865;
+  localparam SIGMA1 = 32'h3320646e;
+  localparam SIGMA2 = 32'h79622d32;
+  localparam SIGMA3 = 32'h6b206574;
 
-  parameter CTRL_IDLE     = 3'h0;
-  parameter CTRL_INIT     = 3'h1;
-  parameter CTRL_ROUNDS   = 3'h2;
-  parameter CTRL_FINALIZE = 3'h3;
-  parameter CTRL_DONE     = 3'h4;
+  localparam CTRL_IDLE     = 3'h0;
+  localparam CTRL_INIT     = 3'h1;
+  localparam CTRL_ROUNDS   = 3'h2;
+  localparam CTRL_FINALIZE = 3'h3;
+  localparam CTRL_DONE     = 3'h4;
 
 
   //----------------------------------------------------------------
