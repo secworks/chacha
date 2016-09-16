@@ -87,15 +87,15 @@ module chacha(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
-  reg init_reg;
-  reg next_reg;
-  reg ctrl_we;
+  reg          init_reg;
+  reg          next_reg;
+  reg          ctrl_we;
 
-  reg keylen_reg;
-  reg keylen_we;
+  reg          keylen_reg;
+  reg          keylen_we;
 
-  reg [4 : 0] rounds_reg;
-  reg         rounds_we;
+  reg [4 : 0]  rounds_reg;
+  reg          rounds_we;
 
   reg [31 : 0] key_reg [0 : 7];
   reg          key_we;
@@ -110,11 +110,7 @@ module chacha(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  wire           core_init;
-  wire           core_next;
   wire [255 : 0] core_key;
-  wire           core_keylen;
-  wire [4 : 0]   core_rounds;
   wire [63 : 0]  core_iv;
   wire           core_ready;
   wire [511 : 0] core_data_in;
@@ -127,14 +123,6 @@ module chacha(
   //----------------------------------------------------------------
   // Concurrent connectivity for ports etc.
   //----------------------------------------------------------------
-  assign core_init    = init_reg;
-
-  assign core_next    = next_reg;
-
-  assign core_keylen  = keylen_reg;
-
-  assign core_rounds  = rounds_reg;
-
   assign core_key     = {key_reg[0], key_reg[1], key_reg[2], key_reg[3],
                          key_reg[4], key_reg[5], key_reg[6], key_reg[7]};
 
@@ -145,7 +133,7 @@ module chacha(
                          data_in_reg[08], data_in_reg[09], data_in_reg[10], data_in_reg[11],
                          data_in_reg[12], data_in_reg[13], data_in_reg[14], data_in_reg[15]};
 
-  assign read_data = tmp_read_data;
+  assign read_data     = tmp_read_data;
 
 
   //----------------------------------------------------------------
@@ -154,13 +142,13 @@ module chacha(
   chacha_core core (
                     .clk(clk),
                     .reset_n(reset_n),
-                    .init(core_init),
-                    .next(core_next),
+                    .init(init_reg),
+                    .next(next_reg),
                     .key(core_key),
-                    .keylen(core_keylen),
+                    .keylen(keylen_reg),
                     .iv(core_iv),
                     .ctr(DEFAULT_CTR_INIT),
-                    .rounds(core_rounds),
+                    .rounds(rounds_reg),
                     .data_in(core_data_in),
                     .ready(core_ready),
                     .data_out(core_data_out),
@@ -180,12 +168,12 @@ module chacha(
      integer i;
       if (!reset_n)
         begin
-          init_reg           <= 0;
-          next_reg           <= 0;
-          keylen_reg         <= 0;
-          rounds_reg         <= 5'h0;
-          iv_reg[0]          <= 32'h0;
-          iv_reg[1]          <= 32'h0;
+          init_reg   <= 0;
+          next_reg   <= 0;
+          keylen_reg <= 0;
+          rounds_reg <= 5'h0;
+          iv_reg[0]  <= 32'h0;
+          iv_reg[1]  <= 32'h0;
 
           for (i = 0 ; i < 8 ; i = i + 1)
             key_reg[i] <= 32'h0;
@@ -236,6 +224,15 @@ module chacha(
         begin
           if (we)
             begin
+              if (addr == ADDR_CTRL)
+                ctrl_we = 1;
+
+              if (addr == ADDR_KEYLEN)
+                keylen_we = 1;
+
+              if (addr == ADDR_ROUNDS)
+                rounds_we = 1;
+
               if ((addr >= ADDR_KEY0) && (addr <= ADDR_KEY7))
                 key_we = 1;
 
@@ -245,15 +242,6 @@ module chacha(
               if ((addr >= ADDR_DATA_IN0) && (addr <= ADDR_DATA_IN15))
                 data_in_we = 1;
 
-              case (addr)
-                ADDR_CTRL: ctrl_we = 1;
-                ADDR_KEYLEN: keylen_we = 1;
-                ADDR_ROUNDS: rounds_we = 1;
-
-                default:
-                  begin
-                  end
-              endcase // case (address)
             end // if (we)
 
           else

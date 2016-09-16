@@ -410,8 +410,9 @@ module chacha_core(
           state_we   = 1;
         end // if (init_state)
 
-      else if (update_state)
+      if (update_state)
         begin
+          state_we = 1;
           case (qr_ctr_reg)
             QR0:
               begin
@@ -447,7 +448,6 @@ module chacha_core(
                 state_new[07] = qr3_b_prim;
                 state_new[11] = qr3_c_prim;
                 state_new[15] = qr3_d_prim;
-                state_we = 1;
               end
 
             QR1:
@@ -484,7 +484,6 @@ module chacha_core(
                 state_new[04] = qr3_b_prim;
                 state_new[09] = qr3_c_prim;
                 state_new[14] = qr3_d_prim;
-                state_we    = 1;
               end
           endcase // case (quarterround_select)
         end // if (update_state)
@@ -765,6 +764,8 @@ module chacha_core(
             if (init)
               begin
                 block_ctr_rst   = 1;
+                ready_new       = 0;
+                ready_we        = 1;
                 chacha_ctrl_new = CTRL_INIT;
                 chacha_ctrl_we  = 1;
               end
