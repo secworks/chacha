@@ -350,10 +350,8 @@ module chacha_core(
       init_state_word7  = key3;
       init_state_word12 = block0_ctr_reg;
       init_state_word13 = block1_ctr_reg;
-      init_state_word14 = {iv[39  :  32], iv[47  :  40],
-                          iv[55  :  48], iv[63  :  56]};
-      init_state_word15 = {iv[7   :   0], iv[15  :   8],
-                          iv[23  :  16], iv[31  :  24]};
+      init_state_word14 = l2b(iv[63 : 32]);
+      init_state_word15 = l2b(iv[31 :  0]);
 
       if (keylen)
         begin
