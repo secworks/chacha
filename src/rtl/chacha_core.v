@@ -511,93 +511,35 @@ module chacha_core(
 
   //----------------------------------------------------------------
   // data_out_logic
-  // Final output logic that combines the result from procceing
-  // with the input word. This adds a final layer of XOR gates.
+  // Final output logic that combines the result from state
+  // update with the input block. This adds a 16 rounds and
+  // a final layer of XOR gates.
   //
   // Note that we also remap all the words into LSB format.
   //----------------------------------------------------------------
   always @*
     begin : data_out_logic
-      reg [31 : 0]  msb_block_state0;
-      reg [31 : 0]  msb_block_state1;
-      reg [31 : 0]  msb_block_state2;
-      reg [31 : 0]  msb_block_state3;
-      reg [31 : 0]  msb_block_state4;
-      reg [31 : 0]  msb_block_state5;
-      reg [31 : 0]  msb_block_state6;
-      reg [31 : 0]  msb_block_state7;
-      reg [31 : 0]  msb_block_state8;
-      reg [31 : 0]  msb_block_state9;
-      reg [31 : 0]  msb_block_state10;
-      reg [31 : 0]  msb_block_state11;
-      reg [31 : 0]  msb_block_state12;
-      reg [31 : 0]  msb_block_state13;
-      reg [31 : 0]  msb_block_state14;
-      reg [31 : 0]  msb_block_state15;
+      integer i;
+      reg [31 : 0] msb_block_state [0 : 15];
+      reg [31 : 0] lsb_block_state [0 : 15];
+      reg [511 : 0] block_state;
 
-      reg [31 : 0]  lsb_block_state0;
-      reg [31 : 0]  lsb_block_state1;
-      reg [31 : 0]  lsb_block_state2;
-      reg [31 : 0]  lsb_block_state3;
-      reg [31 : 0]  lsb_block_state4;
-      reg [31 : 0]  lsb_block_state5;
-      reg [31 : 0]  lsb_block_state6;
-      reg [31 : 0]  lsb_block_state7;
-      reg [31 : 0]  lsb_block_state8;
-      reg [31 : 0]  lsb_block_state9;
-      reg [31 : 0]  lsb_block_state10;
-      reg [31 : 0]  lsb_block_state11;
-      reg [31 : 0]  lsb_block_state12;
-      reg [31 : 0]  lsb_block_state13;
-      reg [31 : 0]  lsb_block_state14;
-      reg [31 : 0]  lsb_block_state15;
+      for (i = 0 ; i < 16 ; i = i + 1)
+        begin
+          msb_block_state[i] = init_state_word[i] + state_reg[i];
+          lsb_block_state[i] = l2b(msb_block_state[i][31 : 0]);
+        end
 
-      reg [511 : 0] lsb_block_state;
+      block_state = {lsb_block_state[00], lsb_block_state[01],
+                     lsb_block_state[02], lsb_block_state[03],
+                     lsb_block_state[04], lsb_block_state[05],
+                     lsb_block_state[06], lsb_block_state[07],
+                     lsb_block_state[08], lsb_block_state[09],
+                     lsb_block_state[10], lsb_block_state[11],
+                     lsb_block_state[12], lsb_block_state[13],
+                     lsb_block_state[14], lsb_block_state[15]};
 
-      msb_block_state0  = init_state_word[00] + state_reg[00];
-      msb_block_state1  = init_state_word[01] + state_reg[01];
-      msb_block_state2  = init_state_word[02] + state_reg[02];
-      msb_block_state3  = init_state_word[03] + state_reg[03];
-      msb_block_state4  = init_state_word[04] + state_reg[04];
-      msb_block_state5  = init_state_word[05] + state_reg[05];
-      msb_block_state6  = init_state_word[06] + state_reg[06];
-      msb_block_state7  = init_state_word[07] + state_reg[07];
-      msb_block_state8  = init_state_word[08] + state_reg[08];
-      msb_block_state9  = init_state_word[09] + state_reg[09];
-      msb_block_state10 = init_state_word[10] + state_reg[10];
-      msb_block_state11 = init_state_word[11] + state_reg[11];
-      msb_block_state12 = init_state_word[12] + state_reg[12];
-      msb_block_state13 = init_state_word[13] + state_reg[13];
-      msb_block_state14 = init_state_word[14] + state_reg[14];
-      msb_block_state15 = init_state_word[15] + state_reg[15];
-
-      lsb_block_state0  = l2b(msb_block_state0[31 : 0]);
-      lsb_block_state1  = l2b(msb_block_state1[31 : 0]);
-      lsb_block_state2  = l2b(msb_block_state2[31 : 0]);
-      lsb_block_state3  = l2b(msb_block_state3[31 : 0]);
-      lsb_block_state4  = l2b(msb_block_state4[31 : 0]);
-      lsb_block_state5  = l2b(msb_block_state5[31 : 0]);
-      lsb_block_state6  = l2b(msb_block_state6[31 : 0]);
-      lsb_block_state7  = l2b(msb_block_state7[31 : 0]);
-      lsb_block_state8  = l2b(msb_block_state8[31 : 0]);
-      lsb_block_state9  = l2b(msb_block_state9[31 : 0]);
-      lsb_block_state10 = l2b(msb_block_state10[31 : 0]);
-      lsb_block_state11 = l2b(msb_block_state11[31 : 0]);
-      lsb_block_state12 = l2b(msb_block_state12[31 : 0]);
-      lsb_block_state13 = l2b(msb_block_state13[31 : 0]);
-      lsb_block_state14 = l2b(msb_block_state14[31 : 0]);
-      lsb_block_state15 = l2b(msb_block_state15[31 : 0]);
-
-      lsb_block_state = {lsb_block_state0,  lsb_block_state1,
-                         lsb_block_state2,  lsb_block_state3,
-                         lsb_block_state4,  lsb_block_state5,
-                         lsb_block_state6,  lsb_block_state7,
-                         lsb_block_state8,  lsb_block_state9,
-                         lsb_block_state10, lsb_block_state11,
-                         lsb_block_state12, lsb_block_state13,
-                         lsb_block_state14, lsb_block_state15};
-
-      data_out_new = data_in ^ lsb_block_state;
+      data_out_new = data_in ^ block_state;
     end // data_out_logic
 
 
