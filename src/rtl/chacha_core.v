@@ -143,22 +143,7 @@ module chacha_core(
   //----------------------------------------------------------------
   // Wires.
   //----------------------------------------------------------------
-  reg [31 : 0] init_state_word0;
-  reg [31 : 0] init_state_word1;
-  reg [31 : 0] init_state_word2;
-  reg [31 : 0] init_state_word3;
-  reg [31 : 0] init_state_word4;
-  reg [31 : 0] init_state_word5;
-  reg [31 : 0] init_state_word6;
-  reg [31 : 0] init_state_word7;
-  reg [31 : 0] init_state_word8;
-  reg [31 : 0] init_state_word9;
-  reg [31 : 0] init_state_word10;
-  reg [31 : 0] init_state_word11;
-  reg [31 : 0] init_state_word12;
-  reg [31 : 0] init_state_word13;
-  reg [31 : 0] init_state_word14;
-  reg [31 : 0] init_state_word15;
+  reg [31 : 0] init_state_word [0 : 15];
 
   reg init_state;
   reg update_state;
@@ -346,38 +331,38 @@ module chacha_core(
       key6 = l2b(key[63  :  32]);
       key7 = l2b(key[31  :   0]);
 
-      init_state_word4  = key0;
-      init_state_word5  = key1;
-      init_state_word6  = key2;
-      init_state_word7  = key3;
-      init_state_word12 = block0_ctr_reg;
-      init_state_word13 = block1_ctr_reg;
-      init_state_word14 = l2b(iv[63 : 32]);
-      init_state_word15 = l2b(iv[31 :  0]);
+      init_state_word[04] = key0;
+      init_state_word[05] = key1;
+      init_state_word[06] = key2;
+      init_state_word[07] = key3;
+      init_state_word[12] = block0_ctr_reg;
+      init_state_word[13] = block1_ctr_reg;
+      init_state_word[14] = l2b(iv[63 : 32]);
+      init_state_word[15] = l2b(iv[31 :  0]);
 
       if (keylen)
         begin
           // 256 bit key.
-          init_state_word0  = SIGMA0;
-          init_state_word1  = SIGMA1;
-          init_state_word2  = SIGMA2;
-          init_state_word3  = SIGMA3;
-          init_state_word8  = key4;
-          init_state_word9  = key5;
-          init_state_word10 = key6;
-          init_state_word11 = key7;
+          init_state_word[00] = SIGMA0;
+          init_state_word[01] = SIGMA1;
+          init_state_word[02] = SIGMA2;
+          init_state_word[03] = SIGMA3;
+          init_state_word[08] = key4;
+          init_state_word[09] = key5;
+          init_state_word[10] = key6;
+          init_state_word[11] = key7;
         end
       else
         begin
           // 128 bit key.
-          init_state_word0  = TAU0;
-          init_state_word1  = TAU1;
-          init_state_word2  = TAU2;
-          init_state_word3  = TAU3;
-          init_state_word8  = key0;
-          init_state_word9  = key1;
-          init_state_word10 = key2;
-          init_state_word11 = key3;
+          init_state_word[00] = TAU0;
+          init_state_word[01] = TAU1;
+          init_state_word[02] = TAU2;
+          init_state_word[03] = TAU3;
+          init_state_word[08] = key0;
+          init_state_word[09] = key1;
+          init_state_word[10] = key2;
+          init_state_word[11] = key3;
         end
     end
 
@@ -404,7 +389,7 @@ module chacha_core(
       state_new[13] = 32'h0;
       state_new[14] = 32'h0;
       state_new[15] = 32'h0;
-      state_we    = 0;
+      state_we      = 0;
 
       qr0_a = 32'h0;
       qr0_b = 32'h0;
@@ -425,22 +410,22 @@ module chacha_core(
 
       if (init_state)
         begin
-          state_new[00] = init_state_word0;
-          state_new[01] = init_state_word1;
-          state_new[02] = init_state_word2;
-          state_new[03] = init_state_word3;
-          state_new[04] = init_state_word4;
-          state_new[05] = init_state_word5;
-          state_new[06] = init_state_word6;
-          state_new[07] = init_state_word7;
-          state_new[08] = init_state_word8;
-          state_new[09] = init_state_word9;
-          state_new[10] = init_state_word10;
-          state_new[11] = init_state_word11;
-          state_new[12] = init_state_word12;
-          state_new[13] = init_state_word13;
-          state_new[14] = init_state_word14;
-          state_new[15] = init_state_word15;
+          state_new[00] = init_state_word[00];
+          state_new[01] = init_state_word[01];
+          state_new[02] = init_state_word[02];
+          state_new[03] = init_state_word[03];
+          state_new[04] = init_state_word[04];
+          state_new[05] = init_state_word[05];
+          state_new[06] = init_state_word[06];
+          state_new[07] = init_state_word[07];
+          state_new[08] = init_state_word[08];
+          state_new[09] = init_state_word[09];
+          state_new[10] = init_state_word[10];
+          state_new[11] = init_state_word[11];
+          state_new[12] = init_state_word[12];
+          state_new[13] = init_state_word[13];
+          state_new[14] = init_state_word[14];
+          state_new[15] = init_state_word[15];
           state_we   = 1;
         end // if (init_state)
 
@@ -569,39 +554,39 @@ module chacha_core(
 
       reg [511 : 0] lsb_block_state;
 
-      msb_block_state0  = init_state_word0  + state_reg[00];
-      msb_block_state1  = init_state_word1  + state_reg[01];
-      msb_block_state2  = init_state_word2  + state_reg[02];
-      msb_block_state3  = init_state_word3  + state_reg[03];
-      msb_block_state4  = init_state_word4  + state_reg[04];
-      msb_block_state5  = init_state_word5  + state_reg[05];
-      msb_block_state6  = init_state_word6  + state_reg[06];
-      msb_block_state7  = init_state_word7  + state_reg[07];
-      msb_block_state8  = init_state_word8  + state_reg[08];
-      msb_block_state9  = init_state_word9  + state_reg[09];
-      msb_block_state10 = init_state_word10 + state_reg[10];
-      msb_block_state11 = init_state_word11 + state_reg[11];
-      msb_block_state12 = init_state_word12 + state_reg[12];
-      msb_block_state13 = init_state_word13 + state_reg[13];
-      msb_block_state14 = init_state_word14 + state_reg[14];
-      msb_block_state15 = init_state_word15 + state_reg[15];
+      msb_block_state0  = init_state_word[00] + state_reg[00];
+      msb_block_state1  = init_state_word[01] + state_reg[01];
+      msb_block_state2  = init_state_word[02] + state_reg[02];
+      msb_block_state3  = init_state_word[03] + state_reg[03];
+      msb_block_state4  = init_state_word[04] + state_reg[04];
+      msb_block_state5  = init_state_word[05] + state_reg[05];
+      msb_block_state6  = init_state_word[06] + state_reg[06];
+      msb_block_state7  = init_state_word[07] + state_reg[07];
+      msb_block_state8  = init_state_word[08] + state_reg[08];
+      msb_block_state9  = init_state_word[09] + state_reg[09];
+      msb_block_state10 = init_state_word[10] + state_reg[10];
+      msb_block_state11 = init_state_word[11] + state_reg[11];
+      msb_block_state12 = init_state_word[12] + state_reg[12];
+      msb_block_state13 = init_state_word[13] + state_reg[13];
+      msb_block_state14 = init_state_word[14] + state_reg[14];
+      msb_block_state15 = init_state_word[15] + state_reg[15];
 
-      lsb_block_state0  = l2b(msb_block_state0[31  :  0]);
-      lsb_block_state1  = l2b(msb_block_state1[31  :  0]);
-      lsb_block_state2  = l2b(msb_block_state2[31  :  0]);
-      lsb_block_state3  = l2b(msb_block_state3[31  :  0]);
-      lsb_block_state4  = l2b(msb_block_state4[31  :  0]);
-      lsb_block_state5  = l2b(msb_block_state5[31  :  0]);
-      lsb_block_state6  = l2b(msb_block_state6[31  :  0]);
-      lsb_block_state7  = l2b(msb_block_state7[31  :  0]);
-      lsb_block_state8  = l2b(msb_block_state8[31  :  0]);
-      lsb_block_state9  = l2b(msb_block_state9[31  :  0]);
-      lsb_block_state10 = l2b(msb_block_state10[31  :  0]);
-      lsb_block_state11 = l2b(msb_block_state11[31  :  0]);
-      lsb_block_state12 = l2b(msb_block_state12[31  :  0]);
-      lsb_block_state13 = l2b(msb_block_state13[31  :  0]);
-      lsb_block_state14 = l2b(msb_block_state14[31  :  0]);
-      lsb_block_state15 = l2b(msb_block_state15[31  :  0]);
+      lsb_block_state0  = l2b(msb_block_state0[31 : 0]);
+      lsb_block_state1  = l2b(msb_block_state1[31 : 0]);
+      lsb_block_state2  = l2b(msb_block_state2[31 : 0]);
+      lsb_block_state3  = l2b(msb_block_state3[31 : 0]);
+      lsb_block_state4  = l2b(msb_block_state4[31 : 0]);
+      lsb_block_state5  = l2b(msb_block_state5[31 : 0]);
+      lsb_block_state6  = l2b(msb_block_state6[31 : 0]);
+      lsb_block_state7  = l2b(msb_block_state7[31 : 0]);
+      lsb_block_state8  = l2b(msb_block_state8[31 : 0]);
+      lsb_block_state9  = l2b(msb_block_state9[31 : 0]);
+      lsb_block_state10 = l2b(msb_block_state10[31 : 0]);
+      lsb_block_state11 = l2b(msb_block_state11[31 : 0]);
+      lsb_block_state12 = l2b(msb_block_state12[31 : 0]);
+      lsb_block_state13 = l2b(msb_block_state13[31 : 0]);
+      lsb_block_state14 = l2b(msb_block_state14[31 : 0]);
+      lsb_block_state15 = l2b(msb_block_state15[31 : 0]);
 
       lsb_block_state = {lsb_block_state0,  lsb_block_state1,
                          lsb_block_state2,  lsb_block_state3,
