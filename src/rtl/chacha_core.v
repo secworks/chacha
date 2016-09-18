@@ -85,6 +85,16 @@ module chacha_core(
 
 
   //----------------------------------------------------------------
+  // Functions for swapping between big and little endianness.
+  //----------------------------------------------------------------
+  function [31 : 0] l2b(input [31 : 0] op);
+    begin
+      l2b = {op[7 : 0], op[15 : 8], op[23 : 16], op[31 : 24]};
+    end
+  endfunction // b2l
+
+
+  //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
   reg [31 : 0] state_reg [0 : 15];
@@ -325,22 +335,14 @@ module chacha_core(
       reg [31 : 0] key6;
       reg [31 : 0] key7;
 
-      key0 = {key[231 : 224], key[239 : 232],
-              key[247 : 240], key[255 : 248]};
-      key1 = {key[199 : 192], key[207 : 200],
-              key[215 : 208], key[223 : 216]};
-      key2 = {key[167 : 160], key[175 : 168],
-              key[183 : 176], key[191 : 184]};
-      key3 = {key[135 : 128], key[143 : 136],
-              key[151 : 144], key[159 : 152]};
-      key4 = {key[103 :  96], key[111 : 104],
-              key[119 : 112], key[127 : 120]};
-      key5 = {key[71  :  64], key[79  :  72],
-              key[87  :  80], key[95  :  88]};
-      key6 = {key[39  :  32], key[47  :  40],
-              key[55  :  48], key[63  :  56]};
-      key7 = {key[7   :   0], key[15  :   8],
-              key[23  :  16], key[31  :  24]};
+      key0 = l2b(key[255 : 224]);
+      key1 = l2b(key[223 : 192]);
+      key2 = l2b(key[191 : 160]);
+      key3 = l2b(key[159 : 128]);
+      key4 = l2b(key[127 :  96]);
+      key5 = l2b(key[95  :  64]);
+      key6 = l2b(key[63  :  32]);
+      key7 = l2b(key[31  :   0]);
 
       init_state_word4  = key0;
       init_state_word5  = key1;
