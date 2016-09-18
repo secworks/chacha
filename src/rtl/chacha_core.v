@@ -373,23 +373,11 @@ module chacha_core(
   //----------------------------------------------------------------
   always @*
     begin : state_logic
-      state_new[00] = 32'h0;
-      state_new[01] = 32'h0;
-      state_new[02] = 32'h0;
-      state_new[03] = 32'h0;
-      state_new[04] = 32'h0;
-      state_new[05] = 32'h0;
-      state_new[06] = 32'h0;
-      state_new[07] = 32'h0;
-      state_new[08] = 32'h0;
-      state_new[09] = 32'h0;
-      state_new[10] = 32'h0;
-      state_new[11] = 32'h0;
-      state_new[12] = 32'h0;
-      state_new[13] = 32'h0;
-      state_new[14] = 32'h0;
-      state_new[15] = 32'h0;
-      state_we      = 0;
+      integer i;
+
+      for (i = 0 ; i < 16 ; i = i + 1)
+        state_new[i] = 32'h0;
+      state_we = 0;
 
       qr0_a = 32'h0;
       qr0_b = 32'h0;
@@ -410,22 +398,8 @@ module chacha_core(
 
       if (init_state)
         begin
-          state_new[00] = init_state_word[00];
-          state_new[01] = init_state_word[01];
-          state_new[02] = init_state_word[02];
-          state_new[03] = init_state_word[03];
-          state_new[04] = init_state_word[04];
-          state_new[05] = init_state_word[05];
-          state_new[06] = init_state_word[06];
-          state_new[07] = init_state_word[07];
-          state_new[08] = init_state_word[08];
-          state_new[09] = init_state_word[09];
-          state_new[10] = init_state_word[10];
-          state_new[11] = init_state_word[11];
-          state_new[12] = init_state_word[12];
-          state_new[13] = init_state_word[13];
-          state_new[14] = init_state_word[14];
-          state_new[15] = init_state_word[15];
+          for (i = 0 ; i < 16 ; i = i + 1)
+            state_new[i] = init_state_word[i];
           state_we   = 1;
         end // if (init_state)
 
