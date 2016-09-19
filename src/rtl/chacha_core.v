@@ -99,45 +99,45 @@ module chacha_core(
   //----------------------------------------------------------------
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
-  reg [31 : 0] state_reg [0 : 15];
-  reg [31 : 0] state_new [0 : 15];
-  reg          state_we;
+  reg [31 : 0]  state_reg [0 : 15];
+  reg [31 : 0]  state_new [0 : 15];
+  reg           state_we;
 
   reg [511 : 0] data_out_reg;
   reg [511 : 0] data_out_new;
 
-  reg  data_out_valid_reg;
-  reg  data_out_valid_new;
-  reg  data_out_valid_we;
+  reg           data_out_valid_reg;
+  reg           data_out_valid_new;
+  reg           data_out_valid_we;
 
-  reg         qr_ctr_reg;
-  reg         qr_ctr_new;
-  reg         qr_ctr_we;
-  reg         qr_ctr_inc;
-  reg         qr_ctr_rst;
+  reg           qr_ctr_reg;
+  reg           qr_ctr_new;
+  reg           qr_ctr_we;
+  reg           qr_ctr_inc;
+  reg           qr_ctr_rst;
 
-  reg [3 : 0] dr_ctr_reg;
-  reg [3 : 0] dr_ctr_new;
-  reg         dr_ctr_we;
-  reg         dr_ctr_inc;
-  reg         dr_ctr_rst;
+  reg [3 : 0]   dr_ctr_reg;
+  reg [3 : 0]   dr_ctr_new;
+  reg           dr_ctr_we;
+  reg           dr_ctr_inc;
+  reg           dr_ctr_rst;
 
-  reg [31 : 0] block0_ctr_reg;
-  reg [31 : 0] block0_ctr_new;
-  reg          block0_ctr_we;
-  reg [31 : 0] block1_ctr_reg;
-  reg [31 : 0] block1_ctr_new;
-  reg          block1_ctr_we;
-  reg          block_ctr_inc;
-  reg          block_ctr_set;
+  reg [31 : 0]  block0_ctr_reg;
+  reg [31 : 0]  block0_ctr_new;
+  reg           block0_ctr_we;
+  reg [31 : 0]  block1_ctr_reg;
+  reg [31 : 0]  block1_ctr_new;
+  reg           block1_ctr_we;
+  reg           block_ctr_inc;
+  reg           block_ctr_set;
 
-  reg          ready_reg;
-  reg          ready_new;
-  reg          ready_we;
+  reg           ready_reg;
+  reg           ready_new;
+  reg           ready_we;
 
-  reg [2 : 0] chacha_ctrl_reg;
-  reg [2 : 0] chacha_ctrl_new;
-  reg         chacha_ctrl_we;
+  reg [2 : 0]   chacha_ctrl_reg;
+  reg [2 : 0]   chacha_ctrl_new;
+  reg           chacha_ctrl_we;
 
 
   //----------------------------------------------------------------
