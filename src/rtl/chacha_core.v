@@ -129,7 +129,7 @@ module chacha_core(
   reg [31 : 0] block1_ctr_new;
   reg          block1_ctr_we;
   reg          block_ctr_inc;
-  reg          block_ctr_rst;
+  reg          block_ctr_set;
 
   reg          ready_reg;
   reg          ready_new;
@@ -577,7 +577,7 @@ module chacha_core(
       block0_ctr_we = 0;
       block1_ctr_we = 0;
 
-      if (block_ctr_rst)
+      if (block_ctr_set)
         begin
           block0_ctr_new = ctr[31 : 00];
           block1_ctr_new = ctr[63 : 32];
@@ -614,7 +614,7 @@ module chacha_core(
       dr_ctr_inc         = 0;
       dr_ctr_rst         = 0;
       block_ctr_inc      = 0;
-      block_ctr_rst      = 0;
+      block_ctr_set      = 0;
       ready_new          = 0;
       ready_we           = 0;
       data_out_valid_new = 0;
@@ -627,7 +627,7 @@ module chacha_core(
           begin
             if (init)
               begin
-                block_ctr_rst   = 1;
+                block_ctr_set   = 1;
                 ready_new       = 0;
                 ready_we        = 1;
                 chacha_ctrl_new = CTRL_INIT;
@@ -678,7 +678,7 @@ module chacha_core(
                 ready_we           = 1;
                 data_out_valid_new = 0;
                 data_out_valid_we  = 1;
-                block_ctr_rst      = 1;
+                block_ctr_set      = 1;
                 chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
               end
