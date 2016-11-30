@@ -19,3 +19,7 @@ files =
 file_type = verilogSource
 usage = sim
 
+[parameter DEBUG]
+datatype = int
+description = Enable debug printouts
+paramtype = vlogparam
