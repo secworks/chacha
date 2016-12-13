@@ -112,7 +112,7 @@ module tb_chacha_core();
 
                    // Control.
                    .init(tb_core_init),
-                   .next(tb_core_next),
+                   .next_block(tb_core_next),
 
                    // Parameters.
                    .key(tb_core_key),
@@ -256,7 +256,7 @@ module tb_chacha_core();
       $display("---------------------------------");
 
       $display("init       = %01x", dut.init);
-      $display("next       = %01x", dut.next);
+      $display("next       = %01x", dut.next_block);
       $display("keylen     = %01x", dut.keylen);
       $display("");
 

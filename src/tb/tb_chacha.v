@@ -199,7 +199,7 @@ module tb_chacha();
           $display("core ctrl: 0x%02x, core_qr_ctr: 0x%02x, core_dr_ctr: 0x%02x, init: 0x%01x, next: 0x%01x, core_ready: 0x%02x",
                    dut.core.chacha_ctrl_reg, dut.core.qr_ctr_reg,
                    dut.core.dr_ctr_reg, dut.core.init,
-                   dut.core.next, dut.core.ready_reg);
+                   dut.core.next_block, dut.core.ready_reg);
 
           $display("state0_reg  = 0x%08x, state1_reg  = 0x%08x, state2_reg  = 0x%08x, state3_reg  = 0x%08x",
                    dut.core.state_reg[00], dut.core.state_reg[01], dut.core.state_reg[02], dut.core.state_reg[03]);

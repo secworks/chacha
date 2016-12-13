@@ -143,7 +143,7 @@ module chacha(
                     .clk(clk),
                     .reset_n(reset_n),
                     .init(init_reg),
-                    .next(next_reg),
+                    .next_block(next_reg),
                     .key(core_key),
                     .keylen(keylen_reg),
                     .iv(core_iv),

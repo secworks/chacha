@@ -41,7 +41,7 @@ module chacha_core(
                    input wire            reset_n,
 
                    input wire            init,
-                   input wire            next,
+                   input wire            next_block,
 
                    input wire [255 : 0]  key,
                    input wire            keylen,
@@ -682,7 +682,7 @@ module chacha_core(
                 chacha_ctrl_new    = CTRL_INIT;
                 chacha_ctrl_we     = 1;
               end
-            else if (next)
+            else if (next_block)
               begin
                 ready_new          = 0;
                 ready_we           = 1;
