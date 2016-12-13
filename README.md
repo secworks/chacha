@@ -18,6 +18,15 @@ The core contains an internal 64-bit block counter that is automatically
 updated for each data block.
 
 
+## Branch for VHDL interoperability ##
+There is a branch
+[*vhdl_interop*](https://github.com/secworks/chacha/tree/vhdl_interop)
+that changes the port name "next" in *chacha_core.v*. Next is a reserved
+word in VHDL. If you are instantiating the core in a mixed language
+environment use this branch. This branch will not be merged into
+*master*, but will track changes to the *master* branch.
+
+
 ## Performance ##
 The core now has four separate quarterround modules, which means that
 one round takes one cycle.
