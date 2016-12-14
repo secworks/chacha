@@ -40,7 +40,7 @@ module tb_chacha();
   //----------------------------------------------------------------
   // Internal constant and parameter definitions.
   //----------------------------------------------------------------
-  localparam DEBUG = 1;
+  parameter DEBUG = 1;
 
   localparam CLK_HALF_PERIOD = 1;
   localparam CLK_PERIOD = 2 * CLK_HALF_PERIOD;

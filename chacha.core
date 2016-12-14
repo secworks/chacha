@@ -1,0 +1,25 @@
+CAPI=1
+
+[main]
+
+name = ::chacha:0
+description = Verilog 2001 implementation of the ChaCha stream cipher
+
+[fileset rtl]
+files =
+ src/rtl/chacha_qr.v
+ src/rtl/chacha_core.v
+ src/rtl/chacha.v
+file_type = verilogSource
+
+[fileset tb]
+files =
+ src/tb/tb_chacha_core.v
+ src/tb/tb_chacha.v
+file_type = verilogSource
+usage = sim
+
+[parameter DEBUG]
+datatype = int
+description = Enable debug printouts
+paramtype = vlogparam
