@@ -18,7 +18,7 @@ TOP_TB_SRC=../src/tb/tb_chacha.v
 CC=iverilog
 CCFLAGS =
 LINT=verilator
-LINTFLAGS =  --lint-only  -Wall -Wno-fatal -Wno-DECLFILENAME
+LINTFLAGS = +1364-2001ext+ --lint-only  -Wall -Wno-fatal -Wno-DECLFILENAME
 
 
 all: top.sim core.sim

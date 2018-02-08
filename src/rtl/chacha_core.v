@@ -139,6 +139,10 @@ module chacha_core(
   reg [2 : 0]   chacha_ctrl_new;
   reg           chacha_ctrl_we;
 
+  // Test
+  reg [31 : 0] msb_block_state [0 : 15];
+  reg [31 : 0] lsb_block_state [0 : 15];
+  reg [511 : 0] block_state;
 
   //----------------------------------------------------------------
   // Wires.
