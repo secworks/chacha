@@ -74,8 +74,7 @@ sim-top: top.sim
 
 
 clean:
-	rm -f core.sim
-	rm -f top.sim
+	rm -f *.sim
 
 
 help:
