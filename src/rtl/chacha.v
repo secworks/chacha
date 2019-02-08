@@ -88,8 +88,9 @@ module chacha(
   // Registers including update variables and write enable.
   //----------------------------------------------------------------
   reg          init_reg;
+  reg          init_new;
   reg          next_reg;
-  reg          ctrl_we;
+  reg          next_new;
 
   reg          keylen_reg;
   reg          keylen_we;
@@ -183,11 +184,8 @@ module chacha(
         end
       else
         begin
-          if (ctrl_we)
-            begin
-              init_reg <= write_data[CTRL_INIT_BIT];
-              next_reg <= write_data[CTRL_NEXT_BIT];
-            end
+          init_reg <= init_new;
+          next_reg <= next_new;
 
           if (keylen_we)
             keylen_reg <= write_data[KEYLEN_BIT];
@@ -212,12 +210,13 @@ module chacha(
   //----------------------------------------------------------------
   always @*
     begin : addr_decoder
-      ctrl_we       = 0;
-      keylen_we     = 0;
-      rounds_we     = 0;
-      key_we        = 0;
-      iv_we         = 0;
-      data_in_we    = 0;
+      keylen_we     = 1'h0;
+      rounds_we     = 1'h0;
+      key_we        = 1'h0;
+      iv_we         = 1'h0;
+      data_in_we    = 1'h0;
+      init_new      = 1'h0;
+      next_new      = 1'h0;
       tmp_read_data = 32'h0;
 
       if (cs)
@@ -225,7 +224,10 @@ module chacha(
           if (we)
             begin
               if (addr == ADDR_CTRL)
-                ctrl_we = 1;
+                begin
+                  init_new = write_data[CTRL_INIT_BIT];
+                  next_new = write_data[CTRL_NEXT_BIT];
+                end
 
               if (addr == ADDR_KEYLEN)
                 keylen_we = 1;
