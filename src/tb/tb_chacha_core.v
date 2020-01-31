@@ -95,6 +95,7 @@ module tb_chacha_core();
   wire           tb_core_ready;
   reg [0 : 511]  tb_core_data_in;
   wire [0 : 511] tb_core_data_out;
+  wire           tb_core_data_out_valid;
 
   reg            display_cycle_ctr;
   reg            display_ctrl_and_ctrs;
