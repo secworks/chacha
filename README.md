@@ -46,34 +46,48 @@ level wrapper is three, which means that with eight rounds the total
 latency is 11 cycles. For ChaCha20 the latency is 23 cycles.
 
 
-## Implementation ##
-Implementation results using the Altera Quartus Prime 15.1 design tool.
+## Implementation results##
 
-### Cyclone IV E ###
-- 4748 LEs
-- 1940 registers
-- 55 MHz
-
-
-### Cyclone V GX ###
-- 1939 ALMs for logic
-- 1940 registers
-- 60 MHz
+### Intel Cyclone IV E ###
+- Tool: Altera Quartus Prime 15.1
+- LEs:  4748
+- Regs: 1940
+- RAM:     0
+- Fmax: 55 MHz
 
 
-Implementation results using Xilinx ISE 14.7.
+### Intel Cyclone V GX ###
+- Tool: Altera Quartus Prime 15.1
+- ALMs: 1939
+- Regs: 1940
+- Ram:     0
+- Fmax: 60 MHz
+
+
+### Microchip IGLOO2 ###
+- Tool:   Libero v 12.4
+- Device: M2GL150TS-FCV484
+- LUTs:   4190
+- SLEs:   2028
+- BRAMs:  2
+- Fmax:   88.4 MHz
+
 
 ### Xilinx Spartan-6 ###
-- xc6slx75-3fgg676
-- 3843 slice LUTs
-- 1049 slices
-- 1994 registers
-- 83 MHz
+- Tool:   Xilinx ISE 14.7
+- Device: xc6slx75-3fgg676
+- LUTs:   3843
+- Slices: 1049
+- Regs:   1994
+- BRAM:      0
+- Fmax:   83 MHz
 
 
 ### Xilinx Artix-7 ###
-- xc7a200t-3fbg484
-- 3837 slice LUTs
-- 1076 slices
-- 1949 registers
-- 100 MHz
+- Tool:   Xilinx ISE 14.7
+- Device: xc7a200t-3fbg484
+- LUTs:   3837
+- Slices: 1076
+- Regs:   1949
+- BRAM:      0
+- Fmax:   100 MHz
