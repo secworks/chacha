@@ -73,6 +73,15 @@ latency is 11 cycles. For ChaCha20 the latency is 23 cycles.
 - Fmax:   88.4 MHz
 
 
+### Microchip PolarFire ###
+- Tool:   Libero v 12.4
+- Device: M2GL150TS-FCV484
+- LUTs:   4190
+- SLEs:   1992
+- BRAMs:  3
+- Fmax:   94.4 MHz
+
+
 ### Xilinx Spartan-6 ###
 - Tool:   Xilinx ISE 14.7
 - Device: xc6slx75-3fgg676
