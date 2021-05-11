@@ -1,6 +1,6 @@
 CAPI=2:
 
-name : secworks:crypto:chacha:1.0.0
+name : secworks:crypto:chacha:0
 description : Verilog 2001 implementation of the ChaCha stream cipher
 
 filesets:
@@ -14,7 +14,7 @@ filesets:
     tb:
         files:
             - src/tb/tb_chacha_core.v
-            - src/tb_chacha.v
+            - src/tb/tb_chacha.v
         file_type : verilogSource
 
     openlane:
@@ -25,8 +25,16 @@ targets:
     default:
         filesets: [rtl]
 
-    sim:
+    tb_chacha:
+        default_tool: icarus
         filesets: [rtl, tb]
+        toplevel: tb_chacha
+        parameters : [DEBUG]
+
+    tb_chacha_core:
+        default_tool: icarus
+        filesets: [rtl, tb]
+        toplevel: tb_chacha_core
 
     sky130:
         default_tool : openlane
