@@ -25,6 +25,14 @@ targets:
     default:
         filesets: [rtl]
 
+    lint:
+        default_tool : verilator
+        filesets : [rtl]
+        tools:
+            verilator:
+                mode: lint-only
+        toplevel: chacha
+
     tb_chacha:
         default_tool: icarus
         filesets: [rtl, tb]

@@ -26,3 +26,34 @@ jobs:
       - run: chmod +x openlane_runner.py
       - run: fusesoc library add $REPO $GITHUB_WORKSPACE/$REPO
       - run: fusesoc run --target=sky130 $VLNV
+
+  sim-icarus:
+    runs-on: ubuntu-latest
+    env:
+      REPO : chacha
+      VLNV : secworks:crypto:chacha
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          path: chacha
+      - run: sudo apt install iverilog
+      - run: pip3 install fusesoc
+      - run: fusesoc library add $REPO $GITHUB_WORKSPACE/$REPO
+      - run: fusesoc run --target=tb_chacha $VLNV
+      - run: fusesoc run --target=tb_chacha_core $VLNV
+
+  lint-verilator:
+    runs-on: ubuntu-latest
+    env:
+      REPO : chacha
+      VLNV : secworks:crypto:chacha
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          path: chacha
+      - run: sudo apt install verilator
+      - run: pip3 install fusesoc
+      - run: fusesoc library add $REPO $GITHUB_WORKSPACE/$REPO
+      - run: fusesoc run --target=lint $VLNV
