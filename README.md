@@ -50,28 +50,40 @@ This core is supported by the
 [FuseSoC](https://github.com/olofk/fusesoc) core package manager and
 build system. Some quick  FuseSoC instructions:
 
-#install FuseSoC
+Install FuseSoC
+~~~
 pip install fusesoc
+~~~
 
-#Create and enter a new workspace
+Create and enter a new workspace
+~~~
 mkdir workspace && cd workspace
+~~~
 
-#Register aes as a library in the workspace
-fusesoc library add chacha /path/to/aes
-#...if repo is available locally or...
-#...to get the upstream repo
+Register chacha as a library in the workspace
+~~~
+fusesoc library add chacha /path/to/chacha
+~~~
+...if repo is available locally or...
+...to get the upstream repo
+~~~
 fusesoc library add chacha https://github.com/secworks/chacha
+~~~
 
-#Run tb_chacha testbench
+Run tb_chacha testbench
+~~~
 fusesoc run --target=tb_chacha secworks:crypto:chacha
+~~~
 
-#Run with modelsim instead of default tool (icarus)
+Run with modelsim instead of default tool (icarus)
+~~~
 fusesoc run --target=tb_chacha --tool=modelsim secworks:crypto:chacha
+~~~
 
-#List all targets
+List all targets
+~~~
 fusesoc core show secworks:crypto:aes
-
-
+~~~
 
 ## Implementation results##
 
