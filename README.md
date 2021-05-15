@@ -75,7 +75,7 @@ latency is 11 cycles. For ChaCha20 the latency is 23 cycles.
 
 ### Microchip PolarFire ###
 - Tool:   Libero v 12.4
-- Device: M2GL150TS-FCV484
+- Device: MPF500TS-FCG784I
 - LUTs:   4190
 - SLEs:   1992
 - BRAMs:  3
