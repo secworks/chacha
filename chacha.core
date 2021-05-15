@@ -1,25 +1,57 @@
-CAPI=1
+CAPI=2:
 
-[main]
+name : secworks:crypto:chacha:0
+description : Verilog 2001 implementation of the ChaCha stream cipher
 
-name = ::chacha:0
-description = Verilog 2001 implementation of the ChaCha stream cipher
+filesets:
+    rtl:
+        files:
+            - src/rtl/chacha_qr.v
+            - src/rtl/chacha_core.v
+            - src/rtl/chacha.v
+        file_type : verilogSource
 
-[fileset rtl]
-files =
- src/rtl/chacha_qr.v
- src/rtl/chacha_core.v
- src/rtl/chacha.v
-file_type = verilogSource
+    tb:
+        files:
+            - src/tb/tb_chacha_core.v
+            - src/tb/tb_chacha.v
+        file_type : verilogSource
 
-[fileset tb]
-files =
- src/tb/tb_chacha_core.v
- src/tb/tb_chacha.v
-file_type = verilogSource
-usage = sim
+    openlane:
+        files:
+            - src/data/openlane_params.tcl : {file_type : tclSource}
 
-[parameter DEBUG]
-datatype = int
-description = Enable debug printouts
-paramtype = vlogparam
+targets:
+    default:
+        filesets: [rtl]
+
+    lint:
+        default_tool : verilator
+        filesets : [rtl]
+        tools:
+            verilator:
+                mode: lint-only
+        toplevel: chacha
+
+    tb_chacha:
+        default_tool: icarus
+        filesets: [rtl, tb]
+        toplevel: tb_chacha
+        parameters : [DEBUG]
+
+    tb_chacha_core:
+        default_tool: icarus
+        filesets: [rtl, tb]
+        toplevel: tb_chacha_core
+
+    sky130:
+        default_tool : openlane
+        filesets : [rtl, openlane]
+        toplevel : chacha
+
+parameters:
+    DEBUG:
+        datatype : int
+        default : 0
+        paramtype : vlogparam
+        description : Enable debug printouts
