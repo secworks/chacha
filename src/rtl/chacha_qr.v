@@ -38,6 +38,8 @@
 //
 //======================================================================
 
+`default_nettype none
+
 module chacha_qr(
                  input wire [31 : 0]  a,
                  input wire [31 : 0]  b,
