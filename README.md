@@ -1,3 +1,5 @@
+[![build-openlane-sky130](https://github.com/secworks/chacha/actions/workflows/ci.yml/badge.svg?branch=master&event=push)](https://github.com/secworks/chacha/actions/workflows/ci.yml)
+
 chacha
 ========
 
@@ -82,7 +84,7 @@ fusesoc run --target=tb_chacha --tool=modelsim secworks:crypto:chacha
 
 List all targets
 ~~~
-fusesoc core show secworks:crypto:aes
+fusesoc core show secworks:crypto:chacha
 ~~~
 
 ## Implementation results##
