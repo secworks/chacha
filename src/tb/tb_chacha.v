@@ -146,7 +146,6 @@ module tb_chacha();
   reg [31 : 0] error_ctr;
   reg [31 : 0] tc_ctr;
 
-  reg          error_found;
   reg [31 : 0] read_data;
 
   reg [511 : 0] extracted_data;
