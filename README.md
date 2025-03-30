@@ -18,6 +18,14 @@ This core implements the [ChaCha stream cipher
 J. Bernstein (DJB).
 
 
+### Contact information ##
+
+Assured provides customer support including customization, integration
+and system development related to the core. For more informantion,
+please contact [Assured Security
+Consultants](https://www.assured.se/contact).
+
+
 ## Functionality ##
 This core implements ChaCha with support for 128 and 256 bit keys. The
 number of rounds can be set from two to 32 rounds in steps of two. The
