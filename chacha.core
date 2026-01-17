@@ -1,7 +1,8 @@
 CAPI=2:
 
-name : secworks:crypto:chacha:0
-description : Verilog 2001 implementation of the ChaCha stream cipher
+name: secworks:crypto:chacha:1.0.0
+description: Verilog 2001 implementation of the ChaCha stream cipher.
+license: BSD-2-Clause
 
 filesets:
     rtl:
